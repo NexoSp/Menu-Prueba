@@ -192,6 +192,10 @@
 
   <!-- LÓGICA JAVASCRIPT ADMIN -->
   <script>
+    // Declaración previa de variables globales para evitar errores de inicialización
+    let listaProductos = [];
+    let configActualId = null;
+
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "1234";
 
@@ -200,9 +204,6 @@
 
     const _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const BUCKET_NAME = 'imagenes-productos';
-
-    let listaProductos = [];
-    let configActualId = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
       if (sessionStorage.getItem('admin_logueado') === 'true') {
