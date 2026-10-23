@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Menú Digital - [Nombre del Negocio]</title>
+  <title>Menú Digital - PERE Y EL FLACO</title>
 
   <!-- Etiquetas Open Graph para WhatsApp y Redes Sociales -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Menú Digital - [Nombre del Negocio]">
+  <meta property="og:title" content="Menú Digital - PERE Y EL FLACO">
   <meta property="og:description" content="Haz tu pedido rápido y fácil por WhatsApp. ¡Conoce nuestro menú!">
-  <meta property="og:url" content="[URL_DE_TU_WEB]">
+  <meta property="og:url" content="https://nexosp.github.io/Menu-digital/?v=13">
 
   <!-- LOGO OPEN GRAPH -->
-  <meta id="og-image" property="og:image" content="[URL_IMAGEN_LOGO]">
-  <meta id="og-image-secure" property="og:image:secure_url" content="[URL_IMAGEN_LOGO]">
+  <meta id="og-image" property="og:image" content="https://ahyvmupqzgcrxrbvjzsb.supabase.co/storage/v1/object/public/imagenes-productos/logos/1792764795898_li1i8.jpg">
+  <meta id="og-image-secure" property="og:image:secure_url" content="https://ahyvmupqzgcrxrbvjzsb.supabase.co/storage/v1/object/public/imagenes-productos/logos/1792764795898_li1i8.jpg">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="500">
   <meta property="og:image:height" content="500">
@@ -23,13 +23,17 @@
   <!-- Supabase JS Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- CONFIGURACIÓN DE TAILWIND Y VARIABLE DE COLOR DINÁMICO -->
+  <!-- CONFIGURACIÓN DE TAILWIND Y COLOR DINÁMICO -->
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            'custom-primary': 'var(--primary-color, #f59e0b)',
+            'custom-primary': 'var(--primary-color, #eab308)',
+            'dark-bg': '#121212',
+            'dark-card': '#1a1a1a',
+            'dark-border': '#2a2a2a',
+            'dark-pill': '#1e1c18'
           }
         }
       }
@@ -38,154 +42,168 @@
 
   <style>
     :root {
-      --primary-color: #f59e0b; /* Color principal personalizable desde el Admin */
+      --primary-color: #eab308; /* Dorado por defecto */
     }
     body {
       background-color: #121212;
       color: #e5e7eb;
     }
-    .bg-custom-primary { background-color: var(--primary-color) !important; }
-    .text-custom-primary { color: var(--primary-color) !important; }
-    .border-custom-primary { border-color: var(--primary-color) !important; }
-    
-    /* Estilos personalizados Modo Oscuro tipo EcoMenu */
-    .dark-card {
-      background-color: #1e1e1e;
-      border: 1px solid #2d2d2d;
+    .text-gold {
+      color: var(--primary-color);
     }
-    .dark-input {
-      background-color: #18181b;
-      border: 1px solid #27272a;
-      color: #fff;
-    }
-    .dark-input:focus {
+    .border-gold {
       border-color: var(--primary-color);
-      outline: none;
+    }
+    .bg-gold {
+      background-color: var(--primary-color);
     }
   </style>
 </head>
-<body class="font-sans pb-32">
+<body class="bg-dark-bg text-gray-200 font-sans pb-32">
 
-  <!-- HEADER / CABECERA OSCURA TIPO ECO-MENU -->
-  <header class="bg-[#18181b] border-b border-[#27272a] sticky top-0 z-40 shadow-md">
-    <div class="max-w-md mx-auto p-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <!-- Logo del negocio -->
-        <img id="logo-header" src="" alt="Logo" class="w-12 h-12 rounded-full object-cover border border-[#3f3f46] shadow-sm">
-        <div>
-          <h1 id="nombre-negocio" class="font-bold text-base text-white tracking-wide">[Nombre del Negocio]</h1>
-          <!-- Indicador dinámico de estado -->
-          <p id="estado-negocio-text" class="text-xs text-emerald-400 font-medium flex items-center gap-1 mt-0.5">
-            <span id="estado-punto" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span id="estado-label">Abierto ahora</span>
-          </p>
-        </div>
+  <!-- BARRA SUPERIOR (HEADER) -->
+  <header class="bg-dark-bg/90 backdrop-blur-md border-b border-dark-border sticky top-0 z-40 px-4 py-3">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="font-extrabold tracking-wider text-gold text-lg">ECO</span>
+        <span class="font-bold tracking-wider text-white text-lg">MENU</span>
       </div>
-
-      <!-- BOTÓN COMPARTIR / VIRALIZAR -->
-      <button onclick="compartirMenu()" class="bg-[#27272a] hover:bg-[#3f3f46] text-gray-200 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border border-[#3f3f46] shadow-sm" title="¡Comparte nuestro menú!">
-        <svg class="w-4 h-4 text-custom-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
-        <span>Compartir</span>
+      <button onclick="compartirMenu()" class="text-gray-400 hover:text-white p-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
       </button>
     </div>
   </header>
 
+  <!-- CABECERA DEL NEGOCIO (PROTAGONISMO TOTAL DEL LOGO Y NOMBRE) -->
+  <section class="max-w-md mx-auto px-4 pt-8 pb-4 text-center flex flex-col items-center">
+    
+    <!-- LOGO MÁS GRANDE, DESTACADO Y CENTRADO -->
+    <div class="relative mb-4">
+      <div class="w-36 h-36 rounded-full p-1.5 border-4 border-gold ring-4 ring-gold/30 flex items-center justify-center bg-black shadow-2xl transition-transform hover:scale-105 duration-300">
+        <img id="logo-header" src="https://ahyvmupqzgcrxrbvjzsb.supabase.co/storage/v1/object/public/imagenes-productos/logos/1792625894900.png" alt="Logo" class="w-full h-full rounded-full object-cover">
+      </div>
+    </div>
+
+    <!-- NOMBRE DEL NEGOCIO MÁS GRANDE Y LLAMATIVO -->
+    <h1 id="nombre-negocio" class="font-black text-3xl sm:text-4xl tracking-widest uppercase text-gold leading-tight drop-shadow-md">
+      PERE Y EL FLACO
+    </h1>
+
+    <!-- ESTADO (ABIERTO/CERRADO) -->
+    <div id="estado-negocio-text" class="mt-2 mb-5 flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider bg-emerald-950/40 border border-emerald-800/50 px-3 py-1 rounded-full">
+      <span id="estado-punto" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span id="estado-label">Abierto ahora</span>
+    </div>
+
+    <!-- PÍLDORAS DE INFORMACIÓN (BADGES) -->
+    <div class="grid grid-cols-2 gap-2.5 w-full text-xs font-medium text-gray-300">
+      <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
+        <span class="text-gold">📍</span>
+        <span id="info-direccion" class="truncate">Chaco, Argentina</span>
+      </div>
+      <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
+        <span class="text-gold">💬</span>
+        <span id="info-ws" class="truncate">WhatsApp Directo</span>
+      </div>
+      <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
+        <span class="text-gold">📷</span>
+        <span>@pereyelflaco</span>
+      </div>
+      <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
+        <span class="text-gold">⏰</span>
+        <span>20:00 hs a 00:00 hs</span>
+      </div>
+    </div>
+
+  </section>
+
   <!-- CONTENIDO PRINCIPAL -->
-  <main class="max-w-md mx-auto p-4 space-y-6">
+  <main class="max-w-md mx-auto p-4 space-y-4">
 
-    <!-- BARRA DE BÚSQUEDA EN LA TIENDA -->
+    <!-- BUSCADOR DE PRODUCTOS -->
     <div class="relative">
-      <input type="text" id="buscador-productos" oninput="filtrarProductosTexto()" placeholder="Buscar en la tienda..." class="w-full p-3 rounded-xl text-sm dark-input shadow-inner">
+      <input type="text" id="input-busqueda" oninput="filtrarProductosPorBusqueda()" placeholder="Buscar en la tienda..." class="w-full bg-dark-card border border-dark-border rounded-2xl py-3.5 px-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold transition-colors">
     </div>
 
-    <!-- FILTRO DE CATEGORÍAS -->
-    <div id="categorias-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-      <button onclick="filtrarCategoria('todas')" class="cat-btn bg-custom-primary text-gray-900 text-xs px-4 py-2 rounded-full font-bold whitespace-nowrap shadow-sm transition-all">Todas</button>
-    </div>
-
-    <!-- LISTA DE PRODUCTOS -->
-    <div id="productos-container" class="space-y-3">
-      <p class="text-center text-sm text-gray-400 py-8">Cargando menú...</p>
+    <!-- LISTA DE CATEGORÍAS Y PRODUCTOS (DESPLEGABLES / ACORDEÓN) -->
+    <div id="categorias-acordeon" class="space-y-3">
+      <p class="text-center text-sm text-gray-500 py-8">Cargando menú...</p>
     </div>
 
     <!-- SECCIÓN DE DATOS DE ENTREGA Y PAGO -->
-    <section class="dark-card rounded-2xl p-4 shadow-md space-y-3">
-      <h2 class="font-bold text-gray-300 text-xs tracking-wider uppercase">1. Datos de Entrega</h2>
+    <section class="bg-dark-card rounded-2xl p-4 border border-dark-border space-y-4 mt-6">
+      <h2 class="font-bold text-gold text-xs tracking-widest uppercase border-b border-dark-border pb-2">1. Datos de Entrega</h2>
       
-      <input type="text" id="cliente-nombre" placeholder="Tu Nombre completo" class="w-full p-2.5 rounded-lg text-sm dark-input">
+      <input type="text" id="cliente-nombre" placeholder="Tu Nombre completo" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:outline-none focus:border-gold">
       
-      <select id="tipo-entrega" onchange="toggleDireccion()" class="w-full p-2.5 rounded-lg text-sm dark-input">
-        <option value="Delivery" class="bg-[#18181b]">🚀 Envío a Domicilio (Delivery)</option>
-        <option value="Retiro" class="bg-[#18181b]">🛍️ Retiro en el Local</option>
+      <select id="tipo-entrega" onchange="toggleDireccion()" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:outline-none focus:border-gold">
+        <option value="Delivery">🚀 Envío a Domicilio (Delivery)</option>
+        <option value="Retiro">🛍️ Retiro en el Local</option>
       </select>
 
       <div id="campo-direccion" class="space-y-2">
-        <input type="text" id="cliente-direccion" placeholder="Dirección completa y altura" class="w-full p-2.5 rounded-lg text-sm dark-input">
+        <input type="text" id="cliente-direccion" placeholder="Dirección completa y altura" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:outline-none focus:border-gold">
         
-        <!-- Botón GPS para el Delivery -->
-        <button type="button" onclick="obtenerUbicacionGPS()" class="w-full py-2.5 px-3 bg-[#27272a] hover:bg-[#3f3f46] text-blue-400 font-medium text-xs rounded-lg flex items-center justify-center gap-2 border border-[#3f3f46] transition-colors">
+        <button type="button" onclick="obtenerUbicacionGPS()" class="w-full py-2.5 px-3 bg-dark-pill border border-dark-border text-gold font-medium text-xs rounded-xl flex items-center justify-center gap-2 hover:border-gold transition-colors">
           <span>📍 Adjuntar mi ubicación GPS exacta</span>
         </button>
         <p id="gps-status" class="text-[11px] text-emerald-400 font-medium hidden">✓ Ubicación GPS capturada correctamente</p>
       </div>
 
       <!-- FORMA DE PAGO -->
-      <h2 class="font-bold text-gray-300 text-xs tracking-wider uppercase pt-2">2. Forma de Pago</h2>
-      <select id="forma-pago" onchange="toggleDatosTransferencia()" class="w-full p-2.5 rounded-lg text-sm dark-input">
-        <option value="Efectivo" class="bg-[#18181b]">💵 Efectivo</option>
-        <option value="Transferencia" class="bg-[#18181b]">📱 Transferencia bancaria / Mercado Pago</option>
+      <h2 class="font-bold text-gold text-xs tracking-widest uppercase border-b border-dark-border pb-2 pt-2">2. Forma de Pago</h2>
+      <select id="forma-pago" onchange="toggleDatosTransferencia()" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:outline-none focus:border-gold">
+        <option value="Efectivo">💵 Efectivo</option>
+        <option value="Transferencia">📱 Transferencia bancaria / Mercado Pago</option>
       </select>
 
       <!-- DATOS DE MERCADO PAGO / ALIAS -->
-      <div id="datos-transferencia" class="hidden bg-[#26221d] border border-[#453621] rounded-lg p-3 space-y-1 mt-2">
-        <p class="text-xs font-bold text-amber-400 flex items-center gap-1">
+      <div id="datos-transferencia" class="hidden bg-dark-pill border border-dark-border rounded-xl p-3 space-y-1">
+        <p class="text-xs font-bold text-gold flex items-center gap-1">
           <span>💳 Datos para transferir:</span>
         </p>
-        <p class="text-xs text-amber-200">
-          <span class="font-semibold">Alias:</span> <span id="mp-alias" class="font-bold select-all bg-[#18181b] px-1.5 py-0.5 rounded border border-[#453621]">No especificado</span>
+        <p class="text-xs text-gray-300">
+          <span class="font-semibold">Alias:</span> <span id="mp-alias" class="font-bold select-all bg-dark-bg px-2 py-0.5 rounded border border-dark-border text-gold">No especificado</span>
         </p>
-        <p class="text-xs text-amber-200">
+        <p class="text-xs text-gray-300">
           <span class="font-semibold">Titular:</span> <span id="mp-titular">No especificado</span>
         </p>
-        <p class="text-[11px] text-amber-300/80 italic pt-1">
+        <p class="text-[11px] text-gray-400 italic pt-1">
           * Realiza la transferencia y envía el comprobante por WhatsApp al realizar el pedido.
         </p>
       </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="text-center pt-2 pb-6 space-y-2">
-      <!-- BOTÓN CONSULTAR NUEVOS CLIENTES -->
-      <button onclick="consultarSoporte()" class="inline-flex items-center gap-2 bg-[#1e293b] hover:bg-[#334155] text-emerald-400 font-semibold px-4 py-2 rounded-xl text-xs border border-[#334155] transition-colors shadow-sm">
-        <span>📢 ¡Contáctanos!</span>
+    <footer class="text-center pt-4 pb-6 space-y-2">
+      <button onclick="consultarNexoServ()" class="inline-flex items-center gap-2 bg-dark-card hover:bg-dark-pill text-gold font-semibold px-4 py-2 rounded-xl text-xs border border-dark-border transition-colors">
+        <span>📢 Desarrollado por NexoServ</span>
       </button>
-      <p class="text-xs text-gray-500 font-normal">
-        Desarrollado por <span class="font-semibold text-gray-400">[Tu Marca / Agencia]</span>
-      </p>
     </footer>
 
   </main>
 
-  <!-- VENTANA MODAL FLOTANTE -->
+  <!-- MODAL DE DETALLE DEL PRODUCTO -->
   <div id="modal-producto" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="dark-card w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl transform transition-all">
+    <div class="bg-dark-card border border-dark-border w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl">
       <div class="relative">
-        <img id="modal-img" src="" alt="Producto" class="w-full h-48 object-cover bg-gray-900">
-        <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/60 hover:bg-black/80 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold transition-colors">✕</button>
+        <img id="modal-img" src="" alt="Producto" class="w-full h-48 object-cover bg-dark-bg">
+        <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/70 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">✕</button>
       </div>
       <div class="p-5 space-y-3">
         <div>
           <h3 id="modal-nombre" class="font-bold text-lg text-white"></h3>
-          <p id="modal-precio" class="font-bold text-base text-custom-primary mt-0.5"></p>
+          <p id="modal-precio" class="font-bold text-base text-gold mt-0.5"></p>
         </div>
         <p id="modal-descripcion" class="text-xs text-gray-400 leading-relaxed"></p>
         
-        <div class="pt-2 flex items-center justify-between gap-3 border-t border-[#27272a]">
-          <div class="flex items-center gap-3 bg-[#18181b] p-1.5 rounded-xl border border-[#27272a]">
-            <button onclick="cambiarCantidadModal(-1)" class="w-8 h-8 rounded-lg bg-[#27272a] font-bold text-white shadow-sm flex items-center justify-center">-</button>
-            <span id="modal-cant" class="text-sm font-bold w-6 text-center text-white">0</span>
-            <button onclick="cambiarCantidadModal(1)" class="w-8 h-8 rounded-lg bg-custom-primary font-bold text-gray-900 shadow-sm flex items-center justify-center">+</button>
+        <div class="pt-2 flex items-center justify-between gap-3 border-t border-dark-border">
+          <div class="flex items-center gap-3 bg-dark-bg p-1.5 rounded-xl border border-dark-border">
+            <button onclick="cambiarCantidadModal(-1)" class="w-8 h-8 rounded-lg bg-dark-card text-white font-bold flex items-center justify-center">-</button>
+            <span id="modal-cant" class="text-sm font-bold w-6 text-center text-gold">0</span>
+            <button onclick="cambiarCantidadModal(1)" class="w-8 h-8 rounded-lg bg-gold text-black font-bold flex items-center justify-center">+</button>
           </div>
-          <button onclick="cerrarModal()" class="flex-1 py-2.5 bg-custom-primary text-gray-900 font-bold text-xs rounded-xl shadow-md transition-all">
+          <button onclick="cerrarModal()" class="flex-1 py-2.5 bg-gold text-black font-bold text-xs rounded-xl shadow-md">
             Listo / Agregar
           </button>
         </div>
@@ -193,15 +211,15 @@
     </div>
   </div>
 
-  <!-- BARRA INFERIOR DEL CARRITO -->
-  <div class="fixed bottom-0 left-0 right-0 bg-[#18181b] border-t border-[#27272a] p-3 shadow-2xl z-50">
+  <!-- BARRA INFERIOR DE TOTAL Y PEDIDO -->
+  <div class="fixed bottom-0 left-0 right-0 bg-dark-card border-t border-dark-border p-3 shadow-2xl z-50">
     <div class="max-w-md mx-auto flex items-center justify-between gap-3">
       <div>
         <p id="label-delivery-info" class="text-[10px] text-gray-400 hidden">Incluye delivery: $<span id="val-delivery">0</span></p>
         <p class="text-xs text-gray-400">Total a Pagar</p>
-        <p id="total-pedido" class="font-bold text-xl text-white">$0</p>
+        <p id="total-pedido" class="font-black text-xl text-gold">$0</p>
       </div>
-      <button onclick="enviarPedidoWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl text-sm flex items-center gap-2 shadow-md transition-all">
+      <button onclick="enviarPedidoWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold py-3 px-6 rounded-xl text-sm flex items-center gap-2 shadow-lg transition-all">
         <span>Enviar Pedido</span>
         <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 0c-6.627 0-12 5.373-12 12 0 2.159.572 4.187 1.57 5.951l-1.601 5.849 6.012-1.576c1.716.936 3.682 1.455 5.769 1.455 6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12zm6.657 16.924c-.281.79-1.385 1.448-2.274 1.637-.607.129-1.399.232-4.062-.868-3.411-1.408-5.612-4.887-5.782-5.114-.17-.227-1.386-1.847-1.386-3.52 0-1.674.878-2.497 1.19-2.838.312-.341.681-.426.908-.426.227 0 .454.002.653.011.213.009.497-.081.778.595.284.682.966 2.358 1.05 2.529.085.17.142.369.028.596-.114.227-.17.369-.341.568-.17.199-.356.444-.509.596-.17.17-.347.355-.149.696.199.341.884 1.459 1.898 2.362 1.306 1.163 2.408 1.523 2.749 1.694.341.17.54.142.739-.085.199-.227.852-.994 1.079-1.335.227-.341.454-.284.767-.17.312.114 1.989.938 2.33 1.108.341.17.568.256.653.398.085.142.085.824-.196 1.614z"/></svg>
       </button>
@@ -210,8 +228,8 @@
 
   <!-- LÓGICA JAVASCRIPT -->
   <script>
-    const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
+    const SUPABASE_URL = 'https://ahyvmupqzgcrxrbvjzsb.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoeXZtdXBxemdjcnhyYnZqenNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MTg5MzcsImV4cCI6MjEwODA5NDkzN30.oBfYP5Pf0hXDymQtMqE2pFbWCVllRKWcYGew0iuca4Q';
 
     const _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -219,12 +237,11 @@
     let carrito = {};
     let ubicacionGPSUrl = '';
     let productoActualModalId = null;
-    let categoriaSeleccionada = 'todas';
-    let textoBusqueda = '';
+    let categoriasAbiertas = {};
     let configNegocio = { 
       whatsapp_1: '', 
       whatsapp_2: '', 
-      nombre: '[Nombre del Negocio]',
+      nombre: 'PERE Y EL FLACO',
       alias: '',
       titular: '',
       abierto: true,
@@ -236,45 +253,32 @@
       await cargarProductos();
     });
 
-    // --- FUNCIÓN PARA COMPARTIR LA PÁGINA ---
     async function compartirMenu() {
       const shareData = {
         title: `Menú Digital - ${configNegocio.nombre}`,
-        text: `¡Hola! Mira el menú digital de ${configNegocio.nombre} y haz tu pedido rápido por WhatsApp:`,
+        text: `¡Hola! Mira el menú digital de ${configNegocio.nombre} y haz tu pedido:`,
         url: window.location.href
       };
-
       if (navigator.share) {
-        try {
-          await navigator.share(shareData);
-        } catch (err) {
-          console.log("Compartir cancelado o error:", err);
-        }
+        try { await navigator.share(shareData); } catch (e) {}
       } else {
-        try {
-          await navigator.clipboard.writeText(window.location.href);
-          alert("¡Enlace del menú copiado al portapapeles! Compártelo con tus amigos.");
-        } catch (err) {
-          alert("No se pudo compartir automáticamente. Puedes copiar el enlace de la barra de direcciones.");
-        }
+        await navigator.clipboard.writeText(window.location.href);
+        alert("Enlace copiado al portapapeles.");
       }
     }
 
-    // --- FUNCIÓN DE CONTACTO / SOPORTE ---
-    function consultarSoporte() {
-      const numeroSoporte = "543644509472";
-      const mensaje = "¡Hola! Me interesa consultar por un menú digital.";
-      const urlWs = `https://wa.me/${numeroSoporte}?text=${encodeURIComponent(mensaje)}`;
-      window.open(urlWs, '_blank');
+    function consultarNexoServ() {
+      const num = "543644509472";
+      const msg = "¡Hola NexoServ! Me interesa consultar por un menú digital.";
+      window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     async function cargarConfiguracion() {
       try {
-        const { data, error } = await _supabaseClient.from('configuracion').select('*').limit(1).maybeSingle();
+        const { data } = await _supabaseClient.from('configuracion').select('*').limit(1).maybeSingle();
         if (data) {
           configNegocio = data;
 
-          // Se lee el color primario directamente desde Supabase configurado en el Admin
           const colorGuardado = data.color_primario || data.color;
           if (colorGuardado) {
             document.documentElement.style.setProperty('--primary-color', colorGuardado);
@@ -289,7 +293,11 @@
             document.getElementById('logo-header').src = data.logo_url;
           }
 
-          const estaAbierto = !(data.abierto === false || data.abierto === 'false' || data.abierto === 0 || data.abierto === '0');
+          if (data.whatsapp_1) {
+            document.getElementById('info-ws').textContent = `+${data.whatsapp_1}`;
+          }
+
+          const estaAbierto = !(data.abierto === false || data.abierto === 'false' || data.abierto === 0);
           configNegocio.abierto = estaAbierto;
 
           const labelEstado = document.getElementById('estado-label');
@@ -298,14 +306,10 @@
 
           if (!estaAbierto) {
             labelEstado.textContent = "Cerrado temporalmente";
-            puntoEstado.className = "w-2 h-2 rounded-full bg-red-500";
-            textoEstadoContainer.className = "text-xs text-red-400 font-medium flex items-center gap-1";
-          } else {
-            labelEstado.textContent = "Abierto ahora";
-            puntoEstado.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-            textoEstadoContainer.className = "text-xs text-emerald-400 font-medium flex items-center gap-1";
+            puntoEstado.className = "w-2.5 h-2.5 rounded-full bg-red-500";
+            textoEstadoContainer.className = "mt-2 mb-5 flex items-center gap-2 text-xs font-bold text-red-400 uppercase tracking-wider bg-red-950/40 border border-red-800/50 px-3 py-1 rounded-full";
           }
-          
+
           if (data.alias || data.mp_alias) {
             document.getElementById('mp-alias').textContent = data.alias || data.mp_alias;
           }
@@ -318,7 +322,7 @@
           toggleDireccion();
         }
       } catch (err) {
-        console.error("Error cargando configuración:", err);
+        console.error(err);
       }
     }
 
@@ -327,73 +331,83 @@
         const { data, error } = await _supabaseClient.from('productos').select('*');
         if (error) throw error;
         productos = data || [];
-        generarBotonesCategorias();
-        renderizarProductos();
+        renderizarAcordeonCategorias();
       } catch (err) {
-        console.error("Error cargando productos:", err);
-        document.getElementById('productos-container').innerHTML = '<p class="text-center text-red-400 text-sm py-4">Error al conectar con la base de datos.</p>';
+        document.getElementById('categorias-acordeon').innerHTML = '<p class="text-center text-red-500 text-xs py-4">Error al conectar con la base de datos.</p>';
       }
     }
 
-    function generarBotonesCategorias() {
-      const container = document.getElementById('categorias-container');
-      const categoriasUnicas = ['todas', ...new Set(productos.map(p => p.categoria).filter(Boolean))];
-
-      container.innerHTML = categoriasUnicas.map(cat => {
-        const esActiva = cat === categoriaSeleccionada;
-        const claseBtn = esActiva 
-          ? 'cat-btn bg-custom-primary text-gray-900 text-xs px-4 py-2 rounded-full font-bold whitespace-nowrap shadow-sm'
-          : 'cat-btn bg-[#18181b] text-gray-300 border border-[#27272a] text-xs px-4 py-2 rounded-full font-medium whitespace-nowrap';
-        const label = cat === 'todas' ? 'Todas' : cat;
-        return `<button onclick="filtrarCategoria('${cat}')" class="${claseBtn}">${label}</button>`;
-      }).join('');
-    }
-
-    function filtrarCategoria(cat) {
-      categoriaSeleccionada = cat;
-      generarBotonesCategorias();
-      renderizarProductos();
-    }
-
-    function filtrarProductosTexto() {
-      textoBusqueda = document.getElementById('buscador-productos').value.toLowerCase().trim();
-      renderizarProductos();
-    }
-
-    function renderizarProductos() {
-      const container = document.getElementById('productos-container');
+    function renderizarAcordeonCategorias(filtroTexto = '') {
+      const container = document.getElementById('categorias-acordeon');
       container.innerHTML = '';
 
-      const listaFiltrada = productos.filter(p => {
-        const noEstaPausado = !(p.pausado === true || p.pausado === 'true' || p.pausado === 1);
-        const coincideCat = categoriaSeleccionada === 'todas' || p.categoria === categoriaSeleccionada;
-        const coincideTexto = !textoBusqueda || p.nombre.toLowerCase().includes(textoBusqueda) || (p.descripcion && p.descripcion.toLowerCase().includes(textoBusqueda));
-        return noEstaPausado && coincideCat && coincideTexto;
-      });
+      const productosVisibles = productos.filter(p => !(p.pausado === true || p.pausado === 'true' || p.pausado === 1));
 
-      if (listaFiltrada.length === 0) {
-        container.innerHTML = '<p class="text-center text-sm text-gray-500 py-6">No se encontraron productos.</p>';
+      const categorias = [...new Set(productosVisibles.map(p => p.categoria || 'Variados'))];
+
+      if (categorias.length === 0) {
+        container.innerHTML = '<p class="text-center text-xs text-gray-500 py-6">No hay productos disponibles.</p>';
         return;
       }
 
-      listaFiltrada.forEach(p => {
-        const cant = carrito[p.id] ? carrito[p.id].cantidad : 0;
-        container.innerHTML += `
-          <div class="dark-card p-3 rounded-2xl shadow-sm flex items-center justify-between gap-3">
-            <img src="${p.imagen_url || 'https://via.placeholder.com/80'}" alt="${p.nombre}" onclick="abrirModal(${p.id})" class="w-16 h-16 rounded-xl object-cover bg-gray-900 cursor-pointer hover:opacity-90 transition-opacity">
-            <div class="flex-1 cursor-pointer" onclick="abrirModal(${p.id})">
-              <h3 class="font-bold text-sm text-white">${p.nombre}</h3>
-              <p class="text-xs text-gray-400 line-clamp-1">${p.descripcion || 'Sin descripción'}</p>
-              <p class="font-bold text-sm text-custom-primary mt-1">$${p.precio}</p>
+      categorias.forEach((cat, index) => {
+        const prodsDeCat = productosVisibles.filter(p => {
+          const coincideCat = (p.categoria || 'Variados') === cat;
+          const coincideBusqueda = !filtroTexto || p.nombre.toLowerCase().includes(filtroTexto.toLowerCase());
+          return coincideCat && coincideBusqueda;
+        });
+
+        if (prodsDeCat.length === 0) return;
+
+        if (categoriasAbiertas[cat] === undefined) {
+          categoriasAbiertas[cat] = true;
+        }
+
+        const estaAbierta = filtroTexto ? true : categoriasAbiertas[cat];
+
+        let htmlProductos = '';
+        prodsDeCat.forEach(p => {
+          const cant = carrito[p.id] ? carrito[p.id].cantidad : 0;
+          htmlProductos += `
+            <div class="bg-dark-card p-3 rounded-xl border border-dark-border flex items-center justify-between gap-3">
+              <img src="${p.imagen_url || 'https://via.placeholder.com/80'}" alt="${p.nombre}" onclick="abrirModal(${p.id})" class="w-16 h-16 rounded-lg object-cover bg-dark-bg cursor-pointer">
+              <div class="flex-1 cursor-pointer" onclick="abrirModal(${p.id})">
+                <h4 class="font-bold text-sm text-white">${p.nombre}</h4>
+                <p class="text-xs text-gray-400 line-clamp-1">${p.descripcion || ''}</p>
+                <p class="font-bold text-sm text-gold mt-1">$${p.precio}</p>
+              </div>
+              <div class="flex items-center gap-2 bg-dark-bg p-1 rounded-lg border border-dark-border">
+                <button onclick="cambiarCantidad(${p.id}, -1)" class="w-6 h-6 rounded bg-dark-card text-white font-bold flex items-center justify-center">-</button>
+                <span id="cant-${p.id}" class="text-xs font-bold w-4 text-center text-gold">${cant}</span>
+                <button onclick="cambiarCantidad(${p.id}, 1)" class="w-6 h-6 rounded bg-gold text-black font-bold flex items-center justify-center">+</button>
+              </div>
             </div>
-            <div class="flex items-center gap-2 bg-[#18181b] p-1 rounded-xl border border-[#27272a]">
-              <button onclick="cambiarCantidad(${p.id}, -1)" class="w-6 h-6 rounded-lg bg-[#27272a] font-bold text-gray-300 shadow-sm flex items-center justify-center">-</button>
-              <span id="cant-${p.id}" class="text-xs font-bold w-4 text-center text-white">${cant}</span>
-              <button onclick="cambiarCantidad(${p.id}, 1)" class="w-6 h-6 rounded-lg bg-custom-primary font-bold text-gray-900 shadow-sm flex items-center justify-center">+</button>
+          `;
+        });
+
+        container.innerHTML += `
+          <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden shadow-sm">
+            <button onclick="toggleCategoria('${cat}')" class="w-full p-4 text-left font-black text-sm uppercase tracking-wider text-white flex items-center justify-between bg-dark-card hover:bg-dark-pill transition-colors">
+              <span>${cat}</span>
+              <span class="text-gold font-bold">${estaAbierta ? '▲' : '▼'}</span>
+            </button>
+            <div class="${estaAbierta ? 'block' : 'hidden'} p-3 pt-0 space-y-2 border-t border-dark-border">
+              ${htmlProductos}
             </div>
           </div>
         `;
       });
+    }
+
+    function toggleCategoria(cat) {
+      categoriasAbiertas[cat] = !categoriasAbiertas[cat];
+      const textoBusqueda = document.getElementById('input-busqueda').value;
+      renderizarAcordeonCategorias(textoBusqueda);
+    }
+
+    function filtrarProductosPorBusqueda() {
+      const texto = document.getElementById('input-busqueda').value;
+      renderizarAcordeonCategorias(texto);
     }
 
     function abrirModal(id) {
@@ -404,7 +418,7 @@
       document.getElementById('modal-img').src = prod.imagen_url || 'https://via.placeholder.com/300';
       document.getElementById('modal-nombre').textContent = prod.nombre;
       document.getElementById('modal-precio').textContent = `$${prod.precio}`;
-      document.getElementById('modal-descripcion').textContent = prod.descripcion || 'No hay descripción detallada para este producto.';
+      document.getElementById('modal-descripcion').textContent = prod.descripcion || 'Sin descripción disponible.';
       
       const cantActual = carrito[id] ? carrito[id].cantidad : 0;
       document.getElementById('modal-cant').textContent = cantActual;
@@ -480,7 +494,6 @@
     function toggleDatosTransferencia() {
       const formaPago = document.getElementById('forma-pago').value;
       const boxTransferencia = document.getElementById('datos-transferencia');
-      
       if (formaPago === 'Transferencia') {
         boxTransferencia.classList.remove('hidden');
       } else {
@@ -490,7 +503,6 @@
 
     function obtenerUbicacionGPS() {
       const statusElem = document.getElementById('gps-status');
-      
       if (!navigator.geolocation) {
         alert("Tu navegador no soporta geolocalización.");
         return;
@@ -504,14 +516,12 @@
         (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
-          
           ubicacionGPSUrl = `https://maps.google.com/?q=${lat},${lng}`;
-          
           statusElem.textContent = "✓ ¡Ubicación GPS capturada correctamente!";
           statusElem.className = "text-[11px] text-emerald-400 font-bold";
         },
         (error) => {
-          statusElem.textContent = "❌ No se pudo obtener la ubicación. Por favor, escríbela abajo.";
+          statusElem.textContent = "❌ No se pudo obtener la ubicación.";
           statusElem.className = "text-[11px] text-red-400 font-medium";
         },
         { enableHighAccuracy: true, timeout: 10000 }
@@ -520,7 +530,7 @@
 
     function enviarPedidoWhatsApp() {
       if (configNegocio.abierto === false) {
-        alert("Lo sentimos, en este momento el local se encuentra cerrado y no acepta nuevos pedidos.");
+        alert("Lo sentimos, en este momento el local se encuentra cerrado.");
         return;
       }
 
@@ -530,7 +540,7 @@
       const formaPago = document.getElementById('forma-pago').value;
 
       if (Object.keys(carrito).length === 0) {
-        alert("Tu carrito está vacío. Agrega productos para realizar el pedido.");
+        alert("Tu carrito está vacío.");
         return;
       }
 
@@ -579,31 +589,13 @@
       mensaje += `💰 *TOTAL:* $${totalFinal}\n\n`;
       mensaje += `¡Muchas gracias!`;
 
-      // ROTACIÓN AUTOMÁTICA DE WHATSAPP (1 y 2)
-      const tel1 = configNegocio.whatsapp_1 || configNegocio.whatsapp;
-      const tel2 = configNegocio.whatsapp_2;
-      let numWhatsApp = tel1;
-
-      if (tel1 && tel2) {
-        const ultimoTurno = localStorage.getItem('ultimo_turno_ws') || '2';
-        if (ultimoTurno === '1') {
-          numWhatsApp = tel2;
-          localStorage.setItem('ultimo_turno_ws', '2');
-        } else {
-          numWhatsApp = tel1;
-          localStorage.setItem('ultimo_turno_ws', '1');
-        }
-      } else {
-        numWhatsApp = tel1 || tel2;
-      }
-
+      const numWhatsApp = configNegocio.whatsapp_1 || configNegocio.whatsapp || configNegocio.whatsapp_2;
       if (!numWhatsApp) {
-        alert("No hay un número de WhatsApp configurado en el sistema.");
+        alert("No hay un número de WhatsApp configurado.");
         return;
       }
 
-      const urlWs = `https://wa.me/${numWhatsApp}?text=${encodeURIComponent(mensaje)}`;
-      window.open(urlWs, '_blank');
+      window.open(`https://wa.me/${numWhatsApp}?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
   </script>
 </body>
