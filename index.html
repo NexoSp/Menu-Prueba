@@ -42,7 +42,7 @@
 
   <style>
     :root {
-      --primary-color: #eab308; /* Dorado resplandeciente por defecto */
+      --primary-color: #eab308;
     }
     body {
       background-color: #09090b;
@@ -74,14 +74,14 @@
   <!-- CABECERA PRINCIPAL: IMPACTO VISUAL MÁXIMO DEL LOGO Y NOMBRE -->
   <section class="max-w-md mx-auto px-4 pt-8 pb-4 text-center flex flex-col items-center">
     
-    <!-- LOGO GIGANTE Y CENTRADO CON DOBLE ANILLO Y RESPLANDOR -->
+    <!-- LOGO GIGANTE Y CENTRADO -->
     <div class="relative mb-5">
       <div class="w-40 h-40 rounded-full p-1.5 border-4 border-gold ring-8 ring-gold/20 flex items-center justify-center bg-black shadow-[0_0_35px_rgba(234,179,8,0.3)] transition-transform hover:scale-105 duration-300">
         <img id="logo-header" src="https://ahyvmupqzgcrxrbvjzsb.supabase.co/storage/v1/object/public/imagenes-productos/logos/1792625894900.png" alt="Logo" class="w-full h-full rounded-full object-cover">
       </div>
     </div>
 
-    <!-- NOMBRE DEL NEGOCIO PROTTAGONISTA Y PROMINENTE -->
+    <!-- NOMBRE DEL NEGOCIO -->
     <h1 id="nombre-negocio" class="font-black text-3xl sm:text-4xl tracking-widest uppercase text-gold leading-tight drop-shadow-[0_2px_10px_rgba(234,179,8,0.2)]">
       PERE Y EL FLACO
     </h1>
@@ -92,7 +92,7 @@
       <span id="estado-label">Abierto ahora</span>
     </div>
 
-    <!-- PÍLDORAS INFORMATIVAS (BADGES SOBRE FONDO OSCURO) -->
+    <!-- PÍLDORAS INFORMATIVAS (DINÁMICAS DESDE SUPABASE) -->
     <div class="grid grid-cols-2 gap-2.5 w-full text-xs font-medium text-gray-300">
       <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
         <span class="text-gold">📍</span>
@@ -104,11 +104,11 @@
       </div>
       <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
         <span class="text-gold">📷</span>
-        <span>@pereyelflaco</span>
+        <span id="info-instagram" class="truncate">@pereyelflaco</span>
       </div>
       <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
         <span class="text-gold">⏰</span>
-        <span>20:00 hs a 00:00 hs</span>
+        <span id="info-horarios" class="truncate">20:00 hs a 00:00 hs</span>
       </div>
     </div>
 
@@ -225,8 +225,8 @@
 
   <!-- LÓGICA JAVASCRIPT INTACTA -->
   <script>
-    const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
+    const SUPABASE_URL = 'https://ahyvmupqzgcrxrbvjzsb.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoeXZtdXBxemdjcnhyYnZqenNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MTg5MzcsImV4cCI6MjEwODA5NDkzN30.oBfYP5Pf0hXDymQtMqE2pFbWCVllRKWcYGew0iuca4Q';
 
     const _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -242,7 +242,10 @@
       alias: '',
       titular: '',
       abierto: true,
-      costo_delivery: 0
+      costo_delivery: 0,
+      direccion: 'Chaco, Argentina',
+      instagram: '@pereyelflaco',
+      horarios: '20:00 hs a 00:00 hs'
     };
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -292,6 +295,18 @@
 
           if (data.whatsapp_1) {
             document.getElementById('info-ws').textContent = `+${data.whatsapp_1}`;
+          }
+
+          if (data.direccion) {
+            document.getElementById('info-direccion').textContent = data.direccion;
+          }
+
+          if (data.instagram) {
+            document.getElementById('info-instagram').textContent = data.instagram;
+          }
+
+          if (data.horarios) {
+            document.getElementById('info-horarios').textContent = data.horarios;
           }
 
           const estaAbierto = !(data.abierto === false || data.abierto === 'false' || data.abierto === 0);
@@ -597,4 +612,3 @@
   </script>
 </body>
 </html>
-0
