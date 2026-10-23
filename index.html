@@ -61,52 +61,55 @@
 </head>
 <body class="bg-dark-bg text-gray-200 font-sans pb-32">
 
-  <!-- BARRA SUPERIOR (HEADER SIN ECO MENU) -->
-  <header class="bg-dark-bg/90 backdrop-blur-md border-b border-dark-border sticky top-0 z-40 px-4 py-3">
-    <div class="max-w-md mx-auto flex items-center justify-end">
-      <button onclick="compartirMenu()" class="text-gray-400 hover:text-white p-2 flex items-center gap-1.5 text-xs font-semibold" title="¡Comparte este menú!">
-        <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
-        <span>Compartir</span>
+  <!-- BARRA SUPERIOR (HEADER) -->
+  <header class="bg-dark-bg border-b border-dark-border sticky top-0 z-40 px-4 py-3">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="font-extrabold tracking-wider text-gold text-lg">ECO</span>
+        <span class="font-bold tracking-wider text-white text-lg">MENU</span>
+      </div>
+      <button onclick="compartirMenu()" class="text-gray-400 hover:text-white p-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
       </button>
     </div>
   </header>
 
-  <!-- CABECERA DEL NEGOCIO (PROTAGONISMO TOTAL DEL LOGO Y NOMBRE) -->
-  <section class="max-w-md mx-auto px-4 pt-8 pb-4 text-center flex flex-col items-center">
+  <!-- CABECERA DEL NEGOCIO (ESTILO MA'MILA) -->
+  <section class="max-w-md mx-auto px-4 pt-6 pb-2 text-center flex flex-col items-center">
     
-    <!-- LOGO MÁS GRANDE, DESTACADO Y CENTRADO -->
-    <div class="relative mb-4">
-      <div class="w-36 h-36 rounded-full p-1.5 border-4 border-gold ring-4 ring-gold/30 flex items-center justify-center bg-black shadow-2xl transition-transform hover:scale-105 duration-300">
+    <!-- Logo Circular con Borde Dorado -->
+    <div class="relative mb-3">
+      <div class="w-28 h-28 rounded-full p-1 border-2 border-gold flex items-center justify-center bg-black shadow-xl">
         <img id="logo-header" src="https://ahyvmupqzgcrxrbvjzsb.supabase.co/storage/v1/object/public/imagenes-productos/logos/1792625894900.png" alt="Logo" class="w-full h-full rounded-full object-cover">
       </div>
     </div>
 
-    <!-- NOMBRE DEL NEGOCIO MÁS GRANDE Y LLAMATIVO -->
-    <h1 id="nombre-negocio" class="font-black text-3xl sm:text-4xl tracking-widest uppercase text-gold leading-tight drop-shadow-md">
+    <!-- Nombre del Negocio -->
+    <h1 id="nombre-negocio" class="font-black text-2xl tracking-wider uppercase text-gold leading-tight">
       PERE Y EL FLACO
     </h1>
 
-    <!-- ESTADO (ABIERTO/CERRADO) -->
-    <div id="estado-negocio-text" class="mt-2 mb-5 flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider bg-emerald-950/40 border border-emerald-800/50 px-3 py-1 rounded-full">
-      <span id="estado-punto" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+    <!-- Estado (Abierto/Cerrado) -->
+    <div id="estado-negocio-text" class="mt-1 mb-4 flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
+      <span id="estado-punto" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
       <span id="estado-label">Abierto ahora</span>
     </div>
 
-    <!-- PÍLDORAS DE INFORMACIÓN (BADGES) -->
-    <div class="grid grid-cols-2 gap-2.5 w-full text-xs font-medium text-gray-300">
-      <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
+    <!-- Píldoras de Información (Badges) -->
+    <div class="grid grid-cols-2 gap-2 w-full text-xs font-medium text-gray-300">
+      <div class="bg-dark-card border border-dark-border rounded-full py-2 px-3 flex items-center justify-center gap-1.5 truncate">
         <span class="text-gold">📍</span>
         <span id="info-direccion" class="truncate">Chaco, Argentina</span>
       </div>
-      <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
+      <div class="bg-dark-card border border-dark-border rounded-full py-2 px-3 flex items-center justify-center gap-1.5 truncate">
         <span class="text-gold">💬</span>
         <span id="info-ws" class="truncate">WhatsApp Directo</span>
       </div>
-      <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
+      <div class="bg-dark-card border border-dark-border rounded-full py-2 px-3 flex items-center justify-center gap-1.5 truncate">
         <span class="text-gold">📷</span>
         <span>@pereyelflaco</span>
       </div>
-      <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
+      <div class="bg-dark-card border border-dark-border rounded-full py-2 px-3 flex items-center justify-center gap-1.5 truncate">
         <span class="text-gold">⏰</span>
         <span>20:00 hs a 00:00 hs</span>
       </div>
@@ -119,7 +122,7 @@
 
     <!-- BUSCADOR DE PRODUCTOS -->
     <div class="relative">
-      <input type="text" id="input-busqueda" oninput="filtrarProductosPorBusqueda()" placeholder="Buscar en la tienda..." class="w-full bg-dark-card border border-dark-border rounded-2xl py-3.5 px-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold transition-colors">
+      <input type="text" id="input-busqueda" oninput="filtrarProductosPorBusqueda()" placeholder="Buscar en la tienda..." class="w-full bg-dark-card border border-dark-border rounded-2xl py-3 px-4 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold transition-colors">
     </div>
 
     <!-- LISTA DE CATEGORÍAS Y PRODUCTOS (DESPLEGABLES / ACORDEÓN) -->
@@ -303,8 +306,8 @@
 
           if (!estaAbierto) {
             labelEstado.textContent = "Cerrado temporalmente";
-            puntoEstado.className = "w-2.5 h-2.5 rounded-full bg-red-500";
-            textoEstadoContainer.className = "mt-2 mb-5 flex items-center gap-2 text-xs font-bold text-red-400 uppercase tracking-wider bg-red-950/40 border border-red-800/50 px-3 py-1 rounded-full";
+            puntoEstado.className = "w-2 h-2 rounded-full bg-red-500";
+            textoEstadoContainer.className = "mt-1 mb-4 flex items-center gap-1.5 text-xs font-semibold text-red-400";
           }
 
           if (data.alias || data.mp_alias) {
@@ -383,7 +386,7 @@
         });
 
         container.innerHTML += `
-          <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden shadow-sm">
+          <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden">
             <button onclick="toggleCategoria('${cat}')" class="w-full p-4 text-left font-black text-sm uppercase tracking-wider text-white flex items-center justify-between bg-dark-card hover:bg-dark-pill transition-colors">
               <span>${cat}</span>
               <span class="text-gold font-bold">${estaAbierta ? '▲' : '▼'}</span>
