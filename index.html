@@ -3,22 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel de Administración - Menú Digital</title>
+  <title>Menú Digital - PERE Y EL FLACO</title>
+
+  <!-- Etiquetas Open Graph para WhatsApp y Redes Sociales -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Menú Digital - PERE Y EL FLACO">
+  <meta property="og:description" content="Haz tu pedido rápido y fácil por WhatsApp. ¡Conoce nuestro menú!">
+  <meta property="og:url" content="https://nexosp.github.io/Menu-digital/?v=13">
+
+  <!-- LOGO OPEN GRAPH -->
+  <meta id="og-image" property="og:image" content="https://ahyvmupqzgcrxrbvjzsb.supabase.co/storage/v1/object/public/imagenes-productos/logos/1792764795898_li1i8.jpg">
+  <meta id="og-image-secure" property="og:image:secure_url" content="https://ahyvmupqzgcrxrbvjzsb.supabase.co/storage/v1/object/public/imagenes-productos/logos/1792764795898_li1i8.jpg">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="500">
+  <meta property="og:image:height" content="500">
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Supabase JS Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <!-- CONFIGURACIÓN DE TAILWIND Y COLOR DINÁMICO -->
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
             'custom-primary': 'var(--primary-color, #eab308)',
-            'dark-bg': '#121212',
-            'dark-card': '#1a1a1a',
-            'dark-border': '#2a2a2a',
-            'dark-pill': '#1e1c18'
+            'dark-bg': '#09090b',
+            'dark-card': '#141417',
+            'dark-border': '#27272a',
+            'dark-pill': '#1c1c21'
           }
         }
       }
@@ -30,497 +45,612 @@
       --primary-color: #eab308;
     }
     body {
-      background-color: #121212;
-      color: #e5e7eb;
+      background-color: #09090b;
+      color: #f4f4f5;
     }
-    .text-gold { color: var(--primary-color); }
-    .border-gold { border-color: var(--primary-color); }
-    .bg-gold { background-color: var(--primary-color); }
+    .text-gold {
+      color: var(--primary-color);
+    }
+    .border-gold {
+      border-color: var(--primary-color);
+    }
+    .bg-gold {
+      background-color: var(--primary-color);
+    }
+    /* Ocultar barra de scroll en las categorías */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
   </style>
 </head>
-<body class="bg-dark-bg text-gray-200 font-sans pb-12">
+<body class="bg-dark-bg text-gray-100 font-sans pb-32">
 
-  <!-- MODAL DE LOGIN -->
-  <div id="modal-login" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-dark-card border border-dark-border w-full max-w-sm rounded-2xl p-6 shadow-2xl space-y-4">
-      <div class="text-center space-y-1">
-        <h2 class="font-bold text-xl text-white">🔐 Acceso al Panel</h2>
-        <p class="text-xs text-gray-400">Ingresa tus credenciales para administrar el menú</p>
+  <!-- BARRA SUPERIOR (HEADER MINIMALISTA CON BOTÓN COMPARTIR) -->
+  <header class="bg-dark-bg/90 backdrop-blur-md border-b border-dark-border sticky top-0 z-40 px-4 py-3">
+    <div class="max-w-md mx-auto flex items-center justify-end">
+      <button onclick="compartirMenu()" class="text-gray-400 hover:text-white p-2 flex items-center gap-1.5 text-xs font-semibold bg-dark-card border border-dark-border px-3 py-1.5 rounded-xl transition-all" title="¡Comparte este menú!">
+        <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+        <span>Compartir</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- CABECERA PRINCIPAL: IMPACTO VISUAL MÁXIMO DEL LOGO Y NOMBRE -->
+  <section class="max-w-md mx-auto px-4 pt-8 pb-4 text-center flex flex-col items-center">
+    
+    <!-- LOGO GIGANTE Y CENTRADO -->
+    <div class="relative mb-5">
+      <div class="w-40 h-40 rounded-full p-1.5 border-4 border-gold ring-8 ring-gold/20 flex items-center justify-center bg-black shadow-[0_0_35px_rgba(234,179,8,0.3)] transition-transform hover:scale-105 duration-300">
+        <img id="logo-header" src="https://ahyvmupqzgcrxrbvjzsb.supabase.co/storage/v1/object/public/imagenes-productos/logos/1792625894900.png" alt="Logo" class="w-full h-full rounded-full object-cover">
       </div>
+    </div>
+
+    <!-- NOMBRE DEL NEGOCIO -->
+    <h1 id="nombre-negocio" class="font-black text-3xl sm:text-4xl tracking-widest uppercase text-gold leading-tight drop-shadow-[0_2px_10px_rgba(234,179,8,0.2)]">
+      PERE Y EL FLACO
+    </h1>
+
+    <!-- INDICADOR DE ESTADO ABIERTO/CERRADO -->
+    <div id="estado-negocio-text" class="mt-3 mb-6 flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-widest bg-emerald-950/50 border border-emerald-800/60 px-4 py-1.5 rounded-full shadow-sm">
+      <span id="estado-punto" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span id="estado-label">Abierto ahora</span>
+    </div>
+
+    <!-- PÍLDORAS INFORMATIVAS DE CONTACTO -->
+    <div class="grid grid-cols-2 gap-2.5 w-full text-xs font-medium text-gray-300">
+      <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
+        <span class="text-gold">📍</span>
+        <span id="info-direccion" class="truncate">Chaco, Argentina</span>
+      </div>
+      <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
+        <span class="text-gold">💬</span>
+        <span id="info-ws" class="truncate">WhatsApp Directo</span>
+      </div>
+      <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
+        <span class="text-gold">📷</span>
+        <span id="info-instagram" class="truncate">@pereyelflaco</span>
+      </div>
+      <div class="bg-dark-card border border-dark-border rounded-full py-2.5 px-3 flex items-center justify-center gap-2 truncate shadow-sm">
+        <span class="text-gold">⏰</span>
+        <span id="info-horarios" class="truncate">20:00 hs a 00:00 hs</span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- CONTENIDO PRINCIPAL DE PRODUCTOS Y SECCIONES -->
+  <main class="max-w-md mx-auto p-4 space-y-4">
+
+    <!-- BUSCADOR EN LA TIENDA -->
+    <div class="relative">
+      <input type="text" id="input-busqueda" oninput="filtrarProductosPorBusqueda()" placeholder="Buscar en la tienda..." class="w-full bg-dark-card border border-dark-border rounded-2xl py-3.5 px-4 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-gold transition-colors">
+    </div>
+
+    <!-- NUEVO: NAVEGACIÓN RÁPIDA DE CATEGORÍAS (SLIDER HORIZONTAL) -->
+    <div id="bar-categorias" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+      <!-- Se generan automáticamente según las categorías cargadas -->
+    </div>
+
+    <!-- CATEGORÍAS TIPO ACORDEÓN (DESPLEGABLES) -->
+    <div id="categorias-acordeon" class="space-y-3">
+      <p class="text-center text-sm text-gray-500 py-8">Cargando menú...</p>
+    </div>
+
+    <!-- DATOS DE ENTREGA Y PAGO -->
+    <section class="bg-dark-card rounded-2xl p-4 border border-dark-border space-y-4 mt-6">
+      <h2 class="font-bold text-gold text-xs tracking-widest uppercase border-b border-dark-border pb-2">1. Datos de Entrega</h2>
       
-      <div class="space-y-3 pt-2">
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Usuario</label>
-          <input type="text" id="login-user" placeholder="admin" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Contraseña</label>
-          <input type="password" id="login-pass" placeholder="••••" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none">
-        </div>
-        <p id="login-error" class="text-xs text-red-400 font-semibold text-center hidden">Usuario o contraseña incorrectos.</p>
+      <input type="text" id="cliente-nombre" placeholder="Tu Nombre completo" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:outline-none focus:border-gold">
+      
+      <select id="tipo-entrega" onchange="toggleDireccion()" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:outline-none focus:border-gold">
+        <option value="Delivery">🚀 Envío a Domicilio (Delivery)</option>
+        <option value="Retiro">🛍️ Retiro en el Local</option>
+      </select>
+
+      <div id="campo-direccion" class="space-y-2">
+        <input type="text" id="cliente-direccion" placeholder="Dirección completa y altura" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:outline-none focus:border-gold">
+        
+        <button type="button" onclick="obtenerUbicacionGPS()" class="w-full py-2.5 px-3 bg-dark-pill border border-dark-border text-gold font-medium text-xs rounded-xl flex items-center justify-center gap-2 hover:border-gold transition-colors">
+          <span>📍 Adjuntar mi ubicación GPS exacta</span>
+        </button>
+        <p id="gps-status" class="text-[11px] text-emerald-400 font-medium hidden">✓ Ubicación GPS capturada correctamente</p>
       </div>
 
-      <button onclick="verificarLogin()" class="w-full py-3 bg-gold hover:opacity-90 text-black font-extrabold rounded-xl text-sm transition-colors shadow-sm">
-        Ingresar al Panel
+      <!-- FORMA DE PAGO -->
+      <h2 class="font-bold text-gold text-xs tracking-widest uppercase border-b border-dark-border pb-2 pt-2">2. Forma de Pago</h2>
+      <select id="forma-pago" onchange="toggleDatosTransferencia()" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:outline-none focus:border-gold">
+        <option value="Efectivo">💵 Efectivo</option>
+        <option value="Transferencia">📱 Transferencia bancaria / Mercado Pago</option>
+      </select>
+
+      <!-- DATOS DE TRANSFERENCIA -->
+      <div id="datos-transferencia" class="hidden bg-dark-pill border border-dark-border rounded-xl p-3 space-y-1">
+        <p class="text-xs font-bold text-gold flex items-center gap-1">
+          <span>💳 Datos para transferir:</span>
+        </p>
+        <p class="text-xs text-gray-300">
+          <span class="font-semibold">Alias:</span> <span id="mp-alias" class="font-bold select-all bg-dark-bg px-2 py-0.5 rounded border border-dark-border text-gold">No especificado</span>
+        </p>
+        <p class="text-xs text-gray-300">
+          <span class="font-semibold">Titular:</span> <span id="mp-titular">No especificado</span>
+        </p>
+        <p class="text-[11px] text-gray-400 italic pt-1">
+          * Realiza la transferencia y envía el comprobante por WhatsApp al realizar el pedido.
+        </p>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="text-center pt-4 pb-6 space-y-2">
+      <button onclick="consultarNexoServ()" class="inline-flex items-center gap-2 bg-dark-card hover:bg-dark-pill text-gold font-semibold px-4 py-2 rounded-xl text-xs border border-dark-border transition-colors">
+        <span>📢 Desarrollado por NexoServ</span>
+      </button>
+    </footer>
+
+  </main>
+
+  <!-- MODAL FLOTANTE DE DETALLE DEL PRODUCTO -->
+  <div id="modal-producto" class="fixed inset-0 bg-black/85 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-dark-card border border-dark-border w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl">
+      <div class="relative">
+        <img id="modal-img" src="" alt="Producto" class="w-full h-48 object-cover bg-dark-bg">
+        <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/70 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">✕</button>
+      </div>
+      <div class="p-5 space-y-3">
+        <div>
+          <h3 id="modal-nombre" class="font-bold text-lg text-white"></h3>
+          <p id="modal-precio" class="font-bold text-base text-gold mt-0.5"></p>
+        </div>
+        <p id="modal-descripcion" class="text-xs text-gray-400 leading-relaxed"></p>
+        
+        <div class="pt-2 flex items-center justify-between gap-3 border-t border-dark-border">
+          <div class="flex items-center gap-3 bg-dark-bg p-1.5 rounded-xl border border-dark-border">
+            <button onclick="cambiarCantidadModal(-1)" class="w-8 h-8 rounded-lg bg-dark-card text-white font-bold flex items-center justify-center">-</button>
+            <span id="modal-cant" class="text-sm font-bold w-6 text-center text-gold">0</span>
+            <button onclick="cambiarCantidadModal(1)" class="w-8 h-8 rounded-lg bg-gold text-black font-bold flex items-center justify-center">+</button>
+          </div>
+          <button onclick="cerrarModal()" class="flex-1 py-2.5 bg-gold text-black font-bold text-xs rounded-xl shadow-md">
+            Listo / Agregar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BARRA INFERIOR DE TOTAL Y PEDIDO -->
+  <div class="fixed bottom-0 left-0 right-0 bg-dark-card border-t border-dark-border p-3 shadow-2xl z-50">
+    <div class="max-w-md mx-auto flex items-center justify-between gap-3">
+      <div>
+        <p id="label-delivery-info" class="text-[10px] text-gray-400 hidden">Incluye delivery: $<span id="val-delivery">0</span></p>
+        <p class="text-xs text-gray-400">Total a Pagar</p>
+        <p id="total-pedido" class="font-black text-xl text-gold">$0</p>
+      </div>
+      <button onclick="enviarPedidoWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold py-3 px-6 rounded-xl text-sm flex items-center gap-2 shadow-lg transition-all">
+        <span>Enviar Pedido</span>
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 0c-6.627 0-12 5.373-12 12 0 2.159.572 4.187 1.57 5.951l-1.601 5.849 6.012-1.576c1.716.936 3.682 1.455 5.769 1.455 6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12zm6.657 16.924c-.281.79-1.385 1.448-2.274 1.637-.607.129-1.399.232-4.062-.868-3.411-1.408-5.612-4.887-5.782-5.114-.17-.227-1.386-1.847-1.386-3.52 0-1.674.878-2.497 1.19-2.838.312-.341.681-.426.908-.426.227 0 .454.002.653.011.213.009.497-.081.778.595.284.682.966 2.358 1.05 2.529.085.17.142.369.028.596-.114.227-.17.369-.341.568-.17.199-.356.444-.509.596-.17.17-.347.355-.149.696.199.341.884 1.459 1.898 2.362 1.306 1.163 2.408 1.523 2.749 1.694.341.17.54.142.739-.085.199-.227.852-.994 1.079-1.335.227-.341.454-.284.767-.17.312.114 1.989.938 2.33 1.108.341.17.568.256.653.398.085.142.085.824-.196 1.614z"/></svg>
       </button>
     </div>
   </div>
 
-  <!-- HEADER / CABECERA -->
-  <header class="bg-dark-card border-b border-dark-border sticky top-0 z-40">
-    <div class="max-w-2xl mx-auto p-4 flex items-center justify-between">
-      <h1 class="font-bold text-sm sm:text-lg text-white flex items-center gap-2">⚙️ <span class="text-gold">Panel de Control Admin</span></h1>
-      <div class="flex items-center gap-2">
-        <button onclick="cerrarSesion()" class="text-xs bg-dark-bg hover:bg-dark-pill text-red-400 px-3 py-2 rounded-xl border border-dark-border font-medium transition-colors">Cerrar Sesión</button>
-        <a href="index.html" class="text-xs bg-dark-bg hover:bg-dark-pill text-gray-300 px-3 py-2 rounded-xl border border-dark-border font-medium transition-colors">Ver Menú ↗</a>
-      </div>
-    </div>
-  </header>
-
-  <main class="max-w-2xl mx-auto p-4 space-y-6">
-
-    <!-- SECCIÓN 1: CONFIGURACIÓN DEL NEGOCIO, DATOS DE CONTACTO Y PAGOS -->
-    <section class="bg-dark-card p-5 rounded-2xl shadow-sm border border-dark-border space-y-4">
-      <h2 class="font-bold text-base text-white flex items-center gap-2 border-b border-dark-border pb-2">
-        <span>🏪 Datos del Negocio, Contacto y Pagos</span>
-      </h2>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Nombre del Local</label>
-          <input type="text" id="cfg-nombre" placeholder="Ej: PERE Y EL FLACO" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none">
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Estado del Local</label>
-          <select id="cfg-abierto" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none font-medium">
-            <option value="true">🟢 Abierto (Aceptando pedidos)</option>
-            <option value="false">🔴 Cerrado (Local no disponible)</option>
-          </select>
-        </div>
-
-        <!-- NUEVO: DIRECCIÓN DEL LOCAL -->
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">📍 Dirección o Zona</label>
-          <input type="text" id="cfg-direccion" placeholder="Ej: Calle 31 Esq. 16, Chaco" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none">
-        </div>
-
-        <!-- NUEVO: INSTAGRAM DEL LOCAL -->
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">📷 Instagram (Usuario o Link)</label>
-          <input type="text" id="cfg-instagram" placeholder="Ej: @pereyelflaco" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none">
-        </div>
-
-        <!-- NUEVO: HORARIOS DE ATENCIÓN -->
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">⏰ Horario de Atención</label>
-          <input type="text" id="cfg-horarios" placeholder="Ej: 20:00 hs a 00:00 hs" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none">
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Costo Envío / Delivery ($)</label>
-          <input type="number" id="cfg-delivery" placeholder="Ej: 500" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none">
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">WhatsApp Pedidos (Sin + ni espacios)</label>
-          <input type="text" id="cfg-ws1" placeholder="Ej: 5493644001122" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none">
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Alias Mercado Pago / CBU</label>
-          <input type="text" id="cfg-alias" placeholder="Ej: pere.el.flaco.mp" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none">
-        </div>
-
-        <div class="sm:col-span-2">
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Titular de la Cuenta</label>
-          <input type="text" id="cfg-titular" placeholder="Ej: Juan Pérez / SRL" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none">
-        </div>
-
-        <!-- LOGO DEL LOCAL -->
-        <div class="sm:col-span-2">
-          <label class="block text-xs font-semibold text-gray-300 mb-1">🖼️ Logo del Local (Sube una imagen desde tu dispositivo)</label>
-          <input type="hidden" id="cfg-logo">
-          <div class="flex items-center gap-2">
-            <input type="file" id="file-logo" accept="image/*" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-dark-pill file:text-gold hover:file:opacity-80 cursor-pointer border border-dark-border rounded-xl p-1 bg-dark-bg">
-          </div>
-          <p id="logo-status" class="text-[11px] text-gray-500 mt-1">Selecciona una imagen si deseas cambiar el logo actual.</p>
-        </div>
-
-        <!-- SELECTOR DE COLOR PRINCIPAL -->
-        <div class="sm:col-span-2 border-t border-dark-border pt-3 mt-1">
-          <label class="block text-xs font-semibold text-gray-300 mb-2">🎨 Color Principal del Menú (Botones y Encabezados)</label>
-          <div class="flex items-center gap-3">
-            <input type="color" id="cfg-color" value="#eab308" class="w-12 h-10 p-1 border border-dark-border rounded-xl cursor-pointer bg-dark-bg">
-            <input type="text" id="cfg-color-hex" value="#eab308" readonly class="w-24 p-2 border border-dark-border rounded-xl text-xs text-center font-mono font-bold bg-dark-bg text-gold">
-            
-            <div class="flex items-center gap-1.5 ml-auto">
-              <button type="button" onclick="seleccionarColor('#eab308')" class="w-6 h-6 rounded-full bg-yellow-500 border border-black/30"></button>
-              <button type="button" onclick="seleccionarColor('#ef4444')" class="w-6 h-6 rounded-full bg-red-500 border border-black/30"></button>
-              <button type="button" onclick="seleccionarColor('#16a34a')" class="w-6 h-6 rounded-full bg-green-600 border border-black/30"></button>
-              <button type="button" onclick="seleccionarColor('#2563eb')" class="w-6 h-6 rounded-full bg-blue-600 border border-black/30"></button>
-              <button type="button" onclick="seleccionarColor('#ea580c')" class="w-6 h-6 rounded-full bg-orange-600 border border-black/30"></button>
-              <button type="button" onclick="seleccionarColor('#9333ea')" class="w-6 h-6 rounded-full bg-purple-600 border border-black/30"></button>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <button onclick="guardarConfiguracion()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
-        💾 Guardar Configuración
-      </button>
-      <p id="cfg-msg" class="text-xs text-center font-semibold hidden"></p>
-    </section>
-
-    <!-- SECCIÓN 2: AGREGAR / EDITAR PRODUCTO -->
-    <section class="bg-dark-card p-5 rounded-2xl shadow-sm border border-dark-border space-y-4">
-      <h2 class="font-bold text-base text-white flex items-center gap-2 border-b border-dark-border pb-2">
-        <span id="form-title" class="text-gold">🍔 Agregar Nuevo Producto</span>
-      </h2>
-
-      <input type="hidden" id="prod-id">
-      <input type="hidden" id="prod-imagen">
-
-      <div class="space-y-3">
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Nombre del Producto</label>
-          <input type="text" id="prod-nombre" placeholder="Ej: Hamburguesa Doble" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none">
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-gray-400 mb-1">Precio ($)</label>
-            <input type="number" id="prod-precio" placeholder="4500" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-gray-400 mb-1">Categoría</label>
-            <input type="text" id="prod-categoria" placeholder="Ej: Hamburguesas" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Descripción</label>
-          <textarea id="prod-descripcion" rows="2" placeholder="Detalle del producto..." class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:border-gold focus:outline-none"></textarea>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-gray-300 mb-1">Imagen del Producto (Desde el dispositivo)</label>
-          <input type="file" id="file-producto" accept="image/*" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-dark-pill file:text-gold hover:file:opacity-80 cursor-pointer border border-dark-border rounded-xl p-1 bg-dark-bg">
-          <p id="prod-img-status" class="text-[11px] text-gray-500 mt-1">Selecciona una foto para subirla al servidor.</p>
-        </div>
-      </div>
-
-      <div class="flex gap-2 pt-2">
-        <button onclick="guardarProducto()" class="flex-1 py-3 bg-gold hover:opacity-90 text-black font-extrabold rounded-xl text-sm transition-colors shadow-sm">
-          Guardar Producto
-        </button>
-        <button id="btn-cancelar" onclick="limpiarFormularioProducto()" class="hidden py-3 px-4 bg-dark-bg hover:bg-dark-pill border border-dark-border text-gray-300 font-bold rounded-xl text-sm transition-colors">
-          Cancelar
-        </button>
-      </div>
-    </section>
-
-    <!-- SECCIÓN 3: LISTADO DE PRODUCTOS -->
-    <section class="bg-dark-card p-5 rounded-2xl shadow-sm border border-dark-border space-y-4">
-      <h2 class="font-bold text-base text-white border-b border-dark-border pb-2">📋 Productos Cargados</h2>
-      <div id="lista-admin-productos" class="space-y-3">
-        <p class="text-center text-sm text-gray-500 py-4">Cargando productos...</p>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- LÓGICA JAVASCRIPT ADMIN -->
+  <!-- LÓGICA JAVASCRIPT INTACTA CON MODO CATEGORÍA -->
   <script>
-    const ADMIN_USER = "admin";
-    const ADMIN_PASS = "1234";
-
-    const SUPABASE_URL = 'https://ahyvmupqzgcrxrbvjzsb.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoeXZtdXBxemdjcnhyYnZqenNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MTg5MzcsImV4cCI6MjEwODA5NDkzN30.oBfYP5Pf0hXDymQtMqE2pFbWCVllRKWcYGew0iuca4Q';
+    const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
 
     const _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const BUCKET_NAME = 'imagenes-productos';
 
-    let listaProductos = [];
-    let configActualId = null;
+    let productos = [];
+    let carrito = {};
+    let ubicacionGPSUrl = '';
+    let productoActualModalId = null;
+    let categoriasAbiertas = {};
+    let categoriaSeleccionadaFiltro = 'todas';
+
+    let configNegocio = { 
+      whatsapp_1: '', 
+      whatsapp_2: '', 
+      nombre: 'PERE Y EL FLACO',
+      alias: '',
+      titular: '',
+      abierto: true,
+      costo_delivery: 0,
+      direccion: 'Chaco, Argentina',
+      instagram: '@pereyelflaco',
+      horarios: '20:00 hs a 00:00 hs'
+    };
 
     document.addEventListener('DOMContentLoaded', async () => {
-      if (sessionStorage.getItem('admin_logueado') === 'true') {
-        document.getElementById('modal-login').classList.add('hidden');
-      }
-
-      const inputColor = document.getElementById('cfg-color');
-      const inputHex = document.getElementById('cfg-color-hex');
-      inputColor.addEventListener('input', (e) => {
-        inputHex.value = e.target.value;
-      });
-
-      try { await cargarConfiguracionAdmin(); } catch (e) { console.error(e); }
-      try { await cargarProductosAdmin(); } catch (e) { console.error(e); }
+      await cargarConfiguracion();
+      await cargarProductos();
     });
 
-    function verificarLogin() {
-      const userInput = document.getElementById('login-user').value.trim();
-      const passInput = document.getElementById('login-pass').value.trim();
-      const errorElem = document.getElementById('login-error');
-
-      if (userInput === ADMIN_USER && passInput === ADMIN_PASS) {
-        sessionStorage.setItem('admin_logueado', 'true');
-        document.getElementById('modal-login').classList.add('hidden');
-        errorElem.classList.add('hidden');
-      } else {
-        errorElem.classList.remove('hidden');
-      }
-    }
-
-    function cerrarSesion() {
-      sessionStorage.removeItem('admin_logueado');
-      location.reload();
-    }
-
-    function seleccionarColor(hex) {
-      document.getElementById('cfg-color').value = hex;
-      document.getElementById('cfg-color-hex').value = hex;
-    }
-
-    async function subirImagenASupabase(file, carpeta = 'general') {
-      try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
-        const filePath = `${carpeta}/${fileName}`;
-
-        const { data, error } = await _supabaseClient.storage
-          .from(BUCKET_NAME)
-          .upload(filePath, file);
-
-        if (error) throw error;
-
-        const { data: publicData } = _supabaseClient.storage
-          .from(BUCKET_NAME)
-          .getPublicUrl(filePath);
-
-        return publicData.publicUrl;
-      } catch (err) {
-        alert("Error al subir la imagen: " + err.message);
-        return null;
-      }
-    }
-
-    async function cargarConfiguracionAdmin() {
-      try {
-        const { data, error } = await _supabaseClient.from('configuracion').select('*').limit(1).maybeSingle();
-        if (data) {
-          configActualId = data.id;
-          document.getElementById('cfg-nombre').value = data.nombre || '';
-          document.getElementById('cfg-ws1').value = data.whatsapp_1 || '';
-          document.getElementById('cfg-direccion').value = data.direccion || '';
-          document.getElementById('cfg-instagram').value = data.instagram || '';
-          document.getElementById('cfg-horarios').value = data.horarios || '';
-          document.getElementById('cfg-alias').value = data.alias || '';
-          document.getElementById('cfg-titular').value = data.titular || '';
-          document.getElementById('cfg-logo').value = data.logo_url || '';
-          document.getElementById('cfg-delivery').value = data.costo_delivery || 0;
-          
-          if (data.abierto !== undefined && data.abierto !== null) {
-            document.getElementById('cfg-abierto').value = data.abierto.toString();
-          }
-          
-          const colorGuardado = data.color_primario || data.color || '#eab308';
-          seleccionarColor(colorGuardado);
-        }
-      } catch (err) {
-        console.error("Error al cargar la configuración:", err);
-      }
-    }
-
-    async function guardarConfiguracion() {
-      const msgElem = document.getElementById('cfg-msg');
-      const colorSeleccionado = document.getElementById('cfg-color').value;
-      const fileInput = document.getElementById('file-logo');
-      const estadoAbierto = document.getElementById('cfg-abierto').value === 'true';
-      const costoDelivery = parseFloat(document.getElementById('cfg-delivery').value) || 0;
-
-      let logoUrl = document.getElementById('cfg-logo').value.trim();
-
-      if (fileInput.files.length > 0) {
-        msgElem.textContent = "⌛ Subiendo logo...";
-        msgElem.className = "text-xs text-center font-semibold text-gold pt-1";
-        msgElem.classList.remove('hidden');
-        
-        const uploadedUrl = await subirImagenASupabase(fileInput.files[0], 'logos');
-        if (uploadedUrl) {
-          logoUrl = uploadedUrl;
-          document.getElementById('cfg-logo').value = logoUrl;
-        }
-      }
-
-      const datos = {
-        nombre: document.getElementById('cfg-nombre').value.trim(),
-        whatsapp_1: document.getElementById('cfg-ws1').value.trim(),
-        direccion: document.getElementById('cfg-direccion').value.trim(),
-        instagram: document.getElementById('cfg-instagram').value.trim(),
-        horarios: document.getElementById('cfg-horarios').value.trim(),
-        alias: document.getElementById('cfg-alias').value.trim(),
-        titular: document.getElementById('cfg-titular').value.trim(),
-        logo_url: logoUrl,
-        color_primario: colorSeleccionado,
-        abierto: estadoAbierto,
-        costo_delivery: costoDelivery
+    async function compartirMenu() {
+      const shareData = {
+        title: `Menú Digital - ${configNegocio.nombre}`,
+        text: `¡Hola! Mira el menú digital de ${configNegocio.nombre} y haz tu pedido:`,
+        url: window.location.href
       };
-
-      try {
-        let res;
-        if (configActualId) {
-          res = await _supabaseClient.from('configuracion').update(datos).eq('id', configActualId);
-        } else {
-          res = await _supabaseClient.from('configuracion').insert([datos]);
-        }
-
-        if (res.error) throw res.error;
-
-        msgElem.textContent = "✓ Configuración guardada exitosamente.";
-        msgElem.className = "text-xs text-center font-semibold text-emerald-400 pt-1";
-        msgElem.classList.remove('hidden');
-        setTimeout(() => msgElem.classList.add('hidden'), 3000);
-
-      } catch (err) {
-        alert("Error guardando la configuración: " + err.message);
+      if (navigator.share) {
+        try { await navigator.share(shareData); } catch (e) {}
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        alert("Enlace copiado al portapapeles.");
       }
     }
 
-    async function cargarProductosAdmin() {
+    function consultarNexoServ() {
+      const num = "543644509472";
+      const msg = "¡Hola NexoServ! Me interesa consultar por un menú digital.";
+      window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    async function cargarConfiguracion() {
       try {
-        const { data, error } = await _supabaseClient.from('productos').select('*').order('id', { ascending: false });
+        const { data } = await _supabaseClient.from('configuracion').select('*').limit(1).maybeSingle();
+        if (data) {
+          configNegocio = data;
+
+          const colorGuardado = data.color_primario || data.color;
+          if (colorGuardado) {
+            document.documentElement.style.setProperty('--primary-color', colorGuardado);
+          }
+
+          if (data.nombre) {
+            document.getElementById('nombre-negocio').textContent = data.nombre;
+            document.title = `Menú Digital - ${data.nombre}`;
+          }
+
+          if (data.logo_url) {
+            document.getElementById('logo-header').src = data.logo_url;
+          }
+
+          if (data.whatsapp_1) {
+            document.getElementById('info-ws').textContent = `+${data.whatsapp_1}`;
+          }
+
+          if (data.direccion) {
+            document.getElementById('info-direccion').textContent = data.direccion;
+          }
+
+          if (data.instagram) {
+            document.getElementById('info-instagram').textContent = data.instagram;
+          }
+
+          if (data.horarios) {
+            document.getElementById('info-horarios').textContent = data.horarios;
+          }
+
+          const estaAbierto = !(data.abierto === false || data.abierto === 'false' || data.abierto === 0);
+          configNegocio.abierto = estaAbierto;
+
+          const labelEstado = document.getElementById('estado-label');
+          const puntoEstado = document.getElementById('estado-punto');
+          const textoEstadoContainer = document.getElementById('estado-negocio-text');
+
+          if (!estaAbierto) {
+            labelEstado.textContent = "Cerrado temporalmente";
+            puntoEstado.className = "w-2.5 h-2.5 rounded-full bg-red-500";
+            textoEstadoContainer.className = "mt-3 mb-6 flex items-center gap-2 text-xs font-bold text-red-400 uppercase tracking-widest bg-red-950/50 border border-red-800/60 px-4 py-1.5 rounded-full shadow-sm";
+          }
+
+          if (data.alias || data.mp_alias) {
+            document.getElementById('mp-alias').textContent = data.alias || data.mp_alias;
+          }
+
+          if (data.titular || data.mp_titular) {
+            document.getElementById('mp-titular').textContent = data.titular || data.mp_titular;
+          }
+
+          document.getElementById('val-delivery').textContent = data.costo_delivery || 0;
+          toggleDireccion();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function cargarProductos() {
+      try {
+        const { data, error } = await _supabaseClient.from('productos').select('*');
         if (error) throw error;
+        productos = data || [];
+        renderizarBarraCategorias();
+        renderizarAcordeonCategorias();
+      } catch (err) {
+        document.getElementById('categorias-acordeon').innerHTML = '<p class="text-center text-red-500 text-xs py-4">Error al conectar con la base de datos.</p>';
+      }
+    }
 
-        listaProductos = data || [];
-        const container = document.getElementById('lista-admin-productos');
-        container.innerHTML = '';
+    function renderizarBarraCategorias() {
+      const container = document.getElementById('bar-categorias');
+      const productosVisibles = productos.filter(p => !(p.pausado === true || p.pausado === 'true' || p.pausado === 1));
+      const categorias = ['todas', ...new Set(productosVisibles.map(p => p.categoria || 'Variados'))];
 
-        if (listaProductos.length === 0) {
-          container.innerHTML = '<p class="text-center text-xs text-gray-500 py-4">No hay productos registrados.</p>';
-          return;
+      container.innerHTML = categorias.map(cat => {
+        const esActiva = cat === categoriaSeleccionadaFiltro;
+        const claseBtn = esActiva
+          ? 'bg-gold text-black font-extrabold text-xs px-4 py-2 rounded-full whitespace-nowrap shadow-md border border-gold transition-all'
+          : 'bg-dark-card text-gray-300 font-semibold text-xs px-4 py-2 rounded-full whitespace-nowrap border border-dark-border hover:border-gold/50 transition-all';
+        
+        const label = cat === 'todas' ? '🔥 Todas' : cat;
+        return `<button onclick="filtrarPorCategoriaRapida('${cat}')" class="${claseBtn}">${label}</button>`;
+      }).join('');
+    }
+
+    function filtrarPorCategoriaRapida(cat) {
+      categoriaSeleccionadaFiltro = cat;
+      renderizarBarraCategorias();
+      const textoBusqueda = document.getElementById('input-busqueda').value;
+      renderizarAcordeonCategorias(textoBusqueda);
+    }
+
+    function renderizarAcordeonCategorias(filtroTexto = '') {
+      const container = document.getElementById('categorias-acordeon');
+      container.innerHTML = '';
+
+      const productosVisibles = productos.filter(p => !(p.pausado === true || p.pausado === 'true' || p.pausado === 1));
+
+      let categorias = [...new Set(productosVisibles.map(p => p.categoria || 'Variados'))];
+
+      if (categoriaSeleccionadaFiltro !== 'todas') {
+        categorias = categorias.filter(c => c === categoriaSeleccionadaFiltro);
+      }
+
+      if (categorias.length === 0) {
+        container.innerHTML = '<p class="text-center text-xs text-gray-500 py-6">No hay productos disponibles.</p>';
+        return;
+      }
+
+      categorias.forEach((cat) => {
+        const prodsDeCat = productosVisibles.filter(p => {
+          const coincideCat = (p.categoria || 'Variados') === cat;
+          const coincideBusqueda = !filtroTexto || p.nombre.toLowerCase().includes(filtroTexto.toLowerCase());
+          return coincideCat && coincideBusqueda;
+        });
+
+        if (prodsDeCat.length === 0) return;
+
+        if (categoriasAbiertas[cat] === undefined) {
+          categoriasAbiertas[cat] = true;
         }
 
-        listaProductos.forEach(p => {
-          const estaPausado = p.pausado === true || p.pausado === 'true' || p.pausado === 1;
-          const estadoClase = estaPausado ? 'bg-amber-950/30 border-amber-800/50 opacity-75' : 'bg-dark-bg';
-          const botonPausarTexto = estaPausado ? '🟢 Activar' : '⏸️ Pausar';
-          const botonPausarClase = estaPausado ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-amber-950 text-amber-400 border border-amber-800';
+        const estaAbierta = (filtroTexto || categoriaSeleccionadaFiltro !== 'todas') ? true : categoriasAbiertas[cat];
 
-          container.innerHTML += `
-            <div class="flex items-center justify-between p-3 border border-dark-border rounded-xl ${estadoClase} gap-3">
-              <img src="${p.imagen_url || 'https://via.placeholder.com/80'}" class="w-12 h-12 rounded-lg object-cover bg-dark-card">
-              <div class="flex-1">
-                <h3 class="font-bold text-sm text-white">${p.nombre} ${estaPausado ? '<span class="text-[10px] bg-amber-900 text-amber-200 px-1.5 py-0.5 rounded font-bold">Pausado</span>' : ''}</h3>
-                <p class="text-xs text-gray-400">${p.categoria || 'Sin categoría'} - <span class="font-bold text-gold">$${p.precio}</span></p>
+        let htmlProductos = '';
+        prodsDeCat.forEach(p => {
+          const cant = carrito[p.id] ? carrito[p.id].cantidad : 0;
+          htmlProductos += `
+            <div class="bg-dark-card p-3 rounded-xl border border-dark-border flex items-center justify-between gap-3">
+              <img src="${p.imagen_url || 'https://via.placeholder.com/80'}" alt="${p.nombre}" onclick="abrirModal(${p.id})" class="w-16 h-16 rounded-lg object-cover bg-dark-bg cursor-pointer">
+              <div class="flex-1 cursor-pointer" onclick="abrirModal(${p.id})">
+                <h4 class="font-bold text-sm text-white">${p.nombre}</h4>
+                <p class="text-xs text-gray-400 line-clamp-1">${p.descripcion || ''}</p>
+                <p class="font-bold text-sm text-gold mt-1">$${p.precio}</p>
               </div>
-              <div class="flex items-center gap-1.5">
-                <button onclick="togglePausarProducto(${p.id}, ${!estaPausado})" class="p-2 text-xs ${botonPausarClase} font-bold rounded-lg transition-colors" title="Pausar o Activar">${botonPausarTexto}</button>
-                <button onclick="prepararEdicion(${p.id})" class="p-2 text-xs bg-dark-card hover:bg-dark-pill border border-dark-border text-blue-400 font-bold rounded-lg" title="Editar">✏️</button>
-                <button onclick="eliminarProducto(${p.id})" class="p-2 text-xs bg-dark-card hover:bg-dark-pill border border-dark-border text-red-400 font-bold rounded-lg" title="Eliminar">🗑️</button>
+              <div class="flex items-center gap-2 bg-dark-bg p-1 rounded-lg border border-dark-border">
+                <button onclick="cambiarCantidad(${p.id}, -1)" class="w-6 h-6 rounded bg-dark-card text-white font-bold flex items-center justify-center">-</button>
+                <span id="cant-${p.id}" class="text-xs font-bold w-4 text-center text-gold">${cant}</span>
+                <button onclick="cambiarCantidad(${p.id}, 1)" class="w-6 h-6 rounded bg-gold text-black font-bold flex items-center justify-center">+</button>
               </div>
             </div>
           `;
         });
-      } catch (err) {
-        document.getElementById('lista-admin-productos').innerHTML = '<p class="text-center text-red-400 text-xs py-4">Error al conectar con la tabla de productos.</p>';
-      }
+
+        container.innerHTML += `
+          <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden shadow-sm">
+            <button onclick="toggleCategoria('${cat}')" class="w-full p-4 text-left font-black text-sm uppercase tracking-wider text-white flex items-center justify-between bg-dark-card hover:bg-dark-pill transition-colors">
+              <span>${cat}</span>
+              <span class="text-gold font-bold">${estaAbierta ? '▲' : '▼'}</span>
+            </button>
+            <div class="${estaAbierta ? 'block' : 'hidden'} p-3 pt-0 space-y-2 border-t border-dark-border">
+              ${htmlProductos}
+            </div>
+          </div>
+        `;
+      });
     }
 
-    async function togglePausarProducto(id, nuevoEstado) {
-      try {
-        const { error } = await _supabaseClient
-          .from('productos')
-          .update({ pausado: nuevoEstado })
-          .eq('id', id);
+    function toggleCategoria(cat) {
+      categoriasAbiertas[cat] = !categoriasAbiertas[cat];
+      const textoBusqueda = document.getElementById('input-busqueda').value;
+      renderizarAcordeonCategorias(textoBusqueda);
+    }
 
-        if (error) {
-          alert("Error al actualizar el estado del producto: " + error.message);
-        } else {
-          await cargarProductosAdmin();
+    function filtrarProductosPorBusqueda() {
+      const texto = document.getElementById('input-busqueda').value;
+      renderizarAcordeonCategorias(texto);
+    }
+
+    function abrirModal(id) {
+      const prod = productos.find(p => p.id === id);
+      if (!prod) return;
+
+      productoActualModalId = id;
+      document.getElementById('modal-img').src = prod.imagen_url || 'https://via.placeholder.com/300';
+      document.getElementById('modal-nombre').textContent = prod.nombre;
+      document.getElementById('modal-precio').textContent = `$${prod.precio}`;
+      document.getElementById('modal-descripcion').textContent = prod.descripcion || 'Sin descripción disponible.';
+      
+      const cantActual = carrito[id] ? carrito[id].cantidad : 0;
+      document.getElementById('modal-cant').textContent = cantActual;
+
+      document.getElementById('modal-producto').classList.remove('hidden');
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal-producto').classList.add('hidden');
+      productoActualModalId = null;
+    }
+
+    function cambiarCantidadModal(cambio) {
+      if (productoActualModalId === null) return;
+      cambiarCantidad(productoActualModalId, cambio);
+      const cantActual = carrito[productoActualModalId] ? carrito[productoActualModalId].cantidad : 0;
+      document.getElementById('modal-cant').textContent = cantActual;
+    }
+
+    function cambiarCantidad(id, cambio) {
+      const prod = productos.find(p => p.id === id);
+      if (!prod) return;
+
+      if (!carrito[id]) {
+        carrito[id] = { producto: prod, cantidad: 0 };
+      }
+
+      carrito[id].cantidad += cambio;
+
+      if (carrito[id].cantidad <= 0) {
+        delete carrito[id];
+      }
+
+      const elemCant = document.getElementById(`cant-${id}`);
+      if (elemCant) elemCant.textContent = carrito[id] ? carrito[id].cantidad : 0;
+      actualizarTotal();
+    }
+
+    function actualizarTotal() {
+      let subtotal = 0;
+      Object.values(carrito).forEach(item => {
+        subtotal += item.producto.precio * item.cantidad;
+      });
+
+      const tipoEntrega = document.getElementById('tipo-entrega').value;
+      const costoDelivery = parseFloat(configNegocio.costo_delivery) || 0;
+      
+      let totalFinal = subtotal;
+      if (tipoEntrega === 'Delivery' && subtotal > 0) {
+        totalFinal += costoDelivery;
+      }
+
+      document.getElementById('total-pedido').textContent = `$${totalFinal}`;
+    }
+
+    function toggleDireccion() {
+      const tipo = document.getElementById('tipo-entrega').value;
+      const campo = document.getElementById('campo-direccion');
+      const labelDeliveryInfo = document.getElementById('label-delivery-info');
+
+      if (tipo === 'Retiro') {
+        campo.classList.add('hidden');
+        labelDeliveryInfo.classList.add('hidden');
+      } else {
+        campo.classList.remove('hidden');
+        if (configNegocio.costo_delivery > 0) {
+          labelDeliveryInfo.classList.remove('hidden');
         }
-      } catch (err) {
-        alert("Error: " + err.message);
+      }
+      actualizarTotal();
+    }
+
+    function toggleDatosTransferencia() {
+      const formaPago = document.getElementById('forma-pago').value;
+      const boxTransferencia = document.getElementById('datos-transferencia');
+      if (formaPago === 'Transferencia') {
+        boxTransferencia.classList.remove('hidden');
+      } else {
+        boxTransferencia.classList.add('hidden');
       }
     }
 
-    async function guardarProducto() {
-      const id = document.getElementById('prod-id').value;
-      const nombre = document.getElementById('prod-nombre').value.trim();
-      const precio = parseFloat(document.getElementById('prod-precio').value);
-      const categoria = document.getElementById('prod-categoria').value.trim();
-      const descripcion = document.getElementById('prod-descripcion').value.trim();
-      const fileInput = document.getElementById('file-producto');
-
-      if (!nombre || isNaN(precio)) {
-        alert("Por favor, completa al menos el nombre y el precio del producto.");
+    function obtenerUbicacionGPS() {
+      const statusElem = document.getElementById('gps-status');
+      if (!navigator.geolocation) {
+        alert("Tu navegador no soporta geolocalización.");
         return;
       }
 
-      let imagenUrl = document.getElementById('prod-imagen').value.trim();
+      statusElem.textContent = "⌛ Obteniendo tu ubicación...";
+      statusElem.className = "text-[11px] text-gray-400 font-medium";
+      statusElem.classList.remove('hidden');
 
-      if (fileInput.files.length > 0) {
-        document.getElementById('prod-img-status').textContent = "⌛ Subiendo imagen...";
-        const uploadedUrl = await subirImagenASupabase(fileInput.files[0], 'productos');
-        if (uploadedUrl) imagenUrl = uploadedUrl;
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          ubicacionGPSUrl = `https://maps.google.com/?q=${lat},${lng}`;
+          statusElem.textContent = "✓ ¡Ubicación GPS capturada correctamente!";
+          statusElem.className = "text-[11px] text-emerald-400 font-bold";
+        },
+        (error) => {
+          statusElem.textContent = "❌ No se pudo obtener la ubicación.";
+          statusElem.className = "text-[11px] text-red-400 font-medium";
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
+    function enviarPedidoWhatsApp() {
+      if (configNegocio.abierto === false) {
+        alert("Lo sentimos, en este momento el local se encuentra cerrado.");
+        return;
       }
 
-      const datosProd = { nombre, precio, categoria, descripcion, imagen_url: imagenUrl };
+      const nombre = document.getElementById('cliente-nombre').value.trim();
+      const tipoEntrega = document.getElementById('tipo-entrega').value;
+      const direccion = document.getElementById('cliente-direccion').value.trim();
+      const formaPago = document.getElementById('forma-pago').value;
 
-      try {
-        if (id) {
-          await _supabaseClient.from('productos').update(datosProd).eq('id', id);
-        } else {
-          await _supabaseClient.from('productos').insert([datosProd]);
+      if (Object.keys(carrito).length === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+      }
+
+      if (!nombre) {
+        alert("Por favor, ingresa tu nombre.");
+        return;
+      }
+
+      if (tipoEntrega === 'Delivery' && !direccion) {
+        alert("Por favor, ingresa la dirección de entrega.");
+        return;
+      }
+
+      let mensaje = `*📦 NUEVO PEDIDO - ${configNegocio.nombre}*\n`;
+      mensaje += `-----------------------------------\n`;
+      mensaje += `👤 *Cliente:* ${nombre}\n`;
+      mensaje += `🚚 *Entrega:* ${tipoEntrega}\n`;
+      
+      if (tipoEntrega === 'Delivery') {
+        mensaje += `📍 *Dirección:* ${direccion}\n`;
+        if (ubicacionGPSUrl) {
+          mensaje += `🗺️ *Ubicación GPS:* ${ubicacionGPSUrl}\n`;
         }
-
-        limpiarFormularioProducto();
-        await cargarProductosAdmin();
-      } catch (err) {
-        alert("Error al guardar el producto: " + err.message);
       }
-    }
 
-    function prepararEdicion(id) {
-      const p = listaProductos.find(item => item.id === id);
-      if (!p) return;
+      mensaje += `💳 *Forma de Pago:* ${formaPago}\n`;
+      mensaje += `-----------------------------------\n`;
+      mensaje += `*DETALLE DEL PEDIDO:*\n`;
 
-      document.getElementById('prod-id').value = p.id;
-      document.getElementById('prod-nombre').value = p.nombre || '';
-      document.getElementById('prod-precio').value = p.precio || '';
-      document.getElementById('prod-categoria').value = p.categoria || '';
-      document.getElementById('prod-descripcion').value = p.descripcion || '';
-      document.getElementById('prod-imagen').value = p.imagen_url || '';
+      let subtotal = 0;
+      Object.values(carrito).forEach(item => {
+        const itemSub = item.producto.precio * item.cantidad;
+        subtotal += itemSub;
+        mensaje += `• ${item.cantidad}x ${item.producto.nombre} - $${itemSub}\n`;
+      });
 
-      document.getElementById('form-title').textContent = "✏️ Editar Producto";
-      document.getElementById('file-producto').value = '';
-      document.getElementById('btn-cancelar').classList.remove('hidden');
-      window.scrollTo({ top: 300, behavior: 'smooth' });
-    }
+      const costoDelivery = parseFloat(configNegocio.costo_delivery) || 0;
+      let totalFinal = subtotal;
 
-    function limpiarFormularioProducto() {
-      document.getElementById('prod-id').value = '';
-      document.getElementById('prod-nombre').value = '';
-      document.getElementById('prod-precio').value = '';
-      document.getElementById('prod-categoria').value = '';
-      document.getElementById('prod-descripcion').value = '';
-      document.getElementById('prod-imagen').value = '';
-      document.getElementById('file-producto').value = '';
-
-      document.getElementById('form-title').textContent = "🍔 Agregar Nuevo Producto";
-      document.getElementById('btn-cancelar').classList.add('hidden');
-    }
-
-    async function eliminarProducto(id) {
-      if (!confirm("¿Estás seguro de que deseas eliminar este producto?")) return;
-      try {
-        await _supabaseClient.from('productos').delete().eq('id', id);
-        await cargarProductosAdmin();
-      } catch (err) {
-        alert("Error al eliminar el producto: " + err.message);
+      if (tipoEntrega === 'Delivery' && costoDelivery > 0) {
+        totalFinal += costoDelivery;
+        mensaje += `• Envío a domicilio: $${costoDelivery}\n`;
       }
+
+      mensaje += `-----------------------------------\n`;
+      mensaje += `💰 *TOTAL:* $${totalFinal}\n\n`;
+      mensaje += `¡Muchas gracias!`;
+
+      const numWhatsApp = configNegocio.whatsapp_1 || configNegocio.whatsapp || configNegocio.whatsapp_2;
+      if (!numWhatsApp) {
+        alert("No hay un número de WhatsApp configurado.");
+        return;
+      }
+
+      window.open(`https://wa.me/${numWhatsApp}?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
   </script>
 </body>
