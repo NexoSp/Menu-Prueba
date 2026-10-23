@@ -1,258 +1,562 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menú Digital Interactivo</title>
-<!-- Tailwind CSS para diseño y estilos -->
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- FontAwesome para iconos -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- SDK oficial de Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menú Digital - [Nombre del Negocio]</title>
+
+  <!-- Etiquetas Open Graph para WhatsApp y Redes Sociales -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Menú Digital - [Nombre del Negocio]">
+  <meta property="og:description" content="Haz tu pedido rápido y fácil por WhatsApp. ¡Conoce nuestro menú!">
+  <meta property="og:url" content="[URL_DE_TU_WEB]">
+
+  <!-- LOGO OPEN GRAPH -->
+  <meta id="og-image" property="og:image" content="[URL_IMAGEN_LOGO]">
+  <meta id="og-image-secure" property="og:image:secure_url" content="[URL_IMAGEN_LOGO]">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="500">
+  <meta property="og:image:height" content="500">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- CONFIGURACIÓN DE TAILWIND Y VARIABLE DE COLOR DINÁMICO -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'custom-primary': 'var(--primary-color, #ef4444)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --primary-color: #ef4444;
+    }
+    .bg-custom-primary { background-color: var(--primary-color) !important; }
+    .text-custom-primary { color: var(--primary-color) !important; }
+    .border-custom-primary { border-color: var(--primary-color) !important; }
+  </style>
 </head>
-<body class="bg-gray-100 pb-24 font-sans">
+<body class="bg-gray-50 text-gray-800 font-sans pb-28">
 
-<!-- Header / Encabezado -->
-<header class="bg-red-600 text-white p-4 sticky top-0 z-30 shadow-md">
-<div class="max-w-md mx-auto flex justify-between items-center">
-<div>
-<h1 class="text-xl font-bold">🍔 Burguer & Co.</h1>
-<p class="text-xs text-red-100">Haz tu pedido rápido por WhatsApp</p>
-</div>
-<!-- Badge dinámico de Abierto / Cerrado -->
-<span id="badge-estado" class="bg-gray-700 text-white text-xs px-2.5 py-1 rounded-full font-semibold transition-all">
-<i class="fa-solid fa-spinner fa-spin"></i>
-</span>
-</div>
-</header>
+  <!-- HEADER / CABECERA -->
+  <header class="bg-white shadow-sm sticky top-0 z-40">
+    <div class="max-w-md mx-auto p-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img id="logo-header" src="" alt="Logo" class="w-12 h-12 rounded-full object-cover border border-gray-100 shadow-sm">
+        <div>
+          <h1 id="nombre-negocio" class="font-bold text-lg text-gray-800 leading-tight">[Nombre del Negocio]</h1>
+          <!-- Indicador dinámico de estado (Abierto / Cerrado) -->
+          <p id="estado-negocio-text" class="text-xs text-emerald-600 font-medium flex items-center gap-1">
+            <span id="estado-punto" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span id="estado-label">Abierto ahora</span>
+          </p>
+        </div>
+      </div>
 
-<main class="max-w-md mx-auto p-4">
+      <!-- BOTÓN COMPARTIR / VIRALIZAR -->
+      <button onclick="compartirMenu()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border border-gray-200 shadow-sm" title="¡Comparte nuestro menú con amigos!">
+        <svg class="w-4 h-4 text-custom-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+        <span>Compartir</span>
+      </button>
+    </div>
+  </header>
 
-<!-- Mensaje si el local está cerrado -->
-<div id="mensaje-cerrado" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-xl mb-6 shadow-sm">
-<div class="flex items-center gap-2">
-<i class="fa-solid fa-circle-exclamation text-lg"></i>
-<p class="font-bold text-sm">El local se encuentra CERRADO en este momento.</p>
-</div>
-<p class="text-xs mt-1 text-red-600">Puedes mirar nuestro menú, pero no se están tomando pedidos por el momento.</p>
-</div>
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="max-w-md mx-auto p-4 space-y-6">
 
-<!-- Datos del Cliente -->
-<section class="bg-white p-4 rounded-xl shadow-sm mb-6">
-<h2 class="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wide">1. Tus datos de entrega</h2>
-<div class="space-y-3">
-<input type="text" id="cliente-nombre" placeholder="Tu Nombre completo" class="w-full border rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+    <!-- FILTRO DE CATEGORÍAS -->
+    <div id="categorias-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+      <button onclick="filtrarCategoria('todas')" class="cat-btn bg-custom-primary text-white text-xs px-4 py-2 rounded-full font-medium whitespace-nowrap shadow-sm">Todas</button>
+    </div>
 
-<select id="tipo-entrega" onchange="alternarDireccion()" class="w-full border rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-<option value="Delivery">🚀 Envío a Domicilio (Delivery)</option>
-<option value="Retiro">🏃 Retiro en el local</option>
-<option value="Mesa">🍽️ Comer en el Local (Mesa)</option>
-</select>
+    <!-- LISTA DE PRODUCTOS -->
+    <div id="productos-container" class="space-y-3">
+      <p class="text-center text-sm text-gray-500 py-8">Cargando menú...</p>
+    </div>
 
-<input type="text" id="cliente-direccion" placeholder="Dirección completa y altura" class="w-full border rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-</div>
-</section>
+    <!-- SECCIÓN DE DATOS DE ENTREGA Y PAGO -->
+    <section class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 space-y-3">
+      <h2 class="font-bold text-gray-700 text-sm tracking-wide uppercase">1. Datos de Entrega</h2>
+      
+      <input type="text" id="cliente-nombre" placeholder="Tu Nombre completo" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-400">
+      
+      <select id="tipo-entrega" onchange="toggleDireccion()" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-400">
+        <option value="Delivery">🚀 Envío a Domicilio (Delivery)</option>
+        <option value="Retiro">🛍️ Retiro en el Local</option>
+      </select>
 
-<!-- Listado de Productos -->
-<section>
-<h2 class="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wide">2. Elige tus productos</h2>
+      <div id="campo-direccion" class="space-y-2">
+        <input type="text" id="cliente-direccion" placeholder="Dirección completa y altura" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-400">
+        
+        <!-- Botón GPS para el Delivery -->
+        <button type="button" onclick="obtenerUbicacionGPS()" class="w-full py-2.5 px-3 bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium text-xs rounded-lg flex items-center justify-center gap-2 border border-blue-200 transition-colors">
+          <span>📍 Adjuntar mi ubicación GPS exacta</span>
+        </button>
+        <p id="gps-status" class="text-[11px] text-emerald-600 font-medium hidden">✓ Ubicación GPS capturada correctamente</p>
+      </div>
 
-<!-- Contenedor dinámico -->
-<div id="contenedor-productos" class="space-y-4">
-<p class="text-center text-gray-500 py-8"><i class="fa-solid fa-spinner fa-spin"></i> Cargando menú...</p>
-</div>
-</section>
+      <!-- FORMA DE PAGO -->
+      <h2 class="font-bold text-gray-700 text-sm tracking-wide uppercase pt-2">2. Forma de Pago</h2>
+      <select id="forma-pago" onchange="toggleDatosTransferencia()" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-400">
+        <option value="Efectivo">💵 Efectivo</option>
+        <option value="Transferencia">📱 Transferencia bancaria / Mercado Pago</option>
+      </select>
 
-</main>
+      <!-- DATOS DE MERCADO PAGO / ALIAS -->
+      <div id="datos-transferencia" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-1 mt-2">
+        <p class="text-xs font-bold text-blue-800 flex items-center gap-1">
+          <span>💳 Datos para transferir:</span>
+        </p>
+        <p class="text-xs text-blue-700">
+          <span class="font-semibold">Alias:</span> <span id="mp-alias" class="font-bold select-all bg-white px-1.5 py-0.5 rounded border border-blue-200">No especificado</span>
+        </p>
+        <p class="text-xs text-blue-700">
+          <span class="font-semibold">Titular:</span> <span id="mp-titular">No especificado</span>
+        </p>
+        <p class="text-[11px] text-blue-600 italic pt-1">
+          * Realiza la transferencia y envía el comprobante por WhatsApp al realizar el pedido.
+        </p>
+      </div>
+    </section>
 
-<!-- Barra Flotante del Carrito -->
-<div id="barra-carrito" class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-2xl z-40 hidden">
-<div class="max-w-md mx-auto flex items-center justify-between">
-<div>
-<p class="text-xs text-gray-500">Total acumulado</p>
-<p id="total-precio" class="text-xl font-black text-red-600">$`0</p>
-</div>
-<button id="btn-enviar-pedido" onclick="enviarPedidoWhatsApp()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
-<i class="fa-brands fa-whatsapp text-xl"></i>
-<span>Enviar Pedido</span>
-</button>
-</div>
-</div>
+    <!-- FOOTER -->
+    <footer class="text-center pt-2 pb-6 space-y-2">
+      <!-- BOTÓN CONSULTAR NUEVOS CLIENTES -->
+      <button onclick="consultarSoporte()" class="inline-flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold px-4 py-2 rounded-xl text-xs border border-emerald-200 transition-colors shadow-sm">
+        <span>📢 ¡Contáctanos!</span>
+      </button>
+      <p class="text-xs text-gray-400 font-normal">
+        Desarrollado por <span class="font-semibold text-gray-600">[Tu Marca / Agencia]</span>
+      </p>
+    </footer>
 
-<script>
-// ==========================================
-// CONFIGURACIÓN DE SUPABASE Y WHATSAPP
-// ==========================================
-const SUPABASE_URL = "https://ahyvmupqzgcrxrbvjzsb.supabase.co";
-const SUPABASE_ANON_KEY = "PEGA_AQUI_TU_KEY_PUBLISHABLE_COMPLETAsb_publishable_zXDGyQ8Sphn0F1gIr7s9jQ_pOOKf08w
-";
-const NUMERO_WHATSAPP = "5493644509472";
+  </main>
 
-const dbSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  <!-- VENTANA MODAL FLOTANTE -->
+  <div id="modal-producto" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl transform transition-all animate-in fade-in zoom-in-95 duration-200">
+      <div class="relative">
+        <img id="modal-img" src="" alt="Producto" class="w-full h-48 object-cover bg-gray-100">
+        <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/50 hover:bg-black/70 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold transition-colors">✕</button>
+      </div>
+      <div class="p-5 space-y-3">
+        <div>
+          <h3 id="modal-nombre" class="font-bold text-lg text-gray-800"></h3>
+          <p id="modal-precio" class="font-bold text-base text-custom-primary mt-0.5"></p>
+        </div>
+        <p id="modal-descripcion" class="text-xs text-gray-600 leading-relaxed"></p>
+        
+        <div class="pt-2 flex items-center justify-between gap-3 border-t border-gray-100">
+          <div class="flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-200">
+            <button onclick="cambiarCantidadModal(-1)" class="w-8 h-8 rounded-lg bg-white font-bold text-gray-700 shadow-sm flex items-center justify-center">-</button>
+            <span id="modal-cant" class="text-sm font-bold w-6 text-center">0</span>
+            <button onclick="cambiarCantidadModal(1)" class="w-8 h-8 rounded-lg bg-custom-primary font-bold text-white shadow-sm flex items-center justify-center">+</button>
+          </div>
+          <button onclick="cerrarModal()" class="flex-1 py-2.5 bg-custom-primary text-white font-bold text-xs rounded-xl shadow-md">
+            Listo / Agregar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-let carrito = {};
-let localEstaAbierto = true;
+  <!-- BARRA INFERIOR DEL CARRITO -->
+  <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-3 shadow-lg z-50">
+    <div class="max-w-md mx-auto flex items-center justify-between gap-3">
+      <div>
+        <p id="label-delivery-info" class="text-[10px] text-gray-400 hidden">Incluye delivery: $<span id="val-delivery">0</span></p>
+        <p class="text-xs text-gray-500">Total a Pagar</p>
+        <p id="total-pedido" class="font-bold text-xl text-gray-800">$0</p>
+      </div>
+      <button onclick="enviarPedidoWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl text-sm flex items-center gap-2 shadow-md transition-all">
+        <span>Enviar Pedido</span>
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 0c-6.627 0-12 5.373-12 12 0 2.159.572 4.187 1.57 5.951l-1.601 5.849 6.012-1.576c1.716.936 3.682 1.455 5.769 1.455 6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12zm6.657 16.924c-.281.79-1.385 1.448-2.274 1.637-.607.129-1.399.232-4.062-.868-3.411-1.408-5.612-4.887-5.782-5.114-.17-.227-1.386-1.847-1.386-3.52 0-1.674.878-2.497 1.19-2.838.312-.341.681-.426.908-.426.227 0 .454.002.653.011.213.009.497-.081.778.595.284.682.966 2.358 1.05 2.529.085.17.142.369.028.596-.114.227-.17.369-.341.568-.17.199-.356.444-.509.596-.17.17-.347.355-.149.696.199.341.884 1.459 1.898 2.362 1.306 1.163 2.408 1.523 2.749 1.694.341.17.54.142.739-.085.199-.227.852-.994 1.079-1.335.227-.341.454-.284.767-.17.312.114 1.989.938 2.33 1.108.341.17.568.256.653.398.085.142.085.824-.196 1.614z"/></svg>
+      </button>
+    </div>
+  </div>
 
-// Verificar si el local está abierto o cerrado
-async function verificarEstadoLocal() {
-try {
-const { data, error } = await dbSupabase
-.from('configuracion')
-.select('abierto')
-.eq('id', 1)
-.single();
+  <!-- LÓGICA JAVASCRIPT -->
+  <script>
+    // CONFIGURACIÓN DE SUPABASE (Reemplazar con variables genéricas o de entorno)
+    const SUPABASE_URL = 'TU_SUPABASE_URL';
+    const SUPABASE_ANON_KEY = 'TU_SUPABASE_ANON_KEY';
 
-if (error) throw error;
+    const _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-localEstaAbierto = data ? data.abierto : true;
-const badge = document.getElementById('badge-estado');
-const bannerCerrado = document.getElementById('mensaje-cerrado');
-const btnPedido = document.getElementById('btn-enviar-pedido');
+    let productos = [];
+    let carrito = {};
+    let ubicacionGPSUrl = '';
+    let productoActualModalId = null;
+    let categoriaSeleccionada = 'todas';
+    let configNegocio = { 
+      whatsapp_1: '', 
+      whatsapp_2: '', 
+      nombre: '[Nombre del Negocio]',
+      alias: '',
+      titular: '',
+      abierto: true,
+      costo_delivery: 0
+    };
 
-if (localEstaAbierto) {
-badge.className = "bg-green-500 text-white text-xs px-2.5 py-1 rounded-full font-semibold";
-badge.innerHTML = <i class="fa-solid fa-clock"&gt;&lt;/i&gt; Abierto;
-bannerCerrado.classList.add('hidden');
-if (btnPedido) btnPedido.disabled = false;
-} else {
-badge.className = "bg-gray-800 text-white text-xs px-2.5 py-1 rounded-full font-semibold";
-badge.innerHTML = <i class="fa-solid fa-lock"&gt;&lt;/i&gt; Cerrado;
-bannerCerrado.classList.remove('hidden');
-if (btnPedido) btnPedido.disabled = true;
-}
-} catch (err) {
-console.error("Error al obtener estado del local:", err);
-}
-}
+    document.addEventListener('DOMContentLoaded', async () => {
+      await cargarConfiguracion();
+      await cargarProductos();
+    });
 
-// Cargar productos
-async function cargarProductos() {
-const contenedor = document.getElementById('contenedor-productos');
-try {
-const { data: productos, error } = await dbSupabase
-.from('productos')
-.select('*')
-.eq('disponible', true);
+    // --- FUNCIÓN PARA COMPARTIR LA PÁGINA ---
+    async function compartirMenu() {
+      const shareData = {
+        title: `Menú Digital - ${configNegocio.nombre}`,
+        text: `¡Hola! Mira el menú digital de ${configNegocio.nombre} y haz tu pedido rápido por WhatsApp:`,
+        url: window.location.href
+      };
 
-if (error) throw error;
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+        } catch (err) {
+          console.log("Compartir cancelado o error:", err);
+        }
+      } else {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          alert("¡Enlace del menú copiado al portapapeles! Compártelo con tus amigos.");
+        } catch (err) {
+          alert("No se pudo compartir automáticamente. Puedes copiar el enlace de la barra de direcciones.");
+        }
+      }
+    }
 
-if (!productos || productos.length === 0) {
-contenedor.innerHTML = '<p class="text-center text-gray-500 py-8">No hay productos disponibles por el momento.</p>';
-return;
-}
+    // --- FUNCIÓN DE CONTACTO / SOPORTE ---
+    function consultarSoporte() {
+      const numeroSoporte = "TU_NUMERO_DE_CONTACTO";
+      const mensaje = "¡Hola! Me interesa consultar por un menú digital.";
+      const urlWs = `https://wa.me/${numeroSoporte}?text=${encodeURIComponent(mensaje)}`;
+      window.open(urlWs, '_blank');
+    }
 
-renderizarProductos(productos);
-} catch (err) {
-console.error("Error al cargar productos:", err);
-contenedor.innerHTML = '<p class="text-center text-red-500 py-8">Error al cargar el menú. Revisa tu clave de Supabase.</p>';
-}
-}
+    async function cargarConfiguracion() {
+      try {
+        const { data, error } = await _supabaseClient.from('configuracion').select('*').limit(1).maybeSingle();
+        if (data) {
+          configNegocio = data;
 
-function renderizarProductos(productos) {
-const contenedor = document.getElementById('contenedor-productos');
-contenedor.innerHTML = '';
+          const colorGuardado = data.color_primario || data.color;
+          if (colorGuardado) {
+            document.documentElement.style.setProperty('--primary-color', colorGuardado);
+          }
 
-productos.forEach(prod => {
-const htmlCard = &lt;div class="bg-white rounded-xl p-3 shadow-sm flex gap-3 items-center border border-gray-100"&gt; &lt;img src="${prod.imagen || 'https://via.placeholder.com/150'}" alt="{prod.nombre}</h3>
-<p class="text-xs text-gray-500 line-clamp-2 my-1">{prod.precio}</p>
-</div>
-<div class="flex items-center gap-2">
-<button onclick="cambiarCantidad({prod.nombre}', {prod.id}" class="font-bold text-sm w-4 text-center">0</span>
-<button onclick="cambiarCantidad({prod.nombre}', ${prod.precio}, 1)" class="w-8 h-8 rounded-full bg-red-600 text-white font-bold hover:bg-red-700 text-sm"&gt;+&lt;/button&gt; &lt;/div&gt; &lt;/div&gt;;
-contenedor.innerHTML += htmlCard;
-});
-}
+          if (data.nombre) {
+            document.getElementById('nombre-negocio').textContent = data.nombre;
+            document.title = `Menú Digital - ${data.nombre}`;
+          }
 
-function cambiarCantidad(id, nombre, precio, cambio) {
-if (!carrito[id]) {
-carrito[id] = { nombre, precio, cantidad: 0 };
-}
+          if (data.logo_url) {
+            document.getElementById('logo-header').src = data.logo_url;
+          }
 
-carrito[id].cantidad += cambio;
+          const estaAbierto = !(data.abierto === false || data.abierto === 'false' || data.abierto === 0 || data.abierto === '0');
+          configNegocio.abierto = estaAbierto;
 
-if (carrito[id].cantidad <= 0) {
-delete carrito[id];
-document.getElementById(cant-${id}).innerText = '0'; } else { document.getElementById(cant-${id}).innerText = carrito[id].cantidad;
-}
+          const labelEstado = document.getElementById('estado-label');
+          const puntoEstado = document.getElementById('estado-punto');
+          const textoEstadoContainer = document.getElementById('estado-negocio-text');
 
-actualizarCarritoView();
-}
+          if (!estaAbierto) {
+            labelEstado.textContent = "Cerrado temporalmente";
+            puntoEstado.className = "w-2 h-2 rounded-full bg-red-500";
+            textoEstadoContainer.className = "text-xs text-red-600 font-medium flex items-center gap-1";
+          } else {
+            labelEstado.textContent = "Abierto ahora";
+            puntoEstado.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+            textoEstadoContainer.className = "text-xs text-emerald-600 font-medium flex items-center gap-1";
+          }
+          
+          if (data.alias || data.mp_alias) {
+            document.getElementById('mp-alias').textContent = data.alias || data.mp_alias;
+          }
 
-function actualizarCarritoView() {
-let total = 0;
-let itemsTotales = 0;
+          if (data.titular || data.mp_titular) {
+            document.getElementById('mp-titular').textContent = data.titular || data.mp_titular;
+          }
 
-Object.values(carrito).forEach(item => {
-total += item.precio * item.cantidad;
-itemsTotales += item.cantidad;
-});
+          document.getElementById('val-delivery').textContent = data.costo_delivery || 0;
+          toggleDireccion();
+        }
+      } catch (err) {
+        console.error("Error cargando configuración:", err);
+      }
+    }
 
-const barra = document.getElementById('barra-carrito');
-if (itemsTotales > 0) {
-barra.classList.remove('hidden');
-document.getElementById('total-precio').innerText = ``${total.toLocaleString('es-AR')}`;
-} else {
-barra.classList.add('hidden');
-}
-}
+    async function cargarProductos() {
+      try {
+        const { data, error } = await _supabaseClient.from('productos').select('*');
+        if (error) throw error;
+        productos = data || [];
+        generarBotonesCategorias();
+        renderizarProductos();
+      } catch (err) {
+        console.error("Error cargando productos:", err);
+        document.getElementById('productos-container').innerHTML = '<p class="text-center text-red-500 text-sm py-4">Error al conectar con la base de datos.</p>';
+      }
+    }
 
-function alternarDireccion() {
-const tipo = document.getElementById('tipo-entrega').value;
-const inputDir = document.getElementById('cliente-direccion');
-if (tipo === 'Delivery') {
-inputDir.classList.remove('hidden');
-inputDir.placeholder = "Dirección completa y altura";
-} else if (tipo === 'Mesa') {
-inputDir.classList.remove('hidden');
-inputDir.placeholder = "Número de Mesa (ej: Mesa 4)";
-} else {
-inputDir.classList.add('hidden');
-}
-}
+    function generarBotonesCategorias() {
+      const container = document.getElementById('categorias-container');
+      const categoriasUnicas = ['todas', ...new Set(productos.map(p => p.categoria).filter(Boolean))];
 
-function enviarPedidoWhatsApp() {
-if (!localEstaAbierto) {
-alert("El local se encuentra cerrado en este momento. No es posible enviar el pedido.");
-return;
-}
+      container.innerHTML = categoriasUnicas.map(cat => {
+        const esActiva = cat === categoriaSeleccionada;
+        const claseBtn = esActiva 
+          ? 'cat-btn bg-custom-primary text-white text-xs px-4 py-2 rounded-full font-medium whitespace-nowrap shadow-sm'
+          : 'cat-btn bg-white text-gray-600 border border-gray-200 text-xs px-4 py-2 rounded-full font-medium whitespace-nowrap';
+        const label = cat === 'todas' ? 'Todas' : cat;
+        return `<button onclick="filtrarCategoria('${cat}')" class="${claseBtn}">${label}</button>`;
+      }).join('');
+    }
 
-const nombre = document.getElementById('cliente-nombre').value.trim();
-const tipoEntrega = document.getElementById('tipo-entrega').value;
-const direccion = document.getElementById('cliente-direccion').value.trim();
+    function filtrarCategoria(cat) {
+      categoriaSeleccionada = cat;
+      generarBotonesCategorias();
+      renderizarProductos();
+    }
 
-if (!nombre) {
-alert("Por favor, ingresa tu nombre antes de enviar el pedido.");
-return;
-}
+    function renderizarProductos() {
+      const container = document.getElementById('productos-container');
+      container.innerHTML = '';
 
-if (tipoEntrega !== 'Retiro' && !direccion) {
-alert("Por favor, ingresa tu dirección o número de mesa.");
-return;
-}
+      const listaFiltrada = productos.filter(p => {
+        const noEstaPausado = !(p.pausado === true || p.pausado === 'true' || p.pausado === 1);
+        const coincideCat = categoriaSeleccionada === 'todas' || p.categoria === categoriaSeleccionada;
+        return noEstaPausado && coincideCat;
+      });
 
-let mensaje = *NUEVO PEDIDO - MENÚ WEB*\n\n;
-mensaje += *Cliente:* ${nombre}\n; mensaje +=Modalidad:${tipoEntrega}\n;
-if (tipoEntrega !== 'Retiro') {
-mensaje += *Ubicación/Detalle:* ${direccion}\n; } mensaje +=\nDETALLE DEL PEDIDO:\n`;
+      if (listaFiltrada.length === 0) {
+        container.innerHTML = '<p class="text-center text-sm text-gray-400 py-6">No hay productos disponibles en esta categoría.</p>';
+        return;
+      }
 
-let total = 0;
-Object.values(carrito).forEach(item => {
-const subtotal = item.precio * item.cantidad;
-total += subtotal;
-mensaje += -${item.cantidad}x {subtotal})\n`;
-});
+      listaFiltrada.forEach(p => {
+        const cant = carrito[p.id] ? carrito[p.id].cantidad : 0;
+        container.innerHTML += `
+          <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between gap-3">
+            <img src="${p.imagen_url || 'https://via.placeholder.com/80'}" alt="${p.nombre}" onclick="abrirModal(${p.id})" class="w-16 h-16 rounded-lg object-cover bg-gray-100 cursor-pointer hover:opacity-90 transition-opacity">
+            <div class="flex-1 cursor-pointer" onclick="abrirModal(${p.id})">
+              <h3 class="font-bold text-sm text-gray-800">${p.nombre}</h3>
+              <p class="text-xs text-gray-400 line-clamp-1">${p.descripcion || 'Sin descripción'}</p>
+              <p class="font-bold text-sm text-custom-primary mt-1">$${p.precio}</p>
+            </div>
+            <div class="flex items-center gap-2 bg-gray-50 p-1 rounded-lg border border-gray-200">
+              <button onclick="cambiarCantidad(${p.id}, -1)" class="w-6 h-6 rounded bg-white font-bold text-gray-600 shadow-sm flex items-center justify-center">-</button>
+              <span id="cant-${p.id}" class="text-xs font-bold w-4 text-center">${cant}</span>
+              <button onclick="cambiarCantidad(${p.id}, 1)" class="w-6 h-6 rounded bg-custom-primary font-bold text-white shadow-sm flex items-center justify-center">+</button>
+            </div>
+          </div>
+        `;
+      });
+    }
 
-mensaje += \n*TOTAL A PAGAR: ${total.toLocaleString('es-AR')}*`;
+    function abrirModal(id) {
+      const prod = productos.find(p => p.id === id);
+      if (!prod) return;
 
-const urlWhatsApp = https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
-window.open(urlWhatsApp, '_blank');
-}
+      productoActualModalId = id;
+      document.getElementById('modal-img').src = prod.imagen_url || 'https://via.placeholder.com/300';
+      document.getElementById('modal-nombre').textContent = prod.nombre;
+      document.getElementById('modal-precio').textContent = `$${prod.precio}`;
+      document.getElementById('modal-descripcion').textContent = prod.descripcion || 'No hay descripción detallada para este producto.';
+      
+      const cantActual = carrito[id] ? carrito[id].cantidad : 0;
+      document.getElementById('modal-cant').textContent = cantActual;
 
-document.addEventListener("DOMContentLoaded", () => {
-verificarEstadoLocal();
-cargarProductos();
-});
-</script>
+      document.getElementById('modal-producto').classList.remove('hidden');
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal-producto').classList.add('hidden');
+      productoActualModalId = null;
+    }
+
+    function cambiarCantidadModal(cambio) {
+      if (productoActualModalId === null) return;
+      cambiarCantidad(productoActualModalId, cambio);
+      const cantActual = carrito[productoActualModalId] ? carrito[productoActualModalId].cantidad : 0;
+      document.getElementById('modal-cant').textContent = cantActual;
+    }
+
+    function cambiarCantidad(id, cambio) {
+      const prod = productos.find(p => p.id === id);
+      if (!prod) return;
+
+      if (!carrito[id]) {
+        carrito[id] = { producto: prod, cantidad: 0 };
+      }
+
+      carrito[id].cantidad += cambio;
+
+      if (carrito[id].cantidad <= 0) {
+        delete carrito[id];
+      }
+
+      const elemCant = document.getElementById(`cant-${id}`);
+      if (elemCant) elemCant.textContent = carrito[id] ? carrito[id].cantidad : 0;
+      actualizarTotal();
+    }
+
+    function actualizarTotal() {
+      let subtotal = 0;
+      Object.values(carrito).forEach(item => {
+        subtotal += item.producto.precio * item.cantidad;
+      });
+
+      const tipoEntrega = document.getElementById('tipo-entrega').value;
+      const costoDelivery = parseFloat(configNegocio.costo_delivery) || 0;
+      
+      let totalFinal = subtotal;
+      if (tipoEntrega === 'Delivery' && subtotal > 0) {
+        totalFinal += costoDelivery;
+      }
+
+      document.getElementById('total-pedido').textContent = `$${totalFinal}`;
+    }
+
+    function toggleDireccion() {
+      const tipo = document.getElementById('tipo-entrega').value;
+      const campo = document.getElementById('campo-direccion');
+      const labelDeliveryInfo = document.getElementById('label-delivery-info');
+
+      if (tipo === 'Retiro') {
+        campo.classList.add('hidden');
+        labelDeliveryInfo.classList.add('hidden');
+      } else {
+        campo.classList.remove('hidden');
+        if (configNegocio.costo_delivery > 0) {
+          labelDeliveryInfo.classList.remove('hidden');
+        }
+      }
+      actualizarTotal();
+    }
+
+    function toggleDatosTransferencia() {
+      const formaPago = document.getElementById('forma-pago').value;
+      const boxTransferencia = document.getElementById('datos-transferencia');
+      
+      if (formaPago === 'Transferencia') {
+        boxTransferencia.classList.remove('hidden');
+      } else {
+        boxTransferencia.classList.add('hidden');
+      }
+    }
+
+    function obtenerUbicacionGPS() {
+      const statusElem = document.getElementById('gps-status');
+      
+      if (!navigator.geolocation) {
+        alert("Tu navegador no soporta geolocalización.");
+        return;
+      }
+
+      statusElem.textContent = "⌛ Obteniendo tu ubicación...";
+      statusElem.className = "text-[11px] text-gray-500 font-medium";
+      statusElem.classList.remove('hidden');
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          
+          ubicacionGPSUrl = `https://maps.google.com/?q=${lat},${lng}`;
+          
+          statusElem.textContent = "✓ ¡Ubicación GPS capturada correctamente!";
+          statusElem.className = "text-[11px] text-emerald-600 font-bold";
+        },
+        (error) => {
+          statusElem.textContent = "❌ No se pudo obtener la ubicación. Por favor, escríbela abajo.";
+          statusElem.className = "text-[11px] text-red-500 font-medium";
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
+    function enviarPedidoWhatsApp() {
+      if (configNegocio.abierto === false) {
+        alert("Lo sentimos, en este momento el local se encuentra cerrado y no acepta nuevos pedidos.");
+        return;
+      }
+
+      const nombre = document.getElementById('cliente-nombre').value.trim();
+      const tipoEntrega = document.getElementById('tipo-entrega').value;
+      const direccion = document.getElementById('cliente-direccion').value.trim();
+      const formaPago = document.getElementById('forma-pago').value;
+
+      if (Object.keys(carrito).length === 0) {
+        alert("Tu carrito está vacío. Agrega productos para realizar el pedido.");
+        return;
+      }
+
+      if (!nombre) {
+        alert("Por favor, ingresa tu nombre.");
+        return;
+      }
+
+      if (tipoEntrega === 'Delivery' && !direccion) {
+        alert("Por favor, ingresa la dirección de entrega.");
+        return;
+      }
+
+      let mensaje = `*📦 NUEVO PEDIDO - ${configNegocio.nombre}*\n`;
+      mensaje += `-----------------------------------\n`;
+      mensaje += `👤 *Cliente:* ${nombre}\n`;
+      mensaje += `🚚 *Entrega:* ${tipoEntrega}\n`;
+      
+      if (tipoEntrega === 'Delivery') {
+        mensaje += `📍 *Dirección:* ${direccion}\n`;
+        if (ubicacionGPSUrl) {
+          mensaje += `🗺️ *Ubicación GPS:* ${ubicacionGPSUrl}\n`;
+        }
+      }
+
+      mensaje += `💳 *Forma de Pago:* ${formaPago}\n`;
+      mensaje += `-----------------------------------\n`;
+      mensaje += `*DETALLE DEL PEDIDO:*\n`;
+
+      let subtotal = 0;
+      Object.values(carrito).forEach(item => {
+        const itemSub = item.producto.precio * item.cantidad;
+        subtotal += itemSub;
+        mensaje += `• ${item.cantidad}x ${item.producto.nombre} - $${itemSub}\n`;
+      });
+
+      const costoDelivery = parseFloat(configNegocio.costo_delivery) || 0;
+      let totalFinal = subtotal;
+
+      if (tipoEntrega === 'Delivery' && costoDelivery > 0) {
+        totalFinal += costoDelivery;
+        mensaje += `• Envío a domicilio: $${costoDelivery}\n`;
+      }
+
+      mensaje += `-----------------------------------\n`;
+      mensaje += `💰 *TOTAL:* $${totalFinal}\n\n`;
+      mensaje += `¡Muchas gracias!`;
+
+      const numWhatsApp = configNegocio.whatsapp_1 || configNegocio.whatsapp || configNegocio.whatsapp_2;
+      
+      if (!numWhatsApp) {
+        alert("No hay un número de WhatsApp configurado en el sistema.");
+        return;
+      }
+
+      const urlWs = `https://wa.me/${numWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+      window.open(urlWs, '_blank');
+    }
+  </script>
 </body>
 </html>
