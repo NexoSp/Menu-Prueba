@@ -29,7 +29,7 @@
       theme: {
         extend: {
           colors: {
-            'custom-primary': 'var(--primary-color, #ef4444)',
+            'custom-primary': 'var(--primary-color, #f59e0b)',
           }
         }
       }
@@ -38,31 +38,51 @@
 
   <style>
     :root {
-      --primary-color: #ef4444;
+      --primary-color: #f59e0b; /* Color principal personalizable desde el Admin */
+    }
+    body {
+      background-color: #121212;
+      color: #e5e7eb;
     }
     .bg-custom-primary { background-color: var(--primary-color) !important; }
     .text-custom-primary { color: var(--primary-color) !important; }
     .border-custom-primary { border-color: var(--primary-color) !important; }
+    
+    /* Estilos personalizados Modo Oscuro tipo EcoMenu */
+    .dark-card {
+      background-color: #1e1e1e;
+      border: 1px solid #2d2d2d;
+    }
+    .dark-input {
+      background-color: #18181b;
+      border: 1px solid #27272a;
+      color: #fff;
+    }
+    .dark-input:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans pb-28">
+<body class="font-sans pb-32">
 
-  <!-- HEADER / CABECERA -->
-  <header class="bg-white shadow-sm sticky top-0 z-40">
+  <!-- HEADER / CABECERA OSCURA TIPO ECO-MENU -->
+  <header class="bg-[#18181b] border-b border-[#27272a] sticky top-0 z-40 shadow-md">
     <div class="max-w-md mx-auto p-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <img id="logo-header" src="" alt="Logo" class="w-12 h-12 rounded-full object-cover border border-gray-100 shadow-sm">
+        <!-- Logo del negocio -->
+        <img id="logo-header" src="" alt="Logo" class="w-12 h-12 rounded-full object-cover border border-[#3f3f46] shadow-sm">
         <div>
-          <h1 id="nombre-negocio" class="font-bold text-lg text-gray-800 leading-tight">[Nombre del Negocio]</h1>
-          <!-- Indicador dinámico de estado (Abierto / Cerrado) -->
-          <p id="estado-negocio-text" class="text-xs text-emerald-600 font-medium flex items-center gap-1">
+          <h1 id="nombre-negocio" class="font-bold text-base text-white tracking-wide">[Nombre del Negocio]</h1>
+          <!-- Indicador dinámico de estado -->
+          <p id="estado-negocio-text" class="text-xs text-emerald-400 font-medium flex items-center gap-1 mt-0.5">
             <span id="estado-punto" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span id="estado-label">Abierto ahora</span>
           </p>
         </div>
       </div>
 
       <!-- BOTÓN COMPARTIR / VIRALIZAR -->
-      <button onclick="compartirMenu()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border border-gray-200 shadow-sm" title="¡Comparte nuestro menú con amigos!">
+      <button onclick="compartirMenu()" class="bg-[#27272a] hover:bg-[#3f3f46] text-gray-200 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border border-[#3f3f46] shadow-sm" title="¡Comparte nuestro menú!">
         <svg class="w-4 h-4 text-custom-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
         <span>Compartir</span>
       </button>
@@ -72,56 +92,61 @@
   <!-- CONTENIDO PRINCIPAL -->
   <main class="max-w-md mx-auto p-4 space-y-6">
 
+    <!-- BARRA DE BÚSQUEDA EN LA TIENDA -->
+    <div class="relative">
+      <input type="text" id="buscador-productos" oninput="filtrarProductosTexto()" placeholder="Buscar en la tienda..." class="w-full p-3 rounded-xl text-sm dark-input shadow-inner">
+    </div>
+
     <!-- FILTRO DE CATEGORÍAS -->
     <div id="categorias-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-      <button onclick="filtrarCategoria('todas')" class="cat-btn bg-custom-primary text-white text-xs px-4 py-2 rounded-full font-medium whitespace-nowrap shadow-sm">Todas</button>
+      <button onclick="filtrarCategoria('todas')" class="cat-btn bg-custom-primary text-gray-900 text-xs px-4 py-2 rounded-full font-bold whitespace-nowrap shadow-sm transition-all">Todas</button>
     </div>
 
     <!-- LISTA DE PRODUCTOS -->
     <div id="productos-container" class="space-y-3">
-      <p class="text-center text-sm text-gray-500 py-8">Cargando menú...</p>
+      <p class="text-center text-sm text-gray-400 py-8">Cargando menú...</p>
     </div>
 
     <!-- SECCIÓN DE DATOS DE ENTREGA Y PAGO -->
-    <section class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 space-y-3">
-      <h2 class="font-bold text-gray-700 text-sm tracking-wide uppercase">1. Datos de Entrega</h2>
+    <section class="dark-card rounded-2xl p-4 shadow-md space-y-3">
+      <h2 class="font-bold text-gray-300 text-xs tracking-wider uppercase">1. Datos de Entrega</h2>
       
-      <input type="text" id="cliente-nombre" placeholder="Tu Nombre completo" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-400">
+      <input type="text" id="cliente-nombre" placeholder="Tu Nombre completo" class="w-full p-2.5 rounded-lg text-sm dark-input">
       
-      <select id="tipo-entrega" onchange="toggleDireccion()" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-400">
-        <option value="Delivery">🚀 Envío a Domicilio (Delivery)</option>
-        <option value="Retiro">🛍️ Retiro en el Local</option>
+      <select id="tipo-entrega" onchange="toggleDireccion()" class="w-full p-2.5 rounded-lg text-sm dark-input">
+        <option value="Delivery" class="bg-[#18181b]">🚀 Envío a Domicilio (Delivery)</option>
+        <option value="Retiro" class="bg-[#18181b]">🛍️ Retiro en el Local</option>
       </select>
 
       <div id="campo-direccion" class="space-y-2">
-        <input type="text" id="cliente-direccion" placeholder="Dirección completa y altura" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-400">
+        <input type="text" id="cliente-direccion" placeholder="Dirección completa y altura" class="w-full p-2.5 rounded-lg text-sm dark-input">
         
         <!-- Botón GPS para el Delivery -->
-        <button type="button" onclick="obtenerUbicacionGPS()" class="w-full py-2.5 px-3 bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium text-xs rounded-lg flex items-center justify-center gap-2 border border-blue-200 transition-colors">
+        <button type="button" onclick="obtenerUbicacionGPS()" class="w-full py-2.5 px-3 bg-[#27272a] hover:bg-[#3f3f46] text-blue-400 font-medium text-xs rounded-lg flex items-center justify-center gap-2 border border-[#3f3f46] transition-colors">
           <span>📍 Adjuntar mi ubicación GPS exacta</span>
         </button>
-        <p id="gps-status" class="text-[11px] text-emerald-600 font-medium hidden">✓ Ubicación GPS capturada correctamente</p>
+        <p id="gps-status" class="text-[11px] text-emerald-400 font-medium hidden">✓ Ubicación GPS capturada correctamente</p>
       </div>
 
       <!-- FORMA DE PAGO -->
-      <h2 class="font-bold text-gray-700 text-sm tracking-wide uppercase pt-2">2. Forma de Pago</h2>
-      <select id="forma-pago" onchange="toggleDatosTransferencia()" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-400">
-        <option value="Efectivo">💵 Efectivo</option>
-        <option value="Transferencia">📱 Transferencia bancaria / Mercado Pago</option>
+      <h2 class="font-bold text-gray-300 text-xs tracking-wider uppercase pt-2">2. Forma de Pago</h2>
+      <select id="forma-pago" onchange="toggleDatosTransferencia()" class="w-full p-2.5 rounded-lg text-sm dark-input">
+        <option value="Efectivo" class="bg-[#18181b]">💵 Efectivo</option>
+        <option value="Transferencia" class="bg-[#18181b]">📱 Transferencia bancaria / Mercado Pago</option>
       </select>
 
       <!-- DATOS DE MERCADO PAGO / ALIAS -->
-      <div id="datos-transferencia" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-1 mt-2">
-        <p class="text-xs font-bold text-blue-800 flex items-center gap-1">
+      <div id="datos-transferencia" class="hidden bg-[#26221d] border border-[#453621] rounded-lg p-3 space-y-1 mt-2">
+        <p class="text-xs font-bold text-amber-400 flex items-center gap-1">
           <span>💳 Datos para transferir:</span>
         </p>
-        <p class="text-xs text-blue-700">
-          <span class="font-semibold">Alias:</span> <span id="mp-alias" class="font-bold select-all bg-white px-1.5 py-0.5 rounded border border-blue-200">No especificado</span>
+        <p class="text-xs text-amber-200">
+          <span class="font-semibold">Alias:</span> <span id="mp-alias" class="font-bold select-all bg-[#18181b] px-1.5 py-0.5 rounded border border-[#453621]">No especificado</span>
         </p>
-        <p class="text-xs text-blue-700">
+        <p class="text-xs text-amber-200">
           <span class="font-semibold">Titular:</span> <span id="mp-titular">No especificado</span>
         </p>
-        <p class="text-[11px] text-blue-600 italic pt-1">
+        <p class="text-[11px] text-amber-300/80 italic pt-1">
           * Realiza la transferencia y envía el comprobante por WhatsApp al realizar el pedido.
         </p>
       </div>
@@ -130,37 +155,37 @@
     <!-- FOOTER -->
     <footer class="text-center pt-2 pb-6 space-y-2">
       <!-- BOTÓN CONSULTAR NUEVOS CLIENTES -->
-      <button onclick="consultarSoporte()" class="inline-flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold px-4 py-2 rounded-xl text-xs border border-emerald-200 transition-colors shadow-sm">
+      <button onclick="consultarSoporte()" class="inline-flex items-center gap-2 bg-[#1e293b] hover:bg-[#334155] text-emerald-400 font-semibold px-4 py-2 rounded-xl text-xs border border-[#334155] transition-colors shadow-sm">
         <span>📢 ¡Contáctanos!</span>
       </button>
-      <p class="text-xs text-gray-400 font-normal">
-        Desarrollado por <span class="font-semibold text-gray-600">[Tu Marca / Agencia]</span>
+      <p class="text-xs text-gray-500 font-normal">
+        Desarrollado por <span class="font-semibold text-gray-400">[Tu Marca / Agencia]</span>
       </p>
     </footer>
 
   </main>
 
   <!-- VENTANA MODAL FLOTANTE -->
-  <div id="modal-producto" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl transform transition-all animate-in fade-in zoom-in-95 duration-200">
+  <div id="modal-producto" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="dark-card w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl transform transition-all">
       <div class="relative">
-        <img id="modal-img" src="" alt="Producto" class="w-full h-48 object-cover bg-gray-100">
-        <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/50 hover:bg-black/70 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold transition-colors">✕</button>
+        <img id="modal-img" src="" alt="Producto" class="w-full h-48 object-cover bg-gray-900">
+        <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/60 hover:bg-black/80 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold transition-colors">✕</button>
       </div>
       <div class="p-5 space-y-3">
         <div>
-          <h3 id="modal-nombre" class="font-bold text-lg text-gray-800"></h3>
+          <h3 id="modal-nombre" class="font-bold text-lg text-white"></h3>
           <p id="modal-precio" class="font-bold text-base text-custom-primary mt-0.5"></p>
         </div>
-        <p id="modal-descripcion" class="text-xs text-gray-600 leading-relaxed"></p>
+        <p id="modal-descripcion" class="text-xs text-gray-400 leading-relaxed"></p>
         
-        <div class="pt-2 flex items-center justify-between gap-3 border-t border-gray-100">
-          <div class="flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-200">
-            <button onclick="cambiarCantidadModal(-1)" class="w-8 h-8 rounded-lg bg-white font-bold text-gray-700 shadow-sm flex items-center justify-center">-</button>
-            <span id="modal-cant" class="text-sm font-bold w-6 text-center">0</span>
-            <button onclick="cambiarCantidadModal(1)" class="w-8 h-8 rounded-lg bg-custom-primary font-bold text-white shadow-sm flex items-center justify-center">+</button>
+        <div class="pt-2 flex items-center justify-between gap-3 border-t border-[#27272a]">
+          <div class="flex items-center gap-3 bg-[#18181b] p-1.5 rounded-xl border border-[#27272a]">
+            <button onclick="cambiarCantidadModal(-1)" class="w-8 h-8 rounded-lg bg-[#27272a] font-bold text-white shadow-sm flex items-center justify-center">-</button>
+            <span id="modal-cant" class="text-sm font-bold w-6 text-center text-white">0</span>
+            <button onclick="cambiarCantidadModal(1)" class="w-8 h-8 rounded-lg bg-custom-primary font-bold text-gray-900 shadow-sm flex items-center justify-center">+</button>
           </div>
-          <button onclick="cerrarModal()" class="flex-1 py-2.5 bg-custom-primary text-white font-bold text-xs rounded-xl shadow-md">
+          <button onclick="cerrarModal()" class="flex-1 py-2.5 bg-custom-primary text-gray-900 font-bold text-xs rounded-xl shadow-md transition-all">
             Listo / Agregar
           </button>
         </div>
@@ -169,12 +194,12 @@
   </div>
 
   <!-- BARRA INFERIOR DEL CARRITO -->
-  <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-3 shadow-lg z-50">
+  <div class="fixed bottom-0 left-0 right-0 bg-[#18181b] border-t border-[#27272a] p-3 shadow-2xl z-50">
     <div class="max-w-md mx-auto flex items-center justify-between gap-3">
       <div>
         <p id="label-delivery-info" class="text-[10px] text-gray-400 hidden">Incluye delivery: $<span id="val-delivery">0</span></p>
-        <p class="text-xs text-gray-500">Total a Pagar</p>
-        <p id="total-pedido" class="font-bold text-xl text-gray-800">$0</p>
+        <p class="text-xs text-gray-400">Total a Pagar</p>
+        <p id="total-pedido" class="font-bold text-xl text-white">$0</p>
       </div>
       <button onclick="enviarPedidoWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl text-sm flex items-center gap-2 shadow-md transition-all">
         <span>Enviar Pedido</span>
@@ -185,7 +210,6 @@
 
   <!-- LÓGICA JAVASCRIPT -->
   <script>
-    // CONFIGURACIÓN DE SUPABASE (Reemplazar con variables genéricas o de entorno)
     const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
 
@@ -196,6 +220,7 @@
     let ubicacionGPSUrl = '';
     let productoActualModalId = null;
     let categoriaSeleccionada = 'todas';
+    let textoBusqueda = '';
     let configNegocio = { 
       whatsapp_1: '', 
       whatsapp_2: '', 
@@ -237,7 +262,7 @@
 
     // --- FUNCIÓN DE CONTACTO / SOPORTE ---
     function consultarSoporte() {
-      const numeroSoporte = "TU_NUMERO_DE_CONTACTO";
+      const numeroSoporte = "543644509472";
       const mensaje = "¡Hola! Me interesa consultar por un menú digital.";
       const urlWs = `https://wa.me/${numeroSoporte}?text=${encodeURIComponent(mensaje)}`;
       window.open(urlWs, '_blank');
@@ -249,6 +274,7 @@
         if (data) {
           configNegocio = data;
 
+          // Se lee el color primario directamente desde Supabase configurado en el Admin
           const colorGuardado = data.color_primario || data.color;
           if (colorGuardado) {
             document.documentElement.style.setProperty('--primary-color', colorGuardado);
@@ -273,11 +299,11 @@
           if (!estaAbierto) {
             labelEstado.textContent = "Cerrado temporalmente";
             puntoEstado.className = "w-2 h-2 rounded-full bg-red-500";
-            textoEstadoContainer.className = "text-xs text-red-600 font-medium flex items-center gap-1";
+            textoEstadoContainer.className = "text-xs text-red-400 font-medium flex items-center gap-1";
           } else {
             labelEstado.textContent = "Abierto ahora";
             puntoEstado.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-            textoEstadoContainer.className = "text-xs text-emerald-600 font-medium flex items-center gap-1";
+            textoEstadoContainer.className = "text-xs text-emerald-400 font-medium flex items-center gap-1";
           }
           
           if (data.alias || data.mp_alias) {
@@ -305,7 +331,7 @@
         renderizarProductos();
       } catch (err) {
         console.error("Error cargando productos:", err);
-        document.getElementById('productos-container').innerHTML = '<p class="text-center text-red-500 text-sm py-4">Error al conectar con la base de datos.</p>';
+        document.getElementById('productos-container').innerHTML = '<p class="text-center text-red-400 text-sm py-4">Error al conectar con la base de datos.</p>';
       }
     }
 
@@ -316,8 +342,8 @@
       container.innerHTML = categoriasUnicas.map(cat => {
         const esActiva = cat === categoriaSeleccionada;
         const claseBtn = esActiva 
-          ? 'cat-btn bg-custom-primary text-white text-xs px-4 py-2 rounded-full font-medium whitespace-nowrap shadow-sm'
-          : 'cat-btn bg-white text-gray-600 border border-gray-200 text-xs px-4 py-2 rounded-full font-medium whitespace-nowrap';
+          ? 'cat-btn bg-custom-primary text-gray-900 text-xs px-4 py-2 rounded-full font-bold whitespace-nowrap shadow-sm'
+          : 'cat-btn bg-[#18181b] text-gray-300 border border-[#27272a] text-xs px-4 py-2 rounded-full font-medium whitespace-nowrap';
         const label = cat === 'todas' ? 'Todas' : cat;
         return `<button onclick="filtrarCategoria('${cat}')" class="${claseBtn}">${label}</button>`;
       }).join('');
@@ -329,6 +355,11 @@
       renderizarProductos();
     }
 
+    function filtrarProductosTexto() {
+      textoBusqueda = document.getElementById('buscador-productos').value.toLowerCase().trim();
+      renderizarProductos();
+    }
+
     function renderizarProductos() {
       const container = document.getElementById('productos-container');
       container.innerHTML = '';
@@ -336,28 +367,29 @@
       const listaFiltrada = productos.filter(p => {
         const noEstaPausado = !(p.pausado === true || p.pausado === 'true' || p.pausado === 1);
         const coincideCat = categoriaSeleccionada === 'todas' || p.categoria === categoriaSeleccionada;
-        return noEstaPausado && coincideCat;
+        const coincideTexto = !textoBusqueda || p.nombre.toLowerCase().includes(textoBusqueda) || (p.descripcion && p.descripcion.toLowerCase().includes(textoBusqueda));
+        return noEstaPausado && coincideCat && coincideTexto;
       });
 
       if (listaFiltrada.length === 0) {
-        container.innerHTML = '<p class="text-center text-sm text-gray-400 py-6">No hay productos disponibles en esta categoría.</p>';
+        container.innerHTML = '<p class="text-center text-sm text-gray-500 py-6">No se encontraron productos.</p>';
         return;
       }
 
       listaFiltrada.forEach(p => {
         const cant = carrito[p.id] ? carrito[p.id].cantidad : 0;
         container.innerHTML += `
-          <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between gap-3">
-            <img src="${p.imagen_url || 'https://via.placeholder.com/80'}" alt="${p.nombre}" onclick="abrirModal(${p.id})" class="w-16 h-16 rounded-lg object-cover bg-gray-100 cursor-pointer hover:opacity-90 transition-opacity">
+          <div class="dark-card p-3 rounded-2xl shadow-sm flex items-center justify-between gap-3">
+            <img src="${p.imagen_url || 'https://via.placeholder.com/80'}" alt="${p.nombre}" onclick="abrirModal(${p.id})" class="w-16 h-16 rounded-xl object-cover bg-gray-900 cursor-pointer hover:opacity-90 transition-opacity">
             <div class="flex-1 cursor-pointer" onclick="abrirModal(${p.id})">
-              <h3 class="font-bold text-sm text-gray-800">${p.nombre}</h3>
+              <h3 class="font-bold text-sm text-white">${p.nombre}</h3>
               <p class="text-xs text-gray-400 line-clamp-1">${p.descripcion || 'Sin descripción'}</p>
               <p class="font-bold text-sm text-custom-primary mt-1">$${p.precio}</p>
             </div>
-            <div class="flex items-center gap-2 bg-gray-50 p-1 rounded-lg border border-gray-200">
-              <button onclick="cambiarCantidad(${p.id}, -1)" class="w-6 h-6 rounded bg-white font-bold text-gray-600 shadow-sm flex items-center justify-center">-</button>
-              <span id="cant-${p.id}" class="text-xs font-bold w-4 text-center">${cant}</span>
-              <button onclick="cambiarCantidad(${p.id}, 1)" class="w-6 h-6 rounded bg-custom-primary font-bold text-white shadow-sm flex items-center justify-center">+</button>
+            <div class="flex items-center gap-2 bg-[#18181b] p-1 rounded-xl border border-[#27272a]">
+              <button onclick="cambiarCantidad(${p.id}, -1)" class="w-6 h-6 rounded-lg bg-[#27272a] font-bold text-gray-300 shadow-sm flex items-center justify-center">-</button>
+              <span id="cant-${p.id}" class="text-xs font-bold w-4 text-center text-white">${cant}</span>
+              <button onclick="cambiarCantidad(${p.id}, 1)" class="w-6 h-6 rounded-lg bg-custom-primary font-bold text-gray-900 shadow-sm flex items-center justify-center">+</button>
             </div>
           </div>
         `;
@@ -465,7 +497,7 @@
       }
 
       statusElem.textContent = "⌛ Obteniendo tu ubicación...";
-      statusElem.className = "text-[11px] text-gray-500 font-medium";
+      statusElem.className = "text-[11px] text-gray-400 font-medium";
       statusElem.classList.remove('hidden');
 
       navigator.geolocation.getCurrentPosition(
@@ -476,11 +508,11 @@
           ubicacionGPSUrl = `https://maps.google.com/?q=${lat},${lng}`;
           
           statusElem.textContent = "✓ ¡Ubicación GPS capturada correctamente!";
-          statusElem.className = "text-[11px] text-emerald-600 font-bold";
+          statusElem.className = "text-[11px] text-emerald-400 font-bold";
         },
         (error) => {
           statusElem.textContent = "❌ No se pudo obtener la ubicación. Por favor, escríbela abajo.";
-          statusElem.className = "text-[11px] text-red-500 font-medium";
+          statusElem.className = "text-[11px] text-red-400 font-medium";
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
@@ -547,8 +579,24 @@
       mensaje += `💰 *TOTAL:* $${totalFinal}\n\n`;
       mensaje += `¡Muchas gracias!`;
 
-      const numWhatsApp = configNegocio.whatsapp_1 || configNegocio.whatsapp || configNegocio.whatsapp_2;
-      
+      // ROTACIÓN AUTOMÁTICA DE WHATSAPP (1 y 2)
+      const tel1 = configNegocio.whatsapp_1 || configNegocio.whatsapp;
+      const tel2 = configNegocio.whatsapp_2;
+      let numWhatsApp = tel1;
+
+      if (tel1 && tel2) {
+        const ultimoTurno = localStorage.getItem('ultimo_turno_ws') || '2';
+        if (ultimoTurno === '1') {
+          numWhatsApp = tel2;
+          localStorage.setItem('ultimo_turno_ws', '2');
+        } else {
+          numWhatsApp = tel1;
+          localStorage.setItem('ultimo_turno_ws', '1');
+        }
+      } else {
+        numWhatsApp = tel1 || tel2;
+      }
+
       if (!numWhatsApp) {
         alert("No hay un número de WhatsApp configurado en el sistema.");
         return;
