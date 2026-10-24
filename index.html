@@ -151,7 +151,7 @@
         <option value="Retiro" class="bg-dark-card">🛍️ Retiro en el Local</option>
       </select>
 
-            <div id="campo-direccion" class="space-y-3">
+      <div id="campo-direccion" class="space-y-3">
         <input type="text" id="cliente-direccion" placeholder="Dirección completa y altura (Calle, número, depto)" class="w-full p-3.5 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:outline-none focus:border-custom-primary">
         
         <!-- BOTÓN GPS MEJORADO Y LLAMATIVO -->
@@ -178,7 +178,6 @@
           <span>¡Ubicación GPS capturada con éxito! El repartidor ya tiene el mapa.</span>
         </div>
       </div>
-
 
       <h2 class="font-bold text-custom-primary text-xs tracking-widest uppercase pt-2">2. Forma de Pago</h2>
       <select id="forma-pago" onchange="toggleDatosTransferencia()" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-custom-primary">
@@ -239,7 +238,7 @@
     </div>
   </div>
 
-  <!-- VISUALIZADOR DE HISTORIAS / PROMOS -->
+  <!-- VISUALIZADOR DE HISTORIAS / PROMOS (12 HORAS) -->
   <div id="modal-story" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col items-center justify-between p-4 backdrop-blur-md">
     <div class="w-full max-w-sm bg-gray-800 h-1.5 rounded-full overflow-hidden mt-2">
       <div id="story-progress" class="bg-rose-500 h-full w-0 transition-all duration-100 ease-linear"></div>
@@ -279,7 +278,6 @@
 
   <!-- LÓGICA JAVASCRIPT -->
   <script>
-    // ⚠️ REEMPLAZAR AQUÍ LAS CREDENCIALES DEL NUEVO PROYECTO DE SUPABASE
     const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
 
@@ -322,10 +320,11 @@
           .maybeSingle();
 
         if (data && data.imagen_url) {
-          const hace24Horas = new Date(Date.now() - 24 * 60 * 60 * 1000);
+          // Ajustado a 12 horas
+          const hace12Horas = new Date(Date.now() - 12 * 60 * 60 * 1000);
           const fechaPromo = new Date(data.creado_en);
 
-          if (fechaPromo > hace24Horas) {
+          if (fechaPromo > hace12Horas) {
             promoActiva = data;
             const ring = document.getElementById('story-ring-container');
             ring.className = "w-36 h-36 rounded-full flex items-center justify-center story-ring";
@@ -481,14 +480,36 @@
         let htmlProductos = '';
         prodsDeCat.forEach(p => {
           const cant = carrito[p.id] ? carrito[p.id].cantidad : 0;
+          
+          // Lógica de Descuento integrada
+          const tieneDescuento = p.precio_original && p.precio_original > p.precio;
+          let porcentajeDescuento = 0;
+          if (tieneDescuento) {
+            porcentajeDescuento = Math.round(((p.precio_original - p.precio) / p.precio_original) * 100);
+          }
+
           htmlProductos += `
-            <div class="bg-dark-card p-3 rounded-xl border border-dark-border flex items-center justify-between gap-3">
+            <div class="bg-dark-card p-3 rounded-xl border border-dark-border flex items-center justify-between gap-3 relative overflow-hidden group">
+              
+              <!-- BADGE DE DESCUENTO LLAMATIVO -->
+              ${tieneDescuento ? `
+                <div class="absolute top-2 left-2 bg-gradient-to-r from-rose-600 to-amber-500 text-white font-black text-[9px] px-2 py-0.5 rounded-full shadow-lg z-10 animate-pulse border border-black/50">
+                  🔥 -${porcentajeDescuento}% OFF
+                </div>
+              ` : ''}
+
               <img src="${p.imagen_url || 'https://via.placeholder.com/80'}" alt="${p.nombre}" onclick="abrirModal(${p.id})" class="w-16 h-16 rounded-lg object-cover bg-dark-bg cursor-pointer">
+              
               <div class="flex-1 cursor-pointer" onclick="abrirModal(${p.id})">
                 <h4 class="font-bold text-sm text-white">${p.nombre}</h4>
                 <p class="text-xs text-gray-400 line-clamp-1">${p.descripcion || ''}</p>
-                <p class="font-bold text-sm text-custom-primary mt-1">$${p.precio}</p>
+                
+                <div class="flex items-center gap-2 mt-1">
+                  <p class="font-bold text-sm text-custom-primary">$${p.precio}</p>
+                  ${tieneDescuento ? `<p class="text-xs text-gray-500 line-through">$${p.precio_original}</p>` : ''}
+                </div>
               </div>
+
               <div class="flex items-center gap-2 bg-dark-bg p-1 rounded-lg border border-dark-border">
                 <button onclick="cambiarCantidad(${p.id}, -1)" class="w-6 h-6 rounded bg-dark-card text-white font-bold flex items-center justify-center">-</button>
                 <span id="cant-${p.id}" class="text-xs font-bold w-4 text-center text-white">${cant}</span>
@@ -589,10 +610,13 @@
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           ubicacionGPSUrl = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-          statusElem.textContent = "✓ Ubicación GPS capturada";
-          statusElem.className = "text-[11px] text-emerald-400 font-bold";
+          statusElem.textContent = "✓ ¡Ubicación GPS capturada con éxito! El repartidor ya tiene el mapa.";
+          statusElem.className = "p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/50 text-xs text-emerald-400 font-bold flex items-center gap-2";
         },
-        () => { statusElem.textContent = "❌ No se obtuvo ubicación."; statusElem.className = "text-[11px] text-red-400 font-medium"; },
+        () => { 
+          statusElem.textContent = "❌ No se obtuvo ubicación. Verificá los permisos."; 
+          statusElem.className = "p-3 rounded-xl bg-red-950/40 border border-red-800/50 text-xs text-red-400 font-medium"; 
+        },
         { enableHighAccuracy: true, timeout: 10000 }
       );
     }
