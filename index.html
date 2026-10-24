@@ -320,7 +320,6 @@
           .maybeSingle();
 
         if (data && data.imagen_url) {
-          // Ajustado a 12 horas
           const hace12Horas = new Date(Date.now() - 12 * 60 * 60 * 1000);
           const fechaPromo = new Date(data.creado_en);
 
@@ -384,9 +383,13 @@
         const { data } = await _supabaseClient.from('configuracion').select('*').limit(1).maybeSingle();
         if (data) {
           configNegocio = data;
-          if (data.color_primario || data.color) {
-            document.documentElement.style.setProperty('--primary-color', data.color_primario || data.color);
+          
+          // Aplicación dinámica del color de la marca del negocio
+          const colorPersonalizado = data.color_primario || data.color;
+          if (colorPersonalizado) {
+            document.documentElement.style.setProperty('--primary-color', colorPersonalizado);
           }
+
           if (data.nombre) {
             document.getElementById('nombre-negocio').textContent = data.nombre;
             document.title = `Menú Digital - ${data.nombre}`;
