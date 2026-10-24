@@ -28,7 +28,7 @@
           colors: {
             'custom-primary': 'var(--primary-color, #eab308)',
             'dark-bg': 'var(--bg-color, #09090b)',
-            'dark-card': '#141417',
+            'dark-card': 'var(--card-bg-color, #141417)',
             'dark-border': '#27272a',
             'dark-pill': '#1c1c21'
           }
@@ -41,6 +41,7 @@
     :root {
       --primary-color: #eab308;
       --bg-color: #09090b;
+      --card-bg-color: #141417;
     }
     body {
       background-color: var(--bg-color);
@@ -49,6 +50,7 @@
     .bg-custom-primary { background-color: var(--primary-color) !important; }
     .text-custom-primary { color: var(--primary-color) !important; }
     .border-custom-primary { border-color: var(--primary-color) !important; }
+    .bg-dark-card { background-color: var(--card-bg-color) !important; }
     
     /* Animación Anillo de Estado de Historias */
     .story-ring {
@@ -395,6 +397,12 @@
           const colorFondoPersonalizado = data.color_fondo;
           if (colorFondoPersonalizado) {
             document.documentElement.style.setProperty('--bg-color', colorFondoPersonalizado);
+          }
+
+          // Aplicación dinámica del color de las tarjetas / cajas
+          const colorTarjetasPersonalizado = data.color_tarjetas;
+          if (colorTarjetasPersonalizado) {
+            document.documentElement.style.setProperty('--card-bg-color', colorTarjetasPersonalizado);
           }
 
           if (data.nombre) {
