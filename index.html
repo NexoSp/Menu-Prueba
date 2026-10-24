@@ -27,7 +27,7 @@
         extend: {
           colors: {
             'custom-primary': 'var(--primary-color, #eab308)',
-            'dark-bg': '#09090b',
+            'dark-bg': 'var(--bg-color, #09090b)',
             'dark-card': '#141417',
             'dark-border': '#27272a',
             'dark-pill': '#1c1c21'
@@ -40,9 +40,10 @@
   <style>
     :root {
       --primary-color: #eab308;
+      --bg-color: #09090b;
     }
     body {
-      background-color: #09090b;
+      background-color: var(--bg-color);
       color: #f4f4f5;
     }
     .bg-custom-primary { background-color: var(--primary-color) !important; }
@@ -384,10 +385,16 @@
         if (data) {
           configNegocio = data;
           
-          // Aplicación dinámica del color de la marca del negocio
+          // Aplicación dinámica del color de la marca
           const colorPersonalizado = data.color_primario || data.color;
           if (colorPersonalizado) {
             document.documentElement.style.setProperty('--primary-color', colorPersonalizado);
+          }
+
+          // Aplicación dinámica del color de fondo
+          const colorFondoPersonalizado = data.color_fondo;
+          if (colorFondoPersonalizado) {
+            document.documentElement.style.setProperty('--bg-color', colorFondoPersonalizado);
           }
 
           if (data.nombre) {
