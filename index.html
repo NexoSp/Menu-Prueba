@@ -222,7 +222,7 @@
           <span class="font-semibold">Titular:</span> <span id="mp-titular">No especificado</span>
         </p>
         
-        <!-- BOTÓN INTELIGENTE: SI EL COMERCIO TIENE LINK, ABRE EL LINK. SINO, COPIA Y ABRE MP -->
+        <!-- BOTÓN INTELIGENTE: SI EL COMERCIO TIENE LINK, ABRE EL LINK (Y GUARDA PEDIDO). SINO, COPIA ALIAS -->
         <button id="btn-mp-dinamico" type="button" onclick="accionMercadoPago()" class="w-full py-3 bg-[#009ee3] hover:bg-[#0082be] text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md transition-all mt-1">
           <span id="btn-mp-label">📱 Copiar Alias y Abrir Mercado Pago</span>
         </button>
@@ -346,6 +346,15 @@
       await cargarConfiguracion();
       await cargarPromocionActiva();
       await cargarProductos();
+
+      // Detectar si el cliente regresa de Mercado Pago con pago exitoso
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('pago') === 'exitoso') {
+        setTimeout(() => {
+          alert("¡Pago registrado con éxito en Mercado Pago! Enviando detalle por WhatsApp...");
+          enviarPedidoWhatsAppTrasPago();
+        }, 800);
+      }
     });
 
     async function cargarPromocionActiva() {
@@ -660,13 +669,58 @@
     }
 
     function accionMercadoPago() {
-      // Si el comercio tiene un Link de Pago configurado, abre directo esa pasarela
+      // Si el comercio tiene un Link de Pago configurado
       if (configNegocio.link_pago_mp && configNegocio.link_pago_mp.trim() !== '') {
-        window.open(configNegocio.link_pago_mp, '_blank');
+        const nombre = document.getElementById('cliente-nombre').value.trim();
+        const tipoEntrega = document.getElementById('tipo-entrega').value;
+        const direccion = document.getElementById('cliente-direccion').value.trim();
+
+        if (!nombre || (tipoEntrega === 'Delivery' && !direccion) || Object.keys(carrito).length === 0) {
+          alert("Por favor completa tu nombre, dirección y selecciona al menos un producto antes de pagar.");
+          return;
+        }
+
+        // Guardar pedido temporalmente en localStorage antes de ir a MP
+        const datosTemp = {
+          nombre: nombre,
+          tipoEntrega: tipoEntrega,
+          direccion: direccion,
+          gps: ubicacionGPSUrl,
+          carrito: carrito,
+          total: document.getElementById('total-pedido').textContent
+        };
+        localStorage.setItem('nexo_pedido_temp', JSON.stringify(datosTemp));
+
+        // Redirigir a Mercado Pago
+        window.location.href = configNegocio.link_pago_mp;
       } else {
         // De lo contrario, copia el Alias e intenta abrir la app/web
         copiarAliasYAbrirMP();
       }
+    }
+
+    function enviarPedidoWhatsAppTrasPago() {
+      const pedidoTemp = JSON.parse(localStorage.getItem('nexo_pedido_temp'));
+      if (!pedidoTemp) return;
+
+      let mensaje = `*📦 PEDIDO PAGADO CON MERCADO PAGO - ${configNegocio.nombre}*\n-----------------------------------\n👤 *Cliente:* ${pedidoTemp.nombre}\n🚚 *Entrega:* ${pedidoTemp.tipoEntrega}\n`;
+      if (pedidoTemp.tipoEntrega === 'Delivery') {
+        mensaje += `📍 *Dirección:* ${pedidoTemp.direccion}\n`;
+        if (pedidoTemp.gps) mensaje += `🗺️ *GPS:* ${pedidoTemp.gps}\n`;
+      }
+      mensaje += `💳 *Pago:* Mercado Pago (Aprobado Online ✅)\n-----------------------------------\n*DETALLE:*\n`;
+
+      Object.values(pedidoTemp.carrito).forEach(item => {
+        const itemSub = item.producto.precio * item.cantidad;
+        mensaje += `• ${item.cantidad}x ${item.producto.nombre} - $${itemSub}\n`;
+      });
+
+      mensaje += `-----------------------------------\n💰 *TOTAL PAGADO:* ${pedidoTemp.total}\n\n¡Gracias!`;
+
+      localStorage.removeItem('nexo_pedido_temp');
+
+      const num = configNegocio.whatsapp_1 || configNegocio.whatsapp_2;
+      window.open(`https://wa.me/${num}?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
 
     function copiarAliasYAbrirMP() {
