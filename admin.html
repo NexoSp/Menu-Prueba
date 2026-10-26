@@ -137,11 +137,18 @@
             <input type="text" id="cfg-titular" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white">
           </div>
           
-          <!-- NUEVO CAMPO: LINK DE PAGO DE MERCADO PAGO -->
+          <!-- LINK DE PAGO DE MERCADO PAGO (OPCIÓN B) -->
           <div class="sm:col-span-2 bg-dark-pill/50 p-3 rounded-xl border border-dark-border">
-            <label class="block text-xs font-semibold text-amber-400 mb-1">💳 Link de Pago de Mercado Pago (URL Opcional)</label>
+            <label class="block text-xs font-semibold text-amber-400 mb-1">💳 Link de Pago Fijo de Mercado Pago (URL Opcional)</label>
             <input type="text" id="cfg-link-pago" placeholder="Ej: https://link.mercadopago.com.ar/tu_negocio" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white">
-            <p class="text-[11px] text-gray-400 mt-1">* Si cargas este link, el botón de pago abrirá directamente la pasarela online. Si lo dejas vacío, funcionará el copiado automático de alias.</p>
+            <p class="text-[11px] text-gray-400 mt-1">* Si no usas cobro automático por API, puedes poner un enlace genérico aquí.</p>
+          </div>
+
+          <!-- ACCESS TOKEN DE MERCADO PAGO (OPCIÓN C - DINÁMICO) -->
+          <div class="sm:col-span-2 bg-dark-pill/50 p-3 rounded-xl border border-dark-border">
+            <label class="block text-xs font-semibold text-emerald-400 mb-1">⚡ Access Token de Mercado Pago (Para Monto Exacto Automático)</label>
+            <input type="password" id="cfg-mp-token" placeholder="Ej: APP_USR-xxxxxxxxxxxxxxxxxxxx" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white">
+            <p class="text-[11px] text-gray-400 mt-1">* Si completas esta credencial, el sistema generará automáticamente un pago por el monto exacto del carrito del cliente en tiempo real.</p>
           </div>
 
           <div>
@@ -357,6 +364,7 @@
           document.getElementById('cfg-alias').value = data.alias || '';
           document.getElementById('cfg-titular').value = data.titular || '';
           document.getElementById('cfg-link-pago').value = data.link_pago_mp || '';
+          document.getElementById('cfg-mp-token').value = data.mp_access_token || '';
           document.getElementById('cfg-direccion').value = data.direccion || '';
           document.getElementById('cfg-instagram').value = data.instagram || '';
           document.getElementById('cfg-horarios').value = data.horarios || '';
@@ -385,6 +393,7 @@
         alias: document.getElementById('cfg-alias').value.trim(),
         titular: document.getElementById('cfg-titular').value.trim(),
         link_pago_mp: document.getElementById('cfg-link-pago').value.trim(),
+        mp_access_token: document.getElementById('cfg-mp-token').value.trim(),
         direccion: document.getElementById('cfg-direccion').value.trim(),
         instagram: document.getElementById('cfg-instagram').value.trim(),
         horarios: document.getElementById('cfg-horarios').value.trim(),
