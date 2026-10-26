@@ -202,7 +202,7 @@
         <option value="Transferencia" class="bg-dark-card">📱 Transferencia bancaria / Mercado Pago</option>
       </select>
 
-      <!-- NUEVO: SELECTOR DE ESTADO DE PAGO -->
+      <!-- SELECTOR DE ESTADO DE PAGO -->
       <div class="space-y-1">
         <label class="block text-[11px] font-semibold text-gray-400">Estado del pago:</label>
         <select id="estado-pago" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-custom-primary">
@@ -222,9 +222,9 @@
           <span class="font-semibold">Titular:</span> <span id="mp-titular">No especificado</span>
         </p>
         
-        <!-- BOTÓN INTELIGENTE PARA COPIAR ALIAS Y ABRIR APP / WEB DE MERCADO PAGO -->
-        <button type="button" onclick="copiarAliasYAbrirMP()" class="w-full py-3 bg-[#009ee3] hover:bg-[#0082be] text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md transition-all mt-1">
-          <span>📱 Copiar Alias y Abrir Mercado Pago</span>
+        <!-- BOTÓN INTELIGENTE: SI EL COMERCIO TIENE LINK, ABRE EL LINK. SINO, COPIA Y ABRE MP -->
+        <button id="btn-mp-dinamico" type="button" onclick="accionMercadoPago()" class="w-full py-3 bg-[#009ee3] hover:bg-[#0082be] text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md transition-all mt-1">
+          <span id="btn-mp-label">📱 Copiar Alias y Abrir Mercado Pago</span>
         </button>
 
         <!-- AVISO DE COPIADO EXITOSO -->
@@ -334,6 +334,7 @@
       nombre: 'MI NEGOCIO',
       alias: '',
       titular: '',
+      link_pago_mp: '',
       abierto: true,
       costo_delivery: 0,
       direccion: 'Dirección',
@@ -463,6 +464,15 @@
           if (data.alias || data.mp_alias) document.getElementById('mp-alias').textContent = data.alias || data.mp_alias;
           if (data.titular || data.mp_titular) document.getElementById('mp-titular').textContent = data.titular || data.mp_titular;
           document.getElementById('val-delivery').textContent = data.costo_delivery || 0;
+          
+          // Lógica del botón inteligente de MP según link o alias
+          const btnLabel = document.getElementById('btn-mp-label');
+          if (data.link_pago_mp && data.link_pago_mp.trim() !== '') {
+            btnLabel.textContent = "💳 Pagar online con Mercado Pago";
+          } else {
+            btnLabel.textContent = "📱 Copiar Alias y Abrir Mercado Pago";
+          }
+
           toggleDireccion();
         }
       } catch (err) { console.error(err); }
@@ -649,6 +659,16 @@
       else box.classList.add('hidden');
     }
 
+    function accionMercadoPago() {
+      // Si el comercio tiene un Link de Pago configurado, abre directo esa pasarela
+      if (configNegocio.link_pago_mp && configNegocio.link_pago_mp.trim() !== '') {
+        window.open(configNegocio.link_pago_mp, '_blank');
+      } else {
+        // De lo contrario, copia el Alias e intenta abrir la app/web
+        copiarAliasYAbrirMP();
+      }
+    }
+
     function copiarAliasYAbrirMP() {
       const aliasText = document.getElementById('mp-alias').textContent.trim();
       
@@ -657,7 +677,6 @@
         return;
       }
 
-      // Copiar al portapapeles
       navigator.clipboard.writeText(aliasText).then(() => {
         const aviso = document.getElementById('copiar-aviso');
         aviso.classList.remove('hidden');
@@ -666,20 +685,15 @@
           aviso.classList.add('hidden');
         }, 4000);
 
-        // Detectar si está en celular o PC
         const esDispositivoMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
         setTimeout(() => {
           if (esDispositivoMovil) {
-            // Intenta abrir la app de Mercado Pago en celulares
             window.location.href = "mercadopago://";
-            
-            // Si pasan 2 segundos y la app no abrió (porque no la tiene instalada), lo manda a la web o store
             setTimeout(() => {
               window.open('https://www.mercadopago.com.ar', '_blank');
             }, 2000);
           } else {
-            // Si está en computadora, abre la web oficial
             window.open('https://www.mercadopago.com.ar', '_blank');
           }
         }, 500);
@@ -715,7 +729,7 @@
       const tipoEntrega = document.getElementById('tipo-entrega').value;
       const direccion = document.getElementById('cliente-direccion').value.trim();
       const formaPago = document.getElementById('forma-pago').value;
-      const estadoPago = document.getElementById('estado-pago').value; // Captura el estado de pago seleccionado
+      const estadoPago = document.getElementById('estado-pago').value;
 
       if (Object.keys(carrito).length === 0 || !nombre || (tipoEntrega === 'Delivery' && !direccion)) {
         alert("Por favor completa los datos y productos.");
