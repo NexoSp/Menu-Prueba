@@ -136,6 +136,14 @@
             <label class="block text-xs font-semibold text-gray-400 mb-1">Titular de Cuenta</label>
             <input type="text" id="cfg-titular" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white">
           </div>
+          
+          <!-- NUEVO CAMPO: LINK DE PAGO DE MERCADO PAGO -->
+          <div class="sm:col-span-2 bg-dark-pill/50 p-3 rounded-xl border border-dark-border">
+            <label class="block text-xs font-semibold text-amber-400 mb-1">💳 Link de Pago de Mercado Pago (URL Opcional)</label>
+            <input type="text" id="cfg-link-pago" placeholder="Ej: https://link.mercadopago.com.ar/tu_negocio" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white">
+            <p class="text-[11px] text-gray-400 mt-1">* Si cargas este link, el botón de pago abrirá directamente la pasarela online. Si lo dejas vacío, funcionará el copiado automático de alias.</p>
+          </div>
+
           <div>
             <label class="block text-xs font-semibold text-gray-400 mb-1">Dirección del Local</label>
             <input type="text" id="cfg-direccion" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white" placeholder="Ej: Av. San Martín 123">
@@ -348,6 +356,7 @@
           document.getElementById('cfg-ws1').value = data.whatsapp_1 || '';
           document.getElementById('cfg-alias').value = data.alias || '';
           document.getElementById('cfg-titular').value = data.titular || '';
+          document.getElementById('cfg-link-pago').value = data.link_pago_mp || '';
           document.getElementById('cfg-direccion').value = data.direccion || '';
           document.getElementById('cfg-instagram').value = data.instagram || '';
           document.getElementById('cfg-horarios').value = data.horarios || '';
@@ -375,6 +384,7 @@
         whatsapp_1: document.getElementById('cfg-ws1').value.trim(),
         alias: document.getElementById('cfg-alias').value.trim(),
         titular: document.getElementById('cfg-titular').value.trim(),
+        link_pago_mp: document.getElementById('cfg-link-pago').value.trim(),
         direccion: document.getElementById('cfg-direccion').value.trim(),
         instagram: document.getElementById('cfg-instagram').value.trim(),
         horarios: document.getElementById('cfg-horarios').value.trim(),
@@ -469,7 +479,6 @@
       document.getElementById('prod-imagen').value = p.imagen_url || '';
       document.getElementById('btn-cancelar').classList.remove('hidden');
       
-      // Si edita desde la lista, lo pasamos automáticamente a la solapa productos
       cambiarSolapa('productos');
     }
 
