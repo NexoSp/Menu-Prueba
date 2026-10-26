@@ -222,7 +222,7 @@
           <span class="font-semibold">Titular:</span> <span id="mp-titular">No especificado</span>
         </p>
         
-        <!-- BOTÓN INTELIGENTE PARA COPIAR ALIAS Y ABRIR MERCADO PAGO -->
+        <!-- BOTÓN INTELIGENTE PARA COPIAR ALIAS Y ABRIR APP DE MERCADO PAGO -->
         <button type="button" onclick="copiarAliasYAbrirMP()" class="w-full py-3 bg-[#009ee3] hover:bg-[#0082be] text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md transition-all mt-1">
           <span>📱 Copiar Alias y Abrir Mercado Pago</span>
         </button>
@@ -665,11 +665,21 @@
           aviso.classList.add('hidden');
         }, 4000);
 
+        const esDispositivoMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
         setTimeout(() => {
-          window.open('https://www.mercadopago.com.ar', '_blank');
-        }, 600);
+          if (esDispositivoMovil) {
+            window.location.href = "mercadopago://";
+            setTimeout(() => {
+              window.open('https://www.mercadopago.com.ar', '_blank');
+            }, 2000);
+          } else {
+            window.open('https://www.mercadopago.com.ar', '_blank');
+          }
+        }, 500);
+
       }).catch(err => {
-        alert("No se pudo copiar automáticamente. Por favor, anota o selecciona el alias manualmente.");
+        alert("No se pudo copiar automáticamente. Por favor, selecciona el alias manualmente.");
         window.open('https://www.mercadopago.com.ar', '_blank');
       });
     }
