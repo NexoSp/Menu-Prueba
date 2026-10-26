@@ -202,7 +202,7 @@
         <option value="Transferencia" class="bg-dark-card">📱 Transferencia bancaria / Mercado Pago</option>
       </select>
 
-      <!-- NUEVO: SELECTOR DE ESTADO DE PAGO -->
+      <!-- SELECTOR DE ESTADO DE PAGO -->
       <div class="space-y-1">
         <label class="block text-[11px] font-semibold text-gray-400">Estado del pago:</label>
         <select id="estado-pago" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-custom-primary">
@@ -211,7 +211,7 @@
         </select>
       </div>
 
-      <div id="datos-transferencia" class="hidden bg-dark-pill border border-dark-border rounded-xl p-3 space-y-1 mt-2">
+      <div id="datos-transferencia" class="hidden bg-dark-pill border border-dark-border rounded-xl p-3 space-y-2.5 mt-2">
         <p class="text-xs font-bold text-custom-primary flex items-center gap-1">
           <span>💳 Datos para transferir:</span>
         </p>
@@ -221,6 +221,17 @@
         <p class="text-xs text-gray-300">
           <span class="font-semibold">Titular:</span> <span id="mp-titular">No especificado</span>
         </p>
+        
+        <!-- BOTÓN INTELIGENTE PARA COPIAR ALIAS Y ABRIR MERCADO PAGO -->
+        <button type="button" onclick="copiarAliasYAbrirMP()" class="w-full py-3 bg-[#009ee3] hover:bg-[#0082be] text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md transition-all mt-1">
+          <span>📱 Copiar Alias y Abrir Mercado Pago</span>
+        </button>
+
+        <!-- AVISO DE COPIADO EXITOSO -->
+        <p id="copiar-aviso" class="text-[11px] text-emerald-400 font-bold text-center hidden">
+          ✓ ¡Alias copiado! Pégalo en Mercado Pago para transferir.
+        </p>
+
         <p class="text-[11px] text-gray-400 italic pt-1">
           * Realiza la transferencia y envía el comprobante por WhatsApp al realizar el pedido.
         </p>
@@ -638,6 +649,31 @@
       else box.classList.add('hidden');
     }
 
+    function copiarAliasYAbrirMP() {
+      const aliasText = document.getElementById('mp-alias').textContent.trim();
+      
+      if (!aliasText || aliasText === 'No especificado') {
+        alert("El alias no está configurado todavía.");
+        return;
+      }
+
+      navigator.clipboard.writeText(aliasText).then(() => {
+        const aviso = document.getElementById('copiar-aviso');
+        aviso.classList.remove('hidden');
+        
+        setTimeout(() => {
+          aviso.classList.add('hidden');
+        }, 4000);
+
+        setTimeout(() => {
+          window.open('https://www.mercadopago.com.ar', '_blank');
+        }, 600);
+      }).catch(err => {
+        alert("No se pudo copiar automáticamente. Por favor, anota o selecciona el alias manualmente.");
+        window.open('https://www.mercadopago.com.ar', '_blank');
+      });
+    }
+
     function obtenerUbicacionGPS() {
       const statusElem = document.getElementById('gps-status');
       if (!navigator.geolocation) { alert("Geolocalización no soportada."); return; }
@@ -663,7 +699,7 @@
       const tipoEntrega = document.getElementById('tipo-entrega').value;
       const direccion = document.getElementById('cliente-direccion').value.trim();
       const formaPago = document.getElementById('forma-pago').value;
-      const estadoPago = document.getElementById('estado-pago').value; // Captura el estado de pago seleccionado
+      const estadoPago = document.getElementById('estado-pago').value;
 
       if (Object.keys(carrito).length === 0 || !nombre || (tipoEntrega === 'Delivery' && !direccion)) {
         alert("Por favor completa los datos y productos.");
