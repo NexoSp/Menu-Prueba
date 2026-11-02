@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NexoServ - Menú Digital</title>
+  <title>NexoServ - Menú Digital Inteligente</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -13,59 +13,118 @@
     .text-primary { color: var(--primary-color); }
     .bg-primary { background-color: var(--primary-color); }
     .border-primary { border-color: var(--primary-color); }
+    
+    /* Efectos visuales profesionales */
+    .glow-effect {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, rgba(9, 9, 11, 0) 70%);
+      z-index: 0;
+      pointer-events: none;
+    }
   </style>
 </head>
-<body class="font-sans pb-24">
+<body class="font-sans pb-24 relative overflow-x-hidden">
 
-  <!-- ================= VISTA 1: LANDING PAGE / INFORMACIÓN GENERAL (CUANDO NO HAY ?u=UUID) ================= -->
-  <div id="vista-landing" class="hidden min-h-screen flex flex-col justify-between p-6 max-w-md mx-auto space-y-8">
-    <div class="space-y-6 pt-6 text-center">
-      <div class="inline-block p-4 bg-amber-500/10 border border-amber-500/30 rounded-3xl text-4xl mb-2">
-        🍔📱
+  <!-- ================= VISTA 1: LANDING PAGE PROFESIONAL (CUANDO NO HAY ?u=UUID) ================= -->
+  <div id="vista-landing" class="hidden min-h-screen flex flex-col justify-between p-5 max-w-lg mx-auto relative z-10 space-y-8">
+    
+    <!-- Destello decorativo de fondo -->
+    <div class="glow-effect -top-10 -left-20"></div>
+    <div class="glow-effect top-1/2 -right-20"></div>
+
+    <!-- Header / Logo -->
+    <header class="flex items-center justify-between pt-4 border-b border-zinc-800/80 pb-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-black font-black text-xl shadow-lg shadow-amber-500/20">
+          N
+        </div>
+        <span class="font-extrabold text-lg text-white tracking-wide">Nexo<span class="text-amber-400">Serv</span></span>
       </div>
-      <div class="space-y-3">
-        <h1 class="font-extrabold text-3xl text-white tracking-tight">NexoServ <span class="text-amber-400">Menú Digital</span></h1>
-        <p class="text-sm text-zinc-400 leading-relaxed">
-          La plataforma ideal para que locales gastronómicos y comercios tengan su propio catálogo online y reciban pedidos directos por WhatsApp sin intermediarios ni comisiones.
+      <a href="admin.html" class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/60 rounded-xl text-xs font-bold text-white transition-all shadow-sm">
+        Iniciar Sesión 🔐
+      </a>
+    </header>
+
+    <!-- Hero Principal -->
+    <main class="space-y-8 text-center pt-2">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold tracking-wide uppercase animate-pulse">
+        ✨ La nueva era de los menús digitales
+      </div>
+
+      <div class="space-y-4">
+        <h1 class="font-black text-4xl sm:text-5xl text-white tracking-tight leading-tight">
+          Tu propio menú online <span class="bg-gradient-to-r from-amber-400 to-yellow-200 bg-clip-text text-transparent">sin comisiones</span>
+        </h1>
+        <p class="text-sm sm:text-base text-zinc-400 max-w-md mx-auto leading-relaxed">
+          Potencia tu local gastronómico o comercio. Digitaliza tu catálogo, recibe pedidos directos por WhatsApp y administra todo de forma profesional.
         </p>
       </div>
 
-      <!-- Tarjetas informativas de procedimiento -->
-      <div class="space-y-3 text-left pt-2">
-        <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl space-y-1">
-          <p class="font-bold text-sm text-white flex items-center gap-2">🚀 1. 30 Días de Prueba Gratuita</p>
-          <p class="text-xs text-zinc-400">Crea tu cuenta de administración con Google y prueba todas las funciones sin cargo inicial.</p>
+      <!-- Tarjetas de Características Novedosas -->
+      <div class="grid gap-3.5 text-left pt-2">
+        <div class="group relative bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800/80 hover:border-amber-500/40 p-4.5 rounded-2xl transition-all shadow-xl">
+          <div class="flex items-start gap-3.5">
+            <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-lg">
+              🚀
+            </div>
+            <div class="space-y-1">
+              <h3 class="font-bold text-sm text-white flex items-center gap-2">30 Días de Prueba Full Gratis</h3>
+              <p class="text-xs text-zinc-400 leading-relaxed">Acceso inmediato sin tarjeta de crédito. Configura tu cuenta con Google en un solo toque.</p>
+            </div>
+          </div>
         </div>
-        <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl space-y-1">
-          <p class="font-bold text-sm text-white flex items-center gap-2">⚙️ 2. Administra tu Menú</p>
-          <p class="text-xs text-zinc-400">Configura tus platos, categorías, logotipo, colores institucionales y estado de apertura en segundos.</p>
+
+        <div class="group relative bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800/80 hover:border-amber-500/40 p-4.5 rounded-2xl transition-all shadow-xl">
+          <div class="flex items-start gap-3.5">
+            <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-lg">
+              ⚡
+            </div>
+            <div class="space-y-1">
+              <h3 class="font-bold text-sm text-white flex items-center gap-2">Automatización con WhatsApp</h3>
+              <p class="text-xs text-zinc-400 leading-relaxed">Tus clientes arman el carrito y el pedido llega formateado de manera perfecta directo a tu chat.</p>
+            </div>
+          </div>
         </div>
-        <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl space-y-1">
-          <p class="font-bold text-sm text-white flex items-center gap-2">📲 3. Comparte y Recibe Pedidos</p>
-          <p class="text-xs text-zinc-400">Comparte tu enlace personalizado en redes o WhatsApp y tus clientes te enviarán el pedido listo para despachar.</p>
+
+        <div class="group relative bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800/80 hover:border-amber-500/40 p-4.5 rounded-2xl transition-all shadow-xl">
+          <div class="flex items-start gap-3.5">
+            <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-lg">
+              💳
+            </div>
+            <div class="space-y-1">
+              <h3 class="font-bold text-sm text-white flex items-center gap-2">Cobros Integrados & Webhooks</h3>
+              <p class="text-xs text-zinc-400 leading-relaxed">Sincronización automatizada con pasarelas de pago y gestión multi-tenant segura.</p>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
 
-    <!-- Botón de Acceso al Admin -->
-    <div class="space-y-3 text-center pb-6">
-      <a href="admin.html" class="block w-full py-4 bg-gradient-to-r from-amber-500 to-yellow-500 hover:opacity-90 text-black font-extrabold rounded-2xl text-sm shadow-xl transition-all">
-        Acceder al Panel Admin / Registrarse ⚙️
+    <!-- Footer / CTA de Registro -->
+    <footer class="space-y-4 pt-4 text-center">
+      <a href="admin.html" class="block w-full py-4 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:opacity-95 text-black font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl shadow-amber-500/20 transition-all transform active:scale-95">
+        Crear mi Menú Gratis Ahora 🚀
       </a>
-      <p class="text-[11px] text-zinc-500">¿Eres un cliente buscando un menú? Pide el enlace directo al comercio.</p>
-    </div>
+      <div class="flex items-center justify-center gap-2 text-xs text-zinc-500">
+        <span>🔒 Pagos seguros</span>
+        <span>•</span>
+        <span>⚡ Configuración instantánea</span>
+      </div>
+    </footer>
   </div>
 
 
   <!-- ================= VISTA 2: MENÚ DIGITAL PÚBLICO (CUANDO SÍ HAY ?u=UUID) ================= -->
   <div id="vista-menu" class="hidden">
     <!-- HEADER DEL NEGOCIO CON LOGO GRANDE TIPO HISTORIA/ESTADO -->
-    <header id="header-local" class="bg-zinc-900 border-b border-zinc-800 p-4 sticky top-0 z-30 shadow-md">
+    <header id="header-local" class="bg-zinc-900/95 border-b border-zinc-800/80 p-4 sticky top-0 z-30 backdrop-blur-md shadow-lg">
       <div class="max-w-md mx-auto flex items-center justify-between">
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3.5">
           <img id="local-logo" src="https://via.placeholder.com/80" class="w-16 h-16 rounded-full object-cover border-2 border-primary shadow-md">
           <div>
-            <h1 id="local-nombre" class="font-extrabold text-base text-white leading-tight">Cargando menú...</h1>
+            <h1 id="local-nombre" class="font-black text-base text-white leading-tight">Cargando menú...</h1>
             <p id="local-estado" class="text-xs text-zinc-400 mt-0.5">Verificando local...</p>
           </div>
         </div>
@@ -170,7 +229,7 @@
       userIdNegocio = params.get('u');
 
       if (!userIdNegocio) {
-        // Mostrar la Landing Page si no hay parámetro ?u=
+        // Mostrar la Landing Page profesional si no hay parámetro ?u=
         document.getElementById('vista-landing').classList.remove('hidden');
         return;
       }
