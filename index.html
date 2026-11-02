@@ -183,15 +183,20 @@
             <input type="text" id="cliente-nombre" placeholder="Ej: Juan Pérez" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
           </div>
           
-          <!-- CAMPO DE DIRECCIÓN -->
-          <div id="campo-direccion">
-            <label class="block text-xs font-semibold text-zinc-400 mb-1">Dirección de Entrega</label>
+          <!-- CAMPO DE DIRECCIÓN CON BOTÓN GPS -->
+          <div id="campo-direccion" class="space-y-2">
+            <div class="flex justify-between items-center">
+              <label class="block text-xs font-semibold text-zinc-400">Dirección de Entrega</label>
+              <button type="button" onclick="obtenerUbicacionGPS()" class="px-3 py-1 bg-amber-500/10 border border-amber-500/40 text-amber-400 hover:bg-amber-500/20 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
+                📍 Usar mi ubicación GPS
+              </button>
+            </div>
             <input type="text" id="cliente-direccion" placeholder="Ej: Av. San Martín 456" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
           </div>
 
-          <!-- CAMPO NUEVO: REFERENCIA / UBICACIÓN PARA EL DELIVERY -->
+          <!-- CAMPO REFERENCIA / MAPS -->
           <div id="campo-referencia">
-            <label class="block text-xs font-semibold text-amber-400 mb-1">📍 Referencia o Ubicación Maps (Opcional)</label>
+            <label class="block text-xs font-semibold text-amber-400 mb-1">📍 Referencia o Coordenadas Maps (Opcional)</label>
             <input type="text" id="cliente-referencia" placeholder="Ej: Casa reja negra / Link de Google Maps" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
           </div>
 
@@ -212,7 +217,7 @@
     </div>
   </div>
 
-  <!-- LÓGICA DE CARGA DINÁMICA -->
+  <!-- LÓGICA DE CARGA DINÁMICA CON BOTONES + / - Y GPS -->
   <script>
     const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
@@ -391,6 +396,9 @@
 
       filtrados.forEach(p => {
         const tieneDescuento = p.precio_original && p.precio_original > p.precio;
+        const itemEnCarrito = carrito.find(item => item.id === p.id);
+        const cantidad = itemEnCarrito ? itemEnCarrito.cantidad : 0;
+
         container.innerHTML += `
           <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 flex gap-3 items-center shadow-sm">
             <img src="${p.imagen_url || 'https://via.placeholder.com/100'}" class="w-20 h-20 rounded-xl object-cover bg-zinc-950">
@@ -402,25 +410,36 @@
                 ${tieneDescuento ? `<span class="text-xs line-through text-zinc-500">$${p.precio_original}</span>` : ''}
               </div>
             </div>
-            <button onclick="agregarAlCarrito(${p.id})" class="p-3 bg-zinc-950 border border-zinc-800 hover:border-primary text-white rounded-xl text-sm transition-all shadow">
-              ➕
-            </button>
+            
+            <!-- CONTROLES DINÁMICOS DE CANTIDAD (+ / -) -->
+            <div class="flex items-center gap-1.5 shrink-0">
+              ${cantidad > 0 ? `
+                <button onclick="cambiarCantidad(${p.id}, -1)" class="w-8 h-8 bg-zinc-950 border border-zinc-800 hover:border-red-500 text-white font-bold rounded-lg text-xs flex items-center justify-center transition-all">➖</button>
+                <span class="w-6 text-center text-xs font-extrabold text-white">${cantidad}</span>
+              ` : ''}
+              <button onclick="cambiarCantidad(${p.id}, 1)" class="w-8 h-8 bg-zinc-950 border border-zinc-800 hover:border-primary text-white font-bold rounded-lg text-xs flex items-center justify-center transition-all shadow">➕</button>
+            </div>
           </div>
         `;
       });
     }
 
-    function agregarAlCarrito(idProducto) {
+    function cambiarCantidad(idProducto, delta) {
       const producto = productosNegocio.find(item => item.id === idProducto);
       if (!producto) return;
 
       const existente = carrito.find(item => item.id === idProducto);
       if (existente) {
-        existente.cantidad += 1;
-      } else {
+        existente.cantidad += delta;
+        if (existente.cantidad <= 0) {
+          carrito = carrito.filter(item => item.id !== idProducto);
+        }
+      } else if (delta > 0) {
         carrito.push({ ...producto, cantidad: 1 });
       }
+
       actualizarBarraCarrito();
+      renderizarProductos();
     }
 
     function actualizarBarraCarrito() {
@@ -431,6 +450,7 @@
         document.getElementById('carrito-total').textContent = `$${totalPrecio.toLocaleString()}`;
       } else {
         barra.classList.add('hidden');
+        cerrarModalCheckout();
       }
     }
 
@@ -440,9 +460,16 @@
 
       carrito.forEach(item => {
         container.innerHTML += `
-          <div class="flex justify-between items-center py-1 border-b border-zinc-800/50">
-            <span>${item.cantidad}x ${item.nombre}</span>
-            <span class="font-bold">$${item.precio * item.cantidad}</span>
+          <div class="flex justify-between items-center py-2 border-b border-zinc-800/50 gap-2">
+            <span class="text-white">${item.nombre}</span>
+            <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1">
+                <button onclick="cambiarCantidadCheckout(${item.id}, -1)" class="w-6 h-6 bg-zinc-950 border border-zinc-800 text-white rounded text-[10px] font-bold">➖</button>
+                <span class="w-5 text-center font-bold text-xs">${item.cantidad}</span>
+                <button onclick="cambiarCantidadCheckout(${item.id}, 1)" class="w-6 h-6 bg-zinc-950 border border-zinc-800 text-white rounded text-[10px] font-bold">➕</button>
+              </div>
+              <span class="font-bold text-primary min-w-[50px] text-right">$${item.precio * item.cantidad}</span>
+            </div>
           </div>
         `;
       });
@@ -450,8 +477,52 @@
       document.getElementById('modal-checkout').classList.remove('hidden');
     }
 
+    function cambiarCantidadCheckout(idProducto, delta) {
+      cambiarCantidad(idProducto, delta);
+      if (carrito.length > 0) {
+        abrirModalCheckout();
+      } else {
+        cerrarModalCheckout();
+      }
+    }
+
     function cerrarModalCheckout() {
       document.getElementById('modal-checkout').classList.add('hidden');
+    }
+
+    function obtenerUbicacionGPS() {
+      if (!navigator.geolocation) {
+        alert("Tu navegador no soporta geolocalización.");
+        return;
+      }
+
+      const btnGps = event.target;
+      const textoOriginal = btnGps.textContent;
+      btnGps.textContent = "📍 Buscando GPS...";
+      btnGps.disabled = true;
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const linkMaps = `https://maps.google.com/?q=${lat},${lng}`;
+          
+          document.getElementById('cliente-direccion').value = `Ubicación GPS Actual`;
+          document.getElementById('cliente-referencia').value = linkMaps;
+          
+          btnGps.textContent = "✅ ¡Ubicación Obtenida!";
+          setTimeout(() => {
+            btnGps.textContent = textoOriginal;
+            btnGps.disabled = false;
+          }, 3000);
+        },
+        (error) => {
+          alert("No se pudo obtener la ubicación. Asegúrate de dar permisos de GPS.");
+          btnGps.textContent = textoOriginal;
+          btnGps.disabled = false;
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
     }
 
     function enviarPedidoWhatsApp() {
