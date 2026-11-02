@@ -73,12 +73,24 @@
       <div class="flex items-center gap-2">
         <span id="user-display-email" class="text-xs text-gray-400 hidden sm:inline"></span>
         <button onclick="cerrarSesion()" class="text-xs bg-dark-bg text-red-400 px-3 py-2 rounded-xl border border-dark-border">Cerrar Sesión</button>
-        <a href="index.html" class="text-xs bg-dark-bg text-gray-300 px-3 py-2 rounded-xl border border-dark-border">Ver Menú ↗</a>
+        <a id="link-ver-menu" href="index.html" target="_blank" class="text-xs bg-dark-bg text-gray-300 px-3 py-2 rounded-xl border border-dark-border">Ver Menú ↗</a>
       </div>
     </div>
   </header>
 
   <main class="max-w-2xl mx-auto p-4 space-y-6">
+
+    <!-- TARJETA PARA COPIAR Y COMPARTIR ENLACE DEL COMERCIO -->
+    <section class="bg-dark-card p-4 rounded-2xl shadow-sm border border-gold/40 space-y-3">
+      <h2 class="font-bold text-xs text-gold uppercase tracking-wider flex items-center gap-2">🔗 Enlace de tu Menú Digital</h2>
+      <div class="flex gap-2">
+        <input type="text" id="input-enlace-tienda" readonly class="w-full p-2.5 bg-dark-bg border border-dark-border rounded-xl text-xs text-gray-300 select-all">
+        <button onclick="copiarEnlaceTienda()" class="px-4 py-2 bg-gold hover:opacity-90 text-black font-extrabold rounded-xl text-xs transition-all shrink-0">
+          📋 Copiar
+        </button>
+      </div>
+      <p class="text-[11px] text-gray-400">Comparte este enlace con tus clientes para que accedan directamente a tu menú.</p>
+    </section>
 
     <!-- BOTONES DE NAVEGACIÓN DE SOLAPAS -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-dark-card p-1.5 rounded-2xl border border-dark-border">
@@ -253,7 +265,7 @@
 
   </main>
 
-  <!-- LÓGICA CON 30 DÍAS DE PRUEBA AUTOMÁTICOS -->
+  <!-- LÓGICA CON 30 DÍAS DE PRUEBA Y GENERACIÓN DE ENLACE -->
   <script>
     const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
@@ -279,9 +291,23 @@
       document.getElementById('user-display-email').textContent = usuarioActual.email;
       document.getElementById('lbl-user-email').textContent = usuarioActual.email;
 
+      // Generar automáticamente el enlace para compartir con el ID del usuario
+      const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+      const enlaceTienda = `${baseUrl}index.html?u=${usuarioActual.id}`;
+      document.getElementById('input-enlace-tienda').value = enlaceTienda;
+      document.getElementById('link-ver-menu').href = `index.html?u=${usuarioActual.id}`;
+
       // 2. Verificar estado de suscripción y 30 días de prueba
       await verificarSuscripcionOPrueba();
     });
+
+    function copiarEnlaceTienda() {
+      const input = document.getElementById('input-enlace-tienda');
+      input.select();
+      input.setSelectionRange(0, 99999); // Para móviles
+      navigator.clipboard.writeText(input.value);
+      alert("¡Enlace copiado al portapapeles!");
+    }
 
     async function loginConGoogle() {
       const { error } = await _supabaseClient.auth.signInWithOAuth({
@@ -315,24 +341,20 @@
 
           await _supabaseClient.from('profiles').insert([nuevoPerfil]);
           
-          // Como acaba de iniciar su prueba, lo dejamos pasar al panel
           await cargarConfiguracionAdmin();
           await cargarEstadoPromoAdmin();
           await cargarProductosAdmin();
           return;
         }
 
-        // Si ya tiene pago activo o sus 30 días de prueba aún no vencen
         const vencePrueba = perfil.trial_ends_at ? new Date(perfil.trial_ends_at) : null;
         const tienePruebaVigente = vencePrueba && vencePrueba > ahora;
 
         if (perfil.is_active || tienePruebaVigente) {
-          // Acceso permitido
           await cargarConfiguracionAdmin();
           await cargarEstadoPromoAdmin();
           await cargarProductosAdmin();
         } else {
-          // Se venció la prueba y no pagó -> Mostrar modal de pago
           document.getElementById('modal-pago').classList.remove('hidden');
         }
 
@@ -520,6 +542,10 @@
       document.getElementById('prod-imagen').value = p.imagen_url || '';
       document.getElementById('btn-cancelar').classList.remove('hidden');
       cambiarSolapa('productos');
+    }
+
+    function limpiarFormularioProfileProducto() {
+      // limpiar
     }
 
     function limpiarFormularioProducto() {
