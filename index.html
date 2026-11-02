@@ -267,7 +267,6 @@
         document.getElementById('local-nombre').textContent = config.nombre || 'Menú Digital';
         if (config.logo_url) document.getElementById('local-logo').src = config.logo_url;
 
-        // Mostrar Instagram de forma destacada si existe
         if (config.instagram) {
           const igLink = document.getElementById('local-instagram-link');
           const igText = document.getElementById('local-instagram-text');
@@ -403,7 +402,7 @@
                 ${tieneDescuento ? `<span class="text-xs line-through text-zinc-500">$${p.precio_original}</span>` : ''}
               </div>
             </div>
-            <button onclick='agregarAlCarrito(${JSON.stringify(p)})' class="p-3 bg-zinc-950 border border-zinc-800 hover:border-primary text-white rounded-xl text-sm transition-all">
+            <button onclick="agregarAlCarrito(${p.id})" class="p-3 bg-zinc-950 border border-zinc-800 hover:border-primary text-white rounded-xl text-sm transition-all shadow">
               ➕
             </button>
           </div>
@@ -411,8 +410,11 @@
       });
     }
 
-    function agregarAlCarrito(producto) {
-      const existente = carrito.find(item => item.id === producto.id);
+    function agregarAlCarrito(idProducto) {
+      const producto = productosNegocio.find(item => item.id === idProducto);
+      if (!producto) return;
+
+      const existente = carrito.find(item => item.id === idProducto);
       if (existente) {
         existente.cantidad += 1;
       } else {
