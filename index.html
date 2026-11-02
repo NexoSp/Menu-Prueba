@@ -150,28 +150,61 @@
           return;
         }
 
+        // 2. Consultar el estado de la suscripción/prueba del dueño en la tabla 'profiles'
+        const { data: perfil } = await _supabaseClient
+          .from('profiles')
+          .select('is_active, trial_ends_at')
+          .eq('id', userIdNegocio)
+          .maybeSingle();
+
+        // Comprobar si la suscripción o prueba está vencida
+        const ahora = new Date();
+        const vencePrueba = perfil && perfil.trial_ends_at ? new Date(perfil.trial_ends_at) : null;
+        const tienePruebaVigente = vencePrueba && vencePrueba > ahora;
+        const estaActivo = perfil && perfil.is_active === true;
+
+        // Si NO está activo y la prueba ya venció, forzamos el cierre del local por falta de pago
+        const suscripcionVencida = !estaActivo && !tienePruebaVigente;
+
         datosConfig = config;
         document.getElementById('local-nombre').textContent = config.nombre || 'Menú Digital';
-        document.getElementById('local-estado').textContent = config.direccion || '';
         if (config.logo_url) document.getElementById('local-logo').src = config.logo_url;
 
-        // Estado Abierto / Cerrado
         const badge = document.getElementById('local-badge-abierto');
+        const estadoTexto = document.getElementById('local-estado');
+
+        if (suscripcionVencida) {
+          // 🔴 Local cerrado por suscripción vencida
+          estadoTexto.textContent = "Local temporalmente no disponible";
+          badge.innerHTML = '<span class="px-3 py-1 bg-rose-950 text-rose-400 border border-rose-800/50 rounded-full text-[10px] font-bold">🔴 Local Cerrado (Suscripción Vencida)</span>';
+          
+          document.getElementById('productos-container').innerHTML = `
+            <div class="bg-zinc-900 border border-rose-500/30 rounded-2xl p-6 text-center space-y-3 shadow-lg">
+              <p class="text-3xl">⏳</p>
+              <h3 class="font-bold text-base text-rose-400">Menú Temporalmente Pausado</h3>
+              <p class="text-xs text-zinc-400">Este comercio se encuentra actualizando su plataforma o cuenta pendiente de renovación.</p>
+            </div>
+          `;
+          return; // Detiene la carga del menú
+        }
+
+        // Si la suscripción está al día, el flujo continúa normal
         if (config.abierto) {
+          estadoTexto.textContent = config.direccion || '';
           badge.innerHTML = '<span class="px-3 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800/50 rounded-full text-[10px] font-bold">🟢 Abierto</span>';
         } else {
+          estadoTexto.textContent = config.direccion || '';
           badge.innerHTML = '<span class="px-3 py-1 bg-rose-950 text-rose-400 border border-rose-800/50 rounded-full text-[10px] font-bold">🔴 Cerrado</span>';
         }
 
-        // Aplicar color personalizado si existe
         if (config.color_primario) {
           document.documentElement.style.setProperty('--primary-color', config.color_primario);
         }
 
-        // 2. Cargar Promoción activa (si tiene menos de 12 horas)
+        // 3. Cargar Promoción activa (si tiene menos de 12 horas)
         await cargarPromoActiva();
 
-        // 3. Cargar Productos del Negocio
+        // 4. Cargar Productos del Negocio
         await cargarProductosComercio();
 
       } catch (e) {
@@ -285,7 +318,7 @@
     }
 
     function actualizarBarraCarrito() {
-      const totalItems = carrito.reduce((sum, i) => sum + i.cantidad, totalItems = 0);
+      const totalItems = carrito.reduce((sum, i) => sum + i.cantidad, 0);
       const totalPrecio = carrito.reduce((sum, i) => sum + (i.precio * i.cantidad), 0);
 
       const barra = document.getElementById('carrito-flotante');
