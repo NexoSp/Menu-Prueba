@@ -46,23 +46,22 @@
     </div>
   </div>
 
-  <!-- MODAL DE PAGO / SUSCRIPCIÓN VENCIDA (MERCADO PAGO) -->
+  <!-- MODAL DE PAGO / PRUEBA VENCIDA (MERCADO PAGO) -->
   <div id="modal-pago" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-md hidden">
     <div class="bg-dark-card border border-amber-500/40 w-full max-w-md rounded-2xl p-6 shadow-2xl text-center space-y-4">
-      <div class="text-4xl">💳</div>
-      <h2 class="font-bold text-xl text-amber-400">Suscripción Requerida</h2>
+      <div class="text-4xl">⏳</div>
+      <h2 class="font-bold text-xl text-amber-400">Tu periodo de prueba ha finalizado</h2>
       <p class="text-xs text-gray-300 leading-relaxed">
-        Para mantener tu menú digital activo y acceder al panel de control, debes abonar el arancel mensual de uso de la plataforma.
+        Tus 30 días de prueba gratuita han concluido. Para continuar editando tu menú y mantenerlo online, abona el arancel mensual de uso.
       </p>
       <div class="p-3 bg-dark-bg border border-dark-border rounded-xl text-left text-xs space-y-1">
         <p class="text-gray-400">👤 Cuenta: <span id="lbl-user-email" class="text-white font-semibold"></span></p>
-        <p class="text-emerald-400 font-bold">Estado: 🔴 Sin suscripción activa</p>
+        <p class="text-rose-400 font-bold">Estado: 🔴 Prueba Vencida / Sin Activar</p>
       </div>
-      <!-- Enlace o botón hacia tu link de pago de Mercado Pago -->
       <a id="btn-pagar-mp" href="https://link.mercadopago.com.ar/TULINKDEMERCADOPAGO" target="_blank" class="block w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:opacity-90 text-black font-extrabold rounded-xl text-sm shadow-lg transition-all">
         Pagar Arancel con Mercado Pago 🚀
       </a>
-      <p class="text-[11px] text-gray-500">Una vez realizado el pago, avísanos o recarga la página para verificar la activación.</p>
+      <p class="text-[11px] text-gray-500">Una vez abonado, tu cuenta se reactivará automáticamente o podrás recargar la página.</p>
       <button onclick="cerrarSesion()" class="text-xs text-red-400 underline">Cerrar sesión con otra cuenta</button>
     </div>
   </div>
@@ -97,7 +96,7 @@
       </button>
     </div>
 
-    <!-- ================= SOLAPAS (Contenido igual al tuyo) ================= -->
+    <!-- SOLAPAS DE CONTENIDO -->
     <div id="solapa-config" class="space-y-6">
       <section class="bg-dark-card p-5 rounded-2xl shadow-sm border border-amber-500/30 space-y-4">
         <h2 class="font-bold text-base text-amber-400 border-b border-dark-border pb-2">🔥 Subir Estado / Promo del Día (Dura 12 Horas)</h2>
@@ -254,7 +253,7 @@
 
   </main>
 
-  <!-- LÓGICA DE AUTENTICACIÓN GOOGLE, SUSCRIPCIÓN Y SUPABASE -->
+  <!-- LÓGICA CON 30 DÍAS DE PRUEBA AUTOMÁTICOS -->
   <script>
     const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
@@ -280,8 +279,8 @@
       document.getElementById('user-display-email').textContent = usuarioActual.email;
       document.getElementById('lbl-user-email').textContent = usuarioActual.email;
 
-      // 2. Verificar si el usuario tiene la suscripción activa en la base de datos
-      await verificarSuscripcionUsuario();
+      // 2. Verificar estado de suscripción y 30 días de prueba
+      await verificarSuscripcionOPrueba();
     });
 
     async function loginConGoogle() {
@@ -292,35 +291,53 @@
       if (error) alert("Error al iniciar sesión con Google: " + error.message);
     }
 
-    async function verificarSuscripcionUsuario() {
+    async function verificarSuscripcionOPrueba() {
       try {
-        // Consultar la tabla 'profiles' o 'suscripciones' vinculada al ID del usuario
         let { data: perfil, error } = await _supabaseClient
           .from('profiles')
-          .select('is_active')
+          .select('is_active, trial_ends_at')
           .eq('id', usuarioActual.id)
           .maybeSingle();
 
-        // Si el usuario recién entra por primera vez, creamos su registro inactivo
+        const ahora = new Date();
+
+        // Si el usuario es nuevo y entra por primera vez, le damos 30 días de prueba gratis automáticos
         if (!perfil) {
-          await _supabaseClient.from('profiles').insert([{ id: usuarioActual.id, email: usuarioActual.email, is_active: false }]);
-          document.getElementById('modal-pago').classList.remove('hidden');
+          const fechaPrueba30Dias = new Date();
+          fechaPrueba30Dias.setDate(ahora.getDate() + 30); // Sumar 30 días
+
+          const nuevoPerfil = {
+            id: usuarioActual.id,
+            email: usuarioActual.email,
+            is_active: false,
+            trial_ends_at: fechaPrueba30Dias.toISOString()
+          };
+
+          await _supabaseClient.from('profiles').insert([nuevoPerfil]);
+          
+          // Como acaba de iniciar su prueba, lo dejamos pasar al panel
+          await cargarConfiguracionAdmin();
+          await cargarEstadoPromoAdmin();
+          await cargarProductosAdmin();
           return;
         }
 
-        // Si no está activo, mostramos el modal para que pague
-        if (!perfil.is_active) {
-          document.getElementById('modal-pago').classList.remove('hidden');
-          return;
-        }
+        // Si ya tiene pago activo o sus 30 días de prueba aún no vencen
+        const vencePrueba = perfil.trial_ends_at ? new Date(perfil.trial_ends_at) : null;
+        const tienePruebaVigente = vencePrueba && vencePrueba > ahora;
 
-        // Si está activo, cargamos todo el panel normalmente
-        await cargarConfiguracionAdmin();
-        await cargarEstadoPromoAdmin();
-        await cargarProductosAdmin();
+        if (perfil.is_active || tienePruebaVigente) {
+          // Acceso permitido
+          await cargarConfiguracionAdmin();
+          await cargarEstadoPromoAdmin();
+          await cargarProductosAdmin();
+        } else {
+          // Se venció la prueba y no pagó -> Mostrar modal de pago
+          document.getElementById('modal-pago').classList.remove('hidden');
+        }
 
       } catch (e) {
-        console.error("Error verificando suscripción:", e);
+        console.error("Error verificando suscripción/prueba:", e);
       }
     }
 
