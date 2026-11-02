@@ -157,7 +157,7 @@
           .eq('id', userIdNegocio)
           .maybeSingle();
 
-        // Comprobar si la suscripción o prueba está vencida
+        // Comprobar si la suscripción o prueba está vigente
         const ahora = new Date();
         const vencePrueba = perfil && perfil.trial_ends_at ? new Date(perfil.trial_ends_at) : null;
         const tienePruebaVigente = vencePrueba && vencePrueba > ahora;
@@ -188,7 +188,7 @@
           return; // Detiene la carga del menú
         }
 
-        // Si la suscripción está al día, el flujo continúa normal
+        // Si la suscripción está al día o la prueba sigue vigente, el flujo continúa normal
         if (config.abierto) {
           estadoTexto.textContent = config.direccion || '';
           badge.innerHTML = '<span class="px-3 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800/50 rounded-full text-[10px] font-bold">🟢 Abierto</span>';
