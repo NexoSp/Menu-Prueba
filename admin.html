@@ -315,7 +315,7 @@
 
   </main>
 
-  <!-- LÓGICA CON NOMBRE DE COMERCIO DINÁMICO EN WHATSAPP Y SELECTOR DE CATEGORÍAS -->
+  <!-- LÓGICA CON VALIDACIÓN Y CÁLCULO DE DÍAS DE PRUEBA CORREGIDO -->
   <script>
     const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
@@ -360,9 +360,7 @@
       const urlPublica = document.getElementById('input-enlace-tienda').value;
       if (!urlPublica) return;
       
-      // Obtener el nombre del local ingresado en el input (si está vacío, usa un genérico)
       const nombreLocal = document.getElementById('cfg-nombre').value.trim() || 'nuestro local';
-      
       const texto = `¡Hola! 👋 Te compartimos el menú digital de *${nombreLocal}* para hacer pedidos online de forma rápida y directa:\n\n${urlPublica}`;
       const urlWa = `https://wa.me/?text=${encodeURIComponent(texto)}`;
       window.open(urlWa, '_blank');
@@ -391,7 +389,7 @@
 
     async function verificarSuscripcionOPrueba() {
       try {
-        let { data: perfil } = await _supabaseClient
+        let { data: perfil, error } = await _supabaseClient
           .from('profiles')
           .select('is_active, trial_ends_at')
           .eq('id', usuarioActual.id)
@@ -399,6 +397,7 @@
 
         const ahora = new Date();
 
+        // Si el usuario no tiene perfil creado, se le generan 30 días de prueba automáticos
         if (!perfil) {
           const fechaPrueba30Dias = new Date();
           fechaPrueba30Dias.setDate(ahora.getDate() + 30);
@@ -411,18 +410,15 @@
           };
 
           await _supabaseClient.from('profiles').insert([nuevoPerfil]);
-          mostrarDiasPrueba(fechaPrueba30Dias, ahora);
-          await cargarConfiguracionAdmin();
-          await cargarEstadoPromoAdmin();
-          await cargarProductosAdmin();
-          return;
+          perfil = nuevoPerfil;
         }
 
         const vencePrueba = perfil.trial_ends_at ? new Date(perfil.trial_ends_at) : null;
         const tienePruebaVigente = vencePrueba && vencePrueba > ahora;
+        const estaActivo = perfil.is_active === true;
 
-        if (perfil.is_active || tienePruebaVigente) {
-          if (tienePruebaVigente && !perfil.is_active) {
+        if (estaActivo || tienePruebaVigente) {
+          if (tienePruebaVigente) {
             mostrarDiasPrueba(vencePrueba, ahora);
           }
           await cargarConfiguracionAdmin();
@@ -563,7 +559,6 @@
       else alert("¡Configuración guardada!");
     }
 
-    // ACTUALIZAR SELECTOR DE CATEGORÍAS SEGÚN LOS PRODUCTOS CARGADOS
     function actualizarSelectorCategorias(categoriaSeleccionada = '') {
       const select = document.getElementById('prod-categoria-select');
       const inputNueva = document.getElementById('prod-categoria-nueva');
