@@ -100,24 +100,44 @@
 
   <!-- ================= VISTA 2: MENÚ DIGITAL PÚBLICO ================= -->
   <div id="vista-menu" class="hidden">
-    <header id="header-local" class="bg-zinc-900/95 border-b border-zinc-800/80 p-4 sticky top-0 z-30 backdrop-blur-md shadow-lg">
-      <div class="max-w-md mx-auto flex items-center justify-between">
-        <div class="flex items-center gap-3.5">
-          <img id="local-logo" src="https://via.placeholder.com/80" class="w-16 h-16 rounded-full object-cover border-2 border-primary shadow-md">
-          <div>
-            <h1 id="local-nombre" class="font-black text-base text-white leading-tight">Cargando menú...</h1>
-            <p id="local-estado" class="text-xs text-zinc-400 mt-0.5">Verificando local...</p>
-          </div>
+    <!-- HEADER IMPONENTE Y CENTRADO -->
+    <header class="bg-gradient-to-b from-zinc-900 via-zinc-900/95 to-zinc-950 border-b border-zinc-800/80 pt-6 pb-5 px-4 sticky top-0 z-30 backdrop-blur-md shadow-xl">
+      <div class="max-w-md mx-auto text-center space-y-3">
+        
+        <!-- Logo Grande y Centrado con Efecto Glow -->
+        <div class="relative inline-block">
+          <div class="absolute -inset-1 bg-gradient-to-r from-amber-500 to-yellow-300 rounded-full blur opacity-40"></div>
+          <img id="local-logo" src="https://via.placeholder.com/100" class="relative w-24 h-24 rounded-full object-cover border-4 border-zinc-900 shadow-2xl mx-auto">
         </div>
-        <div id="local-badge-abierto"></div>
+
+        <!-- Nombre del Comercio -->
+        <div class="space-y-1">
+          <h1 id="local-nombre" class="font-black text-2xl text-white tracking-tight leading-snug">Cargando menú...</h1>
+          <p id="local-estado" class="text-xs text-zinc-400 font-medium"></p>
+        </div>
+
+        <!-- Estado de Apertura e Instagram Destacados -->
+        <div class="flex items-center justify-center gap-2 pt-1 flex-wrap">
+          <div id="local-badge-abierto"></div>
+          <a id="local-instagram-link" href="#" target="_blank" class="hidden items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-purple-900/40 to-pink-900/40 border border-pink-500/40 text-pink-400 rounded-full text-xs font-bold hover:bg-pink-500/20 transition-all">
+            📸 <span id="local-instagram-text">Instagram</span>
+          </a>
+        </div>
+
       </div>
     </header>
 
     <main class="max-w-md mx-auto p-4 space-y-6">
-      <div id="promo-container" class="hidden bg-zinc-900 border border-amber-500/30 rounded-2xl p-4 space-y-2 shadow-lg">
-        <div class="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">🔥 Destacado del Día</div>
-        <img id="promo-img" src="" class="w-full h-40 object-cover rounded-xl hidden">
-        <p id="promo-txt" class="text-xs text-zinc-300"></p>
+      <!-- Banner de Promociones / Ofertas Imponente -->
+      <div id="promo-container" class="hidden bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border-2 border-amber-500/50 rounded-3xl p-5 space-y-3 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-10 -top-10 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="flex items-center justify-between">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/20 border border-amber-500/40 rounded-full text-amber-400 font-extrabold text-xs tracking-wider uppercase animate-pulse">
+            🔥 Oferta / Destacado del Día
+          </div>
+        </div>
+        <img id="promo-img" src="" class="w-full h-48 object-cover rounded-2xl hidden shadow-md border border-zinc-800">
+        <p id="promo-txt" class="text-sm text-zinc-200 font-medium leading-relaxed"></p>
       </div>
 
       <div id="categorias-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
@@ -247,6 +267,18 @@
         document.getElementById('local-nombre').textContent = config.nombre || 'Menú Digital';
         if (config.logo_url) document.getElementById('local-logo').src = config.logo_url;
 
+        // Mostrar Instagram de forma destacada si existe
+        if (config.instagram) {
+          const igLink = document.getElementById('local-instagram-link');
+          const igText = document.getElementById('local-instagram-text');
+          let handle = config.instagram.trim();
+          if (!handle.startsWith('@')) handle = '@' + handle;
+          igText.textContent = handle;
+          igLink.href = `https://instagram.com/${handle.replace('@', '')}`;
+          igLink.classList.remove('hidden');
+          igLink.classList.add('inline-flex');
+        }
+
         const badge = document.getElementById('local-badge-abierto');
         const estadoTexto = document.getElementById('local-estado');
 
@@ -266,10 +298,10 @@
 
         if (config.abierto) {
           estadoTexto.textContent = config.direccion || '';
-          badge.innerHTML = '<span class="px-3 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800/50 rounded-full text-[10px] font-bold">🟢 Abierto</span>';
+          badge.innerHTML = '<span class="px-3 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800/50 rounded-full text-[11px] font-bold shadow-sm">🟢 Abierto</span>';
         } else {
           estadoTexto.textContent = config.direccion || '';
-          badge.innerHTML = '<span class="px-3 py-1 bg-rose-950 text-rose-400 border border-rose-800/50 rounded-full text-[10px] font-bold">🔴 Cerrado</span>';
+          badge.innerHTML = '<span class="px-3 py-1 bg-rose-950 text-rose-400 border border-rose-800/50 rounded-full text-[11px] font-bold shadow-sm">🔴 Cerrado</span>';
         }
 
         if (config.color_primario) {
