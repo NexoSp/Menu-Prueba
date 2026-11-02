@@ -14,7 +14,6 @@
     .bg-primary { background-color: var(--primary-color); }
     .border-primary { border-color: var(--primary-color); }
     
-    /* Efectos visuales profesionales */
     .glow-effect {
       position: absolute;
       width: 280px;
@@ -27,14 +26,11 @@
 </head>
 <body class="font-sans pb-24 relative overflow-x-hidden">
 
-  <!-- ================= VISTA 1: LANDING PAGE PROFESIONAL (CUANDO NO HAY ?u=UUID) ================= -->
+  <!-- ================= VISTA 1: LANDING PAGE PROFESIONAL ================= -->
   <div id="vista-landing" class="hidden min-h-screen flex flex-col justify-between p-5 max-w-lg mx-auto relative z-10 space-y-8">
-    
-    <!-- Destello decorativo de fondo -->
     <div class="glow-effect -top-10 -left-20"></div>
     <div class="glow-effect top-1/2 -right-20"></div>
 
-    <!-- Header / Logo -->
     <header class="flex items-center justify-between pt-4 border-b border-zinc-800/80 pb-4">
       <div class="flex items-center gap-2.5">
         <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-black font-black text-xl shadow-lg shadow-amber-500/20">
@@ -47,7 +43,6 @@
       </a>
     </header>
 
-    <!-- Hero Principal -->
     <main class="space-y-8 text-center pt-2">
       <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold tracking-wide uppercase animate-pulse">
         ✨ La nueva era de los menús digitales
@@ -62,13 +57,10 @@
         </p>
       </div>
 
-      <!-- Tarjetas de Características Novedosas -->
       <div class="grid gap-3.5 text-left pt-2">
         <div class="group relative bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800/80 hover:border-amber-500/40 p-4.5 rounded-2xl transition-all shadow-xl">
           <div class="flex items-start gap-3.5">
-            <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-lg">
-              🚀
-            </div>
+            <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-lg">🚀</div>
             <div class="space-y-1">
               <h3 class="font-bold text-sm text-white flex items-center gap-2">30 Días de Prueba Full Gratis</h3>
               <p class="text-xs text-zinc-400 leading-relaxed">Acceso inmediato sin tarjeta de crédito. Configura tu cuenta con Google en un solo toque.</p>
@@ -78,9 +70,7 @@
 
         <div class="group relative bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800/80 hover:border-amber-500/40 p-4.5 rounded-2xl transition-all shadow-xl">
           <div class="flex items-start gap-3.5">
-            <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-lg">
-              ⚡
-            </div>
+            <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-lg">⚡</div>
             <div class="space-y-1">
               <h3 class="font-bold text-sm text-white flex items-center gap-2">Automatización con WhatsApp</h3>
               <p class="text-xs text-zinc-400 leading-relaxed">Tus clientes arman el carrito y el pedido llega formateado de manera perfecta directo a tu chat.</p>
@@ -90,9 +80,7 @@
 
         <div class="group relative bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800/80 hover:border-amber-500/40 p-4.5 rounded-2xl transition-all shadow-xl">
           <div class="flex items-start gap-3.5">
-            <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-lg">
-              💳
-            </div>
+            <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-lg">💳</div>
             <div class="space-y-1">
               <h3 class="font-bold text-sm text-white flex items-center gap-2">Cobros Integrados & Webhooks</h3>
               <p class="text-xs text-zinc-400 leading-relaxed">Sincronización automatizada con pasarelas de pago y gestión multi-tenant segura.</p>
@@ -102,23 +90,16 @@
       </div>
     </main>
 
-    <!-- Footer / CTA de Registro -->
     <footer class="space-y-4 pt-4 text-center">
       <a href="admin.html" class="block w-full py-4 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:opacity-95 text-black font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl shadow-amber-500/20 transition-all transform active:scale-95">
         Crear mi Menú Gratis Ahora 🚀
       </a>
-      <div class="flex items-center justify-center gap-2 text-xs text-zinc-500">
-        <span>🔒 Pagos seguros</span>
-        <span>•</span>
-        <span>⚡ Configuración instantánea</span>
-      </div>
     </footer>
   </div>
 
 
-  <!-- ================= VISTA 2: MENÚ DIGITAL PÚBLICO (CUANDO SÍ HAY ?u=UUID) ================= -->
+  <!-- ================= VISTA 2: MENÚ DIGITAL PÚBLICO ================= -->
   <div id="vista-menu" class="hidden">
-    <!-- HEADER DEL NEGOCIO CON LOGO GRANDE TIPO HISTORIA/ESTADO -->
     <header id="header-local" class="bg-zinc-900/95 border-b border-zinc-800/80 p-4 sticky top-0 z-30 backdrop-blur-md shadow-lg">
       <div class="max-w-md mx-auto flex items-center justify-between">
         <div class="flex items-center gap-3.5">
@@ -133,26 +114,17 @@
     </header>
 
     <main class="max-w-md mx-auto p-4 space-y-6">
-
-      <!-- BANNER / PROMO DEL DÍA -->
       <div id="promo-container" class="hidden bg-zinc-900 border border-amber-500/30 rounded-2xl p-4 space-y-2 shadow-lg">
-        <div class="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
-          🔥 Destacado del Día
-        </div>
+        <div class="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">🔥 Destacado del Día</div>
         <img id="promo-img" src="" class="w-full h-40 object-cover rounded-xl hidden">
         <p id="promo-txt" class="text-xs text-zinc-300"></p>
       </div>
 
-      <!-- FILTRO DE CATEGORÍAS -->
       <div id="categorias-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
         <button onclick="filtrarCategoria('todos')" class="cat-btn px-4 py-2 rounded-xl text-xs font-bold bg-primary text-black whitespace-nowrap shadow">Todos</button>
       </div>
 
-      <!-- LISTA DE PRODUCTOS -->
-      <div id="productos-container" class="space-y-3">
-        <!-- Los productos se cargan aquí dinámicamente -->
-      </div>
-
+      <div id="productos-container" class="space-y-3"></div>
     </main>
 
     <!-- BOTÓN FLOTANTE DEL CARRITO -->
@@ -168,7 +140,7 @@
       </div>
     </div>
 
-    <!-- MODAL DE CHECKOUT / DATOS DE ENVÍO -->
+    <!-- MODAL DE CHECKOUT / DATOS DE ENVÍO Y UBICACIÓN -->
     <div id="modal-checkout" class="fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden backdrop-blur-sm">
       <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
@@ -190,10 +162,19 @@
             <label class="block text-xs font-semibold text-zinc-400 mb-1">Nombre y Apellido</label>
             <input type="text" id="cliente-nombre" placeholder="Ej: Juan Pérez" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
           </div>
+          
+          <!-- CAMPO DE DIRECCIÓN -->
           <div id="campo-direccion">
             <label class="block text-xs font-semibold text-zinc-400 mb-1">Dirección de Entrega</label>
             <input type="text" id="cliente-direccion" placeholder="Ej: Av. San Martín 456" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
           </div>
+
+          <!-- CAMPO NUEVO: REFERENCIA / UBICACIÓN PARA EL DELIVERY -->
+          <div id="campo-referencia">
+            <label class="block text-xs font-semibold text-amber-400 mb-1">📍 Referencia o Ubicación Maps (Opcional)</label>
+            <input type="text" id="cliente-referencia" placeholder="Ej: Casa reja negra / Link de Google Maps" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
+          </div>
+
           <div>
             <label class="block text-xs font-semibold text-zinc-400 mb-1">Método de Pago</label>
             <select id="metodo-pago" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
@@ -229,12 +210,10 @@
       userIdNegocio = params.get('u');
 
       if (!userIdNegocio) {
-        // Mostrar la Landing Page profesional si no hay parámetro ?u=
         document.getElementById('vista-landing').classList.remove('hidden');
         return;
       }
 
-      // Mostrar el Menú del comercio si hay parámetro
       document.getElementById('vista-menu').classList.remove('hidden');
       await cargarDatosComercio();
     });
@@ -262,7 +241,6 @@
         const vencePrueba = perfil && perfil.trial_ends_at ? new Date(perfil.trial_ends_at) : null;
         const tienePruebaVigente = vencePrueba && vencePrueba > ahora;
         const estaActivo = perfil && perfil.is_active === true;
-
         const suscripcionVencida = !estaActivo && !tienePruebaVigente;
 
         datosConfig = config;
@@ -445,6 +423,7 @@
     function enviarPedidoWhatsApp() {
       const nombre = document.getElementById('cliente-nombre').value.trim();
       const direccion = document.getElementById('cliente-direccion').value.trim();
+      const referencia = document.getElementById('cliente-referencia').value.trim();
       const tipoEntrega = document.getElementById('tipo-entrega').value;
       const metodoPago = document.getElementById('metodo-pago').value;
       const whatsappNegocio = datosConfig.whatsapp_1;
@@ -465,7 +444,14 @@
       let mensaje = `*¡Nuevo Pedido! 🛒*\n\n`;
       mensaje += `👤 *Cliente:* ${nombre}\n`;
       mensaje += `📦 *Tipo:* ${tipoEntrega === 'delivery' ? 'Envío a Domicilio' : 'Retiro por el local'}\n`;
-      if (tipoEntrega === 'delivery') mensaje += `📍 *Dirección:* ${direccion}\n`;
+      
+      if (tipoEntrega === 'delivery') {
+        mensaje += `📍 *Dirección:* ${direccion}\n`;
+        if (referencia) {
+          mensaje += `🗺️ *Referencia / Maps:* ${referencia}\n`;
+        }
+      }
+
       mensaje += `💳 *Pago:* ${metodoPago}\n\n`;
       mensaje += `*Detalle del pedido:*\n`;
 
