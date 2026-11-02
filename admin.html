@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Admin - Menú Digital</title>
+  <title>NexoServ - Menú Digital Inteligente</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -66,6 +66,26 @@
     </div>
   </div>
 
+  <!-- MODAL PARA MOSTRAR EL CÓDIGO QR -->
+  <div id="modal-qr" class="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+    <div class="bg-dark-card border border-dark-border w-full max-w-xs rounded-2xl p-6 text-center space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-dark-border pb-2">
+        <h3 class="font-bold text-sm text-white">📷 Código QR de tu Menú</h3>
+        <button onclick="cerrarModalQR()" class="text-gray-400 font-bold text-sm">✕</button>
+      </div>
+      
+      <div class="bg-white p-3 rounded-2xl inline-block shadow-inner">
+        <img id="imagen-qr" src="" alt="Código QR del Menú" class="w-48 h-48 mx-auto object-contain">
+      </div>
+      
+      <p class="text-[11px] text-gray-400">Tus clientes pueden escanear este código con la cámara de su celular para abrir el menú al instante.</p>
+      
+      <a id="link-descargar-qr" href="" download="menu-qr.png" class="block w-full py-3 bg-gold text-black font-extrabold rounded-xl text-xs shadow-lg transition-all hover:opacity-90">
+        📥 Descargar Imagen QR
+      </a>
+    </div>
+  </div>
+
   <!-- HEADER -->
   <header class="bg-dark-card border-b border-dark-border sticky top-0 z-40">
     <div class="max-w-2xl mx-auto p-4 flex items-center justify-between">
@@ -86,7 +106,7 @@
       <span class="font-bold"><span id="dias-restantes">--</span> días restantes</span>
     </div>
 
-    <!-- TARJETA PARA COPIAR Y COMPARTIR ENLACE DEL COMERCIO -->
+    <!-- TARJETA PARA COPIAR Y COMPARTIR ENLACE DEL COMERCIO, WHATSAPP Y QR -->
     <section class="bg-dark-card p-4 rounded-2xl shadow-sm border border-gold/40 space-y-3">
       <h2 class="font-bold text-xs text-gold uppercase tracking-wider flex items-center gap-2">🔗 Enlace de tu Menú Digital</h2>
       <div class="flex gap-2">
@@ -95,7 +115,18 @@
           📋 Copiar
         </button>
       </div>
-      <p class="text-[11px] text-gray-400">Comparte este enlace con tus clientes para que accedan directamente a tu menú.</p>
+
+      <!-- Botones de Acción Rápida: Compartir WhatsApp y Ver QR -->
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button onclick="compartirWhatsAppAdmin()" class="flex items-center justify-center gap-2 py-2.5 px-3 bg-emerald-600/20 border border-emerald-600/40 hover:bg-emerald-600/30 text-emerald-400 rounded-xl text-xs font-bold transition-all">
+          💬 Compartir WhatsApp
+        </button>
+        <button onclick="abrirModalQR()" class="flex items-center justify-center gap-2 py-2.5 px-3 bg-amber-500/20 border border-amber-500/40 hover:bg-amber-500/30 text-amber-400 rounded-xl text-xs font-bold transition-all">
+          📷 Ver Código QR
+        </button>
+      </div>
+
+      <p class="text-[11px] text-gray-400">Comparte este enlace, envíalo por WhatsApp o genera tu código QR para tus mesas.</p>
     </section>
 
     <!-- BOTONES DE NAVEGACIÓN DE SOLAPAS -->
@@ -250,7 +281,20 @@
               <input type="number" id="prod-precio-original" placeholder="Ej: 4500" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white">
             </div>
           </div>
-          <input type="text" id="prod-categoria" placeholder="Categoría (Ej: Hamburguesas)" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white">
+
+          <!-- SELECTOR INTELIGENTE DE CATEGORÍAS -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 mb-1">Categoría</label>
+            <div class="flex gap-2">
+              <select id="prod-categoria-select" onchange="verificarNuevaCategoria(this)" class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white">
+                <option value="">-- Selecciona o crea una categoría --</option>
+                <option value="__nueva__">➕ Escribir nueva categoría...</option>
+              </select>
+            </div>
+            <!-- Input oculto que aparece si el usuario elige escribir una nueva categoría -->
+            <input type="text" id="prod-categoria-nueva" placeholder="Escribe la nueva categoría..." class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white mt-2 hidden">
+          </div>
+
           <textarea id="prod-descripcion" rows="2" placeholder="Descripción breve..." class="w-full p-3 bg-dark-bg border border-dark-border rounded-xl text-sm text-white"></textarea>
           <div>
             <label class="block text-xs font-semibold text-gray-400 mb-1">Imagen del Producto</label>
@@ -271,7 +315,7 @@
 
   </main>
 
-  <!-- LÓGICA CON 30 DÍAS DE PRUEBA, CÁLCULO DE DIAS Y ENLACE -->
+  <!-- LÓGICA CON SELECTOR INTELIGENTE DE CATEGORÍAS -->
   <script>
     const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
@@ -284,7 +328,6 @@
     let configActualId = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
-      // 1. Verificar sesión activa de Supabase Auth
       const { data: { session } } = await _supabaseClient.auth.getSession();
       
       if (!session) {
@@ -297,22 +340,41 @@
       document.getElementById('user-display-email').textContent = usuarioActual.email;
       document.getElementById('lbl-user-email').textContent = usuarioActual.email;
 
-      // Generar automáticamente el enlace para compartir con el ID del usuario
       const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
       const enlaceTienda = `${baseUrl}index.html?u=${usuarioActual.id}`;
       document.getElementById('input-enlace-tienda').value = enlaceTienda;
       document.getElementById('link-ver-menu').href = `index.html?u=${usuarioActual.id}`;
 
-      // 2. Verificar estado de suscripción y 30 días de prueba
       await verificarSuscripcionOPrueba();
     });
 
     function copiarEnlaceTienda() {
       const input = document.getElementById('input-enlace-tienda');
       input.select();
-      input.setSelectionRange(0, 99999); // Para móviles
+      input.setSelectionRange(0, 99999);
       navigator.clipboard.writeText(input.value);
       alert("¡Enlace copiado al portapapeles!");
+    }
+
+    function compartirWhatsAppAdmin() {
+      const urlPublica = document.getElementById('input-enlace-tienda').value;
+      if (!urlPublica) return;
+      const texto = `¡Hola! 👋 Te comparto nuestro menú digital para hacer pedidos online de forma rápida y directa:\n\n${urlPublica}`;
+      const urlWa = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+      window.open(urlWa, '_blank');
+    }
+
+    function abrirModalQR() {
+      const urlPublica = document.getElementById('input-enlace-tienda').value;
+      if (!urlPublica) return;
+      const apiQR = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(urlPublica)}`;
+      document.getElementById('imagen-qr').src = apiQR;
+      document.getElementById('link-descargar-qr').href = apiQR;
+      document.getElementById('modal-qr').classList.remove('hidden');
+    }
+
+    function cerrarModalQR() {
+      document.getElementById('modal-qr').classList.add('hidden');
     }
 
     async function loginConGoogle() {
@@ -325,7 +387,7 @@
 
     async function verificarSuscripcionOPrueba() {
       try {
-        let { data: perfil, error } = await _supabaseClient
+        let { data: perfil } = await _supabaseClient
           .from('profiles')
           .select('is_active, trial_ends_at')
           .eq('id', usuarioActual.id)
@@ -333,10 +395,9 @@
 
         const ahora = new Date();
 
-        // Si el usuario es nuevo y entra por primera vez, le damos 30 días de prueba gratis automáticos
         if (!perfil) {
           const fechaPrueba30Dias = new Date();
-          fechaPrueba30Dias.setDate(ahora.getDate() + 30); // Sumar 30 días
+          fechaPrueba30Dias.setDate(ahora.getDate() + 30);
 
           const nuevoPerfil = {
             id: usuarioActual.id,
@@ -346,8 +407,6 @@
           };
 
           await _supabaseClient.from('profiles').insert([nuevoPerfil]);
-          
-          // Mostrar indicador de prueba recién creada (30 días)
           mostrarDiasPrueba(fechaPrueba30Dias, ahora);
           await cargarConfiguracionAdmin();
           await cargarEstadoPromoAdmin();
@@ -368,7 +427,6 @@
         } else {
           document.getElementById('modal-pago').classList.remove('hidden');
         }
-
       } catch (e) {
         console.error("Error verificando suscripción/prueba:", e);
       }
@@ -501,10 +559,57 @@
       else alert("¡Configuración guardada!");
     }
 
+    // ACTUALIZAR SELECTOR DE CATEGORÍAS SEGÚN LOS PRODUCTOS CARGADOS
+    function actualizarSelectorCategorias(categoriaSeleccionada = '') {
+      const select = document.getElementById('prod-categoria-select');
+      const inputNueva = document.getElementById('prod-categoria-nueva');
+      
+      // Obtener categorías únicas de la lista de productos
+      const categoriasUnicas = [...new Set(listaProductos.map(p => p.categoria).filter(Boolean))];
+
+      select.innerHTML = '<option value="">-- Selecciona o crea una categoría --</option>';
+      categoriasUnicas.forEach(cat => {
+        select.innerHTML += `<option value="${cat}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</option>`;
+      });
+      select.innerHTML += `<option value="__nueva__">➕ Escribir nueva categoría...</option>`;
+
+      if (categoriaSeleccionada) {
+        if (categoriasUnicas.includes(categoriaSeleccionada)) {
+          select.value = categoriaSeleccionada;
+          inputNueva.classList.add('hidden');
+          inputNueva.value = '';
+        } else {
+          select.value = '__nueva__';
+          inputNueva.classList.remove('hidden');
+          inputNueva.value = categoriaSeleccionada;
+        }
+      } else {
+        select.value = '';
+        inputNueva.classList.add('hidden');
+        inputNueva.value = '';
+      }
+    }
+
+    function verificarNuevaCategoria(select) {
+      const inputNueva = document.getElementById('prod-categoria-nueva');
+      if (select.value === '__nueva__') {
+        inputNueva.classList.remove('hidden');
+        inputNueva.focus();
+        inputNueva.value = '';
+      } else {
+        inputNueva.classList.add('hidden');
+        inputNueva.value = select.value;
+      }
+    }
+
     async function cargarProductosAdmin() {
       try {
         const { data } = await _supabaseClient.from('productos').select('*').eq('user_id', usuarioActual.id).order('id', { ascending: false });
         listaProductos = data || [];
+        
+        // Refrescar el selector desplegable con las categorías actuales
+        actualizarSelectorCategorias();
+
         const container = document.getElementById('lista-admin-productos');
         container.innerHTML = '';
         listaProductos.forEach(p => {
@@ -513,7 +618,7 @@
               <img src="${p.imagen_url || 'https://via.placeholder.com/80'}" class="w-12 h-12 rounded-lg object-cover">
               <div class="flex-1">
                 <h3 class="font-bold text-sm text-white">${p.nombre}</h3>
-                <p class="text-xs text-gray-400">$${p.precio}</p>
+                <p class="text-xs text-gray-400">$${p.precio} <span class="text-amber-400">(${p.categoria || 'Sin categoría'})</span></p>
               </div>
               <div class="flex gap-1.5">
                 <button onclick="prepararEdicion(${p.id})" class="p-2 text-xs bg-dark-card text-blue-400 font-bold rounded-lg">✏️</button>
@@ -530,6 +635,15 @@
       const fileInput = document.getElementById('file-producto');
       let imagenUrl = document.getElementById('prod-imagen').value.trim();
 
+      // Obtener categoría del select o del input de nueva categoría
+      const selectCat = document.getElementById('prod-categoria-select').value;
+      let categoriaFinal = selectCat === '__nueva__' ? document.getElementById('prod-categoria-nueva').value.trim() : selectCat;
+
+      if (!categoriaFinal) {
+        alert("Por favor selecciona o escribe una categoría.");
+        return;
+      }
+
       if (fileInput.files.length > 0) {
         const uploadedUrl = await subirImagenASupabase(fileInput.files[0], 'productos');
         if (uploadedUrl) imagenUrl = uploadedUrl;
@@ -539,7 +653,7 @@
         user_id: usuarioActual.id,
         nombre: document.getElementById('prod-nombre').value.trim(),
         precio: parseFloat(document.getElementById('prod-precio').value),
-        categoria: document.getElementById('prod-categoria').value.trim(),
+        categoria: categoriaFinal.toLowerCase(), // Guardar en minúsculas para mantener consistencia
         descripcion: document.getElementById('prod-descripcion').value.trim(),
         imagen_url: imagenUrl
       };
@@ -557,7 +671,10 @@
       document.getElementById('prod-id').value = p.id;
       document.getElementById('prod-nombre').value = p.nombre || '';
       document.getElementById('prod-precio').value = p.precio || '';
-      document.getElementById('prod-categoria').value = p.categoria || '';
+      
+      // Cargar la categoría existente en el selector inteligente
+      actualizarSelectorCategorias(p.categoria || '');
+
       document.getElementById('prod-descripcion').value = p.descripcion || '';
       document.getElementById('prod-imagen').value = p.imagen_url || '';
       document.getElementById('btn-cancelar').classList.remove('hidden');
@@ -568,7 +685,9 @@
       document.getElementById('prod-id').value = '';
       document.getElementById('prod-nombre').value = '';
       document.getElementById('prod-precio').value = '';
-      document.getElementById('prod-categoria').value = '';
+      
+      actualizarSelectorCategorias('');
+      
       document.getElementById('prod-descripcion').value = '';
       document.getElementById('prod-imagen').value = '';
       document.getElementById('btn-cancelar').classList.add('hidden');
