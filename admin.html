@@ -80,6 +80,12 @@
 
   <main class="max-w-2xl mx-auto p-4 space-y-6">
 
+    <!-- AVISO DE DÍAS DE PRUEBA RESTANTES -->
+    <div id="badge-prueba" class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center justify-between text-xs text-amber-400 hidden">
+      <span>⏳ Periodo de prueba activo</span>
+      <span class="font-bold"><span id="dias-restantes">--</span> días restantes</span>
+    </div>
+
     <!-- TARJETA PARA COPIAR Y COMPARTIR ENLACE DEL COMERCIO -->
     <section class="bg-dark-card p-4 rounded-2xl shadow-sm border border-gold/40 space-y-3">
       <h2 class="font-bold text-xs text-gold uppercase tracking-wider flex items-center gap-2">🔗 Enlace de tu Menú Digital</h2>
@@ -265,7 +271,7 @@
 
   </main>
 
-  <!-- LÓGICA CON 30 DÍAS DE PRUEBA Y GENERACIÓN DE ENLACE -->
+  <!-- LÓGICA CON 30 DÍAS DE PRUEBA, CÁLCULO DE DIAS Y ENLACE -->
   <script>
     const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
@@ -341,6 +347,8 @@
 
           await _supabaseClient.from('profiles').insert([nuevoPerfil]);
           
+          // Mostrar indicador de prueba recién creada (30 días)
+          mostrarDiasPrueba(fechaPrueba30Dias, ahora);
           await cargarConfiguracionAdmin();
           await cargarEstadoPromoAdmin();
           await cargarProductosAdmin();
@@ -351,6 +359,9 @@
         const tienePruebaVigente = vencePrueba && vencePrueba > ahora;
 
         if (perfil.is_active || tienePruebaVigente) {
+          if (tienePruebaVigente && !perfil.is_active) {
+            mostrarDiasPrueba(vencePrueba, ahora);
+          }
           await cargarConfiguracionAdmin();
           await cargarEstadoPromoAdmin();
           await cargarProductosAdmin();
@@ -360,6 +371,15 @@
 
       } catch (e) {
         console.error("Error verificando suscripción/prueba:", e);
+      }
+    }
+
+    function mostrarDiasPrueba(vencePrueba, ahora) {
+      const diferenciaMs = vencePrueba - ahora;
+      const diasRestantes = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24));
+      if (diasRestantes > 0) {
+        document.getElementById('dias-restantes').textContent = diasRestantes;
+        document.getElementById('badge-prueba').classList.remove('hidden');
       }
     }
 
@@ -542,10 +562,6 @@
       document.getElementById('prod-imagen').value = p.imagen_url || '';
       document.getElementById('btn-cancelar').classList.remove('hidden');
       cambiarSolapa('productos');
-    }
-
-    function limpiarFormularioProfileProducto() {
-      // limpiar
     }
 
     function limpiarFormularioProducto() {
