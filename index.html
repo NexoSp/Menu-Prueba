@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Menú Digital</title>
+  <title>NexoServ - Menú Digital</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -17,96 +17,138 @@
 </head>
 <body class="font-sans pb-24">
 
-  <!-- HEADER DEL NEGOCIO CON LOGO Y NOMBRE AMPLIADOS -->
-  <header id="header-local" class="bg-zinc-900 border-b border-zinc-800 p-4 sticky top-0 z-30 shadow-md">
-    <div class="max-w-md mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <!-- Logo con tamaño grande tipo historia/estado de Instagram -->
-        <img id="local-logo" src="https://via.placeholder.com/80" class="w-18 h-18 w-20 h-20 rounded-full object-cover border-2 border-primary shadow-md">
-        <div>
-          <h1 id="local-nombre" class="font-extrabold text-lg text-white leading-tight">Cargando menú...</h1>
-          <p id="local-estado" class="text-xs text-zinc-400 mt-0.5">Verificando local...</p>
+  <!-- ================= VISTA 1: LANDING PAGE / INFORMACIÓN GENERAL (CUANDO NO HAY ?u=UUID) ================= -->
+  <div id="vista-landing" class="hidden min-h-screen flex flex-col justify-between p-6 max-w-md mx-auto space-y-8">
+    <div class="space-y-6 pt-6 text-center">
+      <div class="inline-block p-4 bg-amber-500/10 border border-amber-500/30 rounded-3xl text-4xl mb-2">
+        🍔📱
+      </div>
+      <div class="space-y-3">
+        <h1 class="font-extrabold text-3xl text-white tracking-tight">NexoServ <span class="text-amber-400">Menú Digital</span></h1>
+        <p class="text-sm text-zinc-400 leading-relaxed">
+          La plataforma ideal para que locales gastronómicos y comercios tengan su propio catálogo online y reciban pedidos directos por WhatsApp sin intermediarios ni comisiones.
+        </p>
+      </div>
+
+      <!-- Tarjetas informativas de procedimiento -->
+      <div class="space-y-3 text-left pt-2">
+        <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl space-y-1">
+          <p class="font-bold text-sm text-white flex items-center gap-2">🚀 1. 30 Días de Prueba Gratuita</p>
+          <p class="text-xs text-zinc-400">Crea tu cuenta de administración con Google y prueba todas las funciones sin cargo inicial.</p>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl space-y-1">
+          <p class="font-bold text-sm text-white flex items-center gap-2">⚙️ 2. Administra tu Menú</p>
+          <p class="text-xs text-zinc-400">Configura tus platos, categorías, logotipo, colores institucionales y estado de apertura en segundos.</p>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl space-y-1">
+          <p class="font-bold text-sm text-white flex items-center gap-2">📲 3. Comparte y Recibe Pedidos</p>
+          <p class="text-xs text-zinc-400">Comparte tu enlace personalizado en redes o WhatsApp y tus clientes te enviarán el pedido listo para despachar.</p>
         </div>
       </div>
-      <div id="local-badge-abierto"></div>
-    </div>
-  </header>
-
-  <main class="max-w-md mx-auto p-4 space-y-6">
-
-    <!-- BANNER / PROMO DEL DÍA -->
-    <div id="promo-container" class="hidden bg-zinc-900 border border-amber-500/30 rounded-2xl p-4 space-y-2 shadow-lg">
-      <div class="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
-        🔥 Destacado del Día
-      </div>
-      <img id="promo-img" src="" class="w-full h-40 object-cover rounded-xl hidden">
-      <p id="promo-txt" class="text-xs text-zinc-300"></p>
     </div>
 
-    <!-- FILTRO DE CATEGORÍAS -->
-    <div id="categorias-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-      <button onclick="filtrarCategoria('todos')" class="cat-btn px-4 py-2 rounded-xl text-xs font-bold bg-primary text-black whitespace-nowrap shadow">Todos</button>
-    </div>
-
-    <!-- LISTA DE PRODUCTOS -->
-    <div id="productos-container" class="space-y-3">
-      <!-- Los productos se cargan aquí dinámicamente -->
-    </div>
-
-  </main>
-
-  <!-- BOTÓN FLOTANTE DEL CARRITO -->
-  <div id="carrito-flotante" class="fixed bottom-0 left-0 right-0 p-4 bg-zinc-900/95 border-t border-zinc-800 backdrop-blur-md z-40 hidden">
-    <div class="max-w-md mx-auto flex items-center justify-between">
-      <div>
-        <p class="text-xs text-zinc-400">Total en Carrito</p>
-        <p id="carrito-total" class="font-extrabold text-lg text-white">$0</p>
-      </div>
-      <button onclick="abrirModalCheckout()" class="px-6 py-3 bg-primary text-black font-extrabold rounded-xl text-sm shadow-lg">
-        Ver Pedido 🛒
-      </button>
+    <!-- Botón de Acceso al Admin -->
+    <div class="space-y-3 text-center pb-6">
+      <a href="admin.html" class="block w-full py-4 bg-gradient-to-r from-amber-500 to-yellow-500 hover:opacity-90 text-black font-extrabold rounded-2xl text-sm shadow-xl transition-all">
+        Acceder al Panel Admin / Registrarse ⚙️
+      </a>
+      <p class="text-[11px] text-zinc-500">¿Eres un cliente buscando un menú? Pide el enlace directo al comercio.</p>
     </div>
   </div>
 
-  <!-- MODAL DE CHECKOUT / DATOS DE ENVÍO -->
-  <div id="modal-checkout" class="fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden backdrop-blur-sm">
-    <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-        <h2 class="font-bold text-base text-white">🛍️ Finalizar tu Pedido</h2>
-        <button onclick="cerrarModalCheckout()" class="text-zinc-400 font-bold text-sm">✕</button>
+
+  <!-- ================= VISTA 2: MENÚ DIGITAL PÚBLICO (CUANDO SÍ HAY ?u=UUID) ================= -->
+  <div id="vista-menu" class="hidden">
+    <!-- HEADER DEL NEGOCIO CON LOGO GRANDE TIPO HISTORIA/ESTADO -->
+    <header id="header-local" class="bg-zinc-900 border-b border-zinc-800 p-4 sticky top-0 z-30 shadow-md">
+      <div class="max-w-md mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <img id="local-logo" src="https://via.placeholder.com/80" class="w-16 h-16 rounded-full object-cover border-2 border-primary shadow-md">
+          <div>
+            <h1 id="local-nombre" class="font-extrabold text-base text-white leading-tight">Cargando menú...</h1>
+            <p id="local-estado" class="text-xs text-zinc-400 mt-0.5">Verificando local...</p>
+          </div>
+        </div>
+        <div id="local-badge-abierto"></div>
+      </div>
+    </header>
+
+    <main class="max-w-md mx-auto p-4 space-y-6">
+
+      <!-- BANNER / PROMO DEL DÍA -->
+      <div id="promo-container" class="hidden bg-zinc-900 border border-amber-500/30 rounded-2xl p-4 space-y-2 shadow-lg">
+        <div class="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
+          🔥 Destacado del Día
+        </div>
+        <img id="promo-img" src="" class="w-full h-40 object-cover rounded-xl hidden">
+        <p id="promo-txt" class="text-xs text-zinc-300"></p>
       </div>
 
-      <div id="resumen-carrito" class="space-y-2 text-xs text-zinc-300 max-h-40 overflow-y-auto pr-1"></div>
-
-      <div class="space-y-3 pt-2 border-t border-zinc-800">
-        <div>
-          <label class="block text-xs font-semibold text-zinc-400 mb-1">Tipo de Entrega</label>
-          <select id="tipo-entrega" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
-            <option value="delivery">🛵 Envío a Domicilio</option>
-            <option value="retiro">🏃 Retiro por el Local</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-zinc-400 mb-1">Nombre y Apellido</label>
-          <input type="text" id="cliente-nombre" placeholder="Ej: Juan Pérez" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
-        </div>
-        <div id="campo-direccion">
-          <label class="block text-xs font-semibold text-zinc-400 mb-1">Dirección de Entrega</label>
-          <input type="text" id="cliente-direccion" placeholder="Ej: Av. San Martín 456" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-zinc-400 mb-1">Método de Pago</label>
-          <select id="metodo-pago" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
-            <option value="Efectivo">💵 Efectivo</option>
-            <option value="Mercado Pago (Alias/Transferencia)">📱 Transferencia / Alias</option>
-            <option value="Link de Pago MP">💳 Tarjeta / Link de Mercado Pago</option>
-          </select>
-        </div>
+      <!-- FILTRO DE CATEGORÍAS -->
+      <div id="categorias-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <button onclick="filtrarCategoria('todos')" class="cat-btn px-4 py-2 rounded-xl text-xs font-bold bg-primary text-black whitespace-nowrap shadow">Todos</button>
       </div>
 
-      <button onclick="enviarPedidoWhatsApp()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-sm shadow-lg transition-all">
-        Enviar Pedido por WhatsApp 🚀
-      </button>
+      <!-- LISTA DE PRODUCTOS -->
+      <div id="productos-container" class="space-y-3">
+        <!-- Los productos se cargan aquí dinámicamente -->
+      </div>
+
+    </main>
+
+    <!-- BOTÓN FLOTANTE DEL CARRITO -->
+    <div id="carrito-flotante" class="fixed bottom-0 left-0 right-0 p-4 bg-zinc-900/95 border-t border-zinc-800 backdrop-blur-md z-40 hidden">
+      <div class="max-w-md mx-auto flex items-center justify-between">
+        <div>
+          <p class="text-xs text-zinc-400">Total en Carrito</p>
+          <p id="carrito-total" class="font-extrabold text-lg text-white">$0</p>
+        </div>
+        <button onclick="abrirModalCheckout()" class="px-6 py-3 bg-primary text-black font-extrabold rounded-xl text-sm shadow-lg">
+          Ver Pedido 🛒
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL DE CHECKOUT / DATOS DE ENVÍO -->
+    <div id="modal-checkout" class="fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden backdrop-blur-sm">
+      <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+          <h2 class="font-bold text-base text-white">🛍️ Finalizar tu Pedido</h2>
+          <button onclick="cerrarModalCheckout()" class="text-zinc-400 font-bold text-sm">✕</button>
+        </div>
+
+        <div id="resumen-carrito" class="space-y-2 text-xs text-zinc-300 max-h-40 overflow-y-auto pr-1"></div>
+
+        <div class="space-y-3 pt-2 border-t border-zinc-800">
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1">Tipo de Entrega</label>
+            <select id="tipo-entrega" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
+              <option value="delivery">🛵 Envío a Domicilio</option>
+              <option value="retiro">🏃 Retiro por el Local</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1">Nombre y Apellido</label>
+            <input type="text" id="cliente-nombre" placeholder="Ej: Juan Pérez" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
+          </div>
+          <div id="campo-direccion">
+            <label class="block text-xs font-semibold text-zinc-400 mb-1">Dirección de Entrega</label>
+            <input type="text" id="cliente-direccion" placeholder="Ej: Av. San Martín 456" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1">Método de Pago</label>
+            <select id="metodo-pago" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
+              <option value="Efectivo">💵 Efectivo</option>
+              <option value="Mercado Pago (Alias/Transferencia)">📱 Transferencia / Alias</option>
+              <option value="Link de Pago MP">💳 Tarjeta / Link de Mercado Pago</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="enviarPedidoWhatsApp()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-sm shadow-lg transition-all">
+          Enviar Pedido por WhatsApp 🚀
+        </button>
+      </div>
     </div>
   </div>
 
@@ -128,11 +170,13 @@
       userIdNegocio = params.get('u');
 
       if (!userIdNegocio) {
-        document.getElementById('local-nombre').textContent = "Negocio no especificado";
-        document.getElementById('local-estado').textContent = "Por favor ingresa con un enlace válido (ej: ?u=tu_id)";
+        // Mostrar la Landing Page si no hay parámetro ?u=
+        document.getElementById('vista-landing').classList.remove('hidden');
         return;
       }
 
+      // Mostrar el Menú del comercio si hay parámetro
+      document.getElementById('vista-menu').classList.remove('hidden');
       await cargarDatosComercio();
     });
 
