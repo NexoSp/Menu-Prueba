@@ -315,7 +315,7 @@
 
   </main>
 
-  <!-- LÓGICA CON SELECTOR INTELIGENTE DE CATEGORÍAS -->
+  <!-- LÓGICA CON NOMBRE DE COMERCIO DINÁMICO EN WHATSAPP Y SELECTOR DE CATEGORÍAS -->
   <script>
     const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
@@ -359,7 +359,11 @@
     function compartirWhatsAppAdmin() {
       const urlPublica = document.getElementById('input-enlace-tienda').value;
       if (!urlPublica) return;
-      const texto = `¡Hola! 👋 Te comparto nuestro menú digital para hacer pedidos online de forma rápida y directa:\n\n${urlPublica}`;
+      
+      // Obtener el nombre del local ingresado en el input (si está vacío, usa un genérico)
+      const nombreLocal = document.getElementById('cfg-nombre').value.trim() || 'nuestro local';
+      
+      const texto = `¡Hola! 👋 Te compartimos el menú digital de *${nombreLocal}* para hacer pedidos online de forma rápida y directa:\n\n${urlPublica}`;
       const urlWa = `https://wa.me/?text=${encodeURIComponent(texto)}`;
       window.open(urlWa, '_blank');
     }
@@ -564,7 +568,6 @@
       const select = document.getElementById('prod-categoria-select');
       const inputNueva = document.getElementById('prod-categoria-nueva');
       
-      // Obtener categorías únicas de la lista de productos
       const categoriasUnicas = [...new Set(listaProductos.map(p => p.categoria).filter(Boolean))];
 
       select.innerHTML = '<option value="">-- Selecciona o crea una categoría --</option>';
@@ -607,7 +610,6 @@
         const { data } = await _supabaseClient.from('productos').select('*').eq('user_id', usuarioActual.id).order('id', { ascending: false });
         listaProductos = data || [];
         
-        // Refrescar el selector desplegable con las categorías actuales
         actualizarSelectorCategorias();
 
         const container = document.getElementById('lista-admin-productos');
@@ -635,7 +637,6 @@
       const fileInput = document.getElementById('file-producto');
       let imagenUrl = document.getElementById('prod-imagen').value.trim();
 
-      // Obtener categoría del select o del input de nueva categoría
       const selectCat = document.getElementById('prod-categoria-select').value;
       let categoriaFinal = selectCat === '__nueva__' ? document.getElementById('prod-categoria-nueva').value.trim() : selectCat;
 
@@ -653,7 +654,7 @@
         user_id: usuarioActual.id,
         nombre: document.getElementById('prod-nombre').value.trim(),
         precio: parseFloat(document.getElementById('prod-precio').value),
-        categoria: categoriaFinal.toLowerCase(), // Guardar en minúsculas para mantener consistencia
+        categoria: categoriaFinal.toLowerCase(),
         descripcion: document.getElementById('prod-descripcion').value.trim(),
         imagen_url: imagenUrl
       };
@@ -672,7 +673,6 @@
       document.getElementById('prod-nombre').value = p.nombre || '';
       document.getElementById('prod-precio').value = p.precio || '';
       
-      // Cargar la categoría existente en el selector inteligente
       actualizarSelectorCategorias(p.categoria || '');
 
       document.getElementById('prod-descripcion').value = p.descripcion || '';
