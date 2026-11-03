@@ -234,7 +234,7 @@
     </div>
   </div>
 
-  <!-- LÓGICA DE CARGA DINÁMICA CON BOTONES + / - , GPS Y COMPARTIR -->
+  <!-- LÓGICA DE CARGA DINÁMICA CON COMPARTIR INTELIGENTE -->
   <script>
     const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
@@ -507,12 +507,27 @@
       document.getElementById('modal-checkout').classList.add('hidden');
     }
 
-    function compartirMenuAmigos() {
+    // FUNCIÓN DE COMPARTIR INTELIGENTE (USA EL COMPARTIR NATIVO DEL CELULAR CON VISTA PREVIA)
+    async function compartirMenuAmigos() {
       const urlActual = window.location.href;
       const nombreLocal = datosConfig.nombre || 'este local';
-      const texto = `¡Hola! 👋 Mirá el menú digital de *${nombreLocal}* para hacer pedidos online:\n\n${urlActual}`;
-      const urlWa = `https://wa.me/?text=${encodeURIComponent(texto)}`;
-      window.open(urlWa, '_blank');
+      const textoCompartir = `¡Hola! 👋 Mirá el menú digital de *${nombreLocal}* para hacer pedidos online de forma rápida y directa.`;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: nombreLocal,
+            text: textoCompartir,
+            url: urlActual,
+          });
+        } catch (err) {
+          // Si el usuario cancela, no hacemos nada
+        }
+      } else {
+        // Fallback para PC / navegadores que no soportan Web Share API
+        const urlWa = `https://wa.me/?text=${encodeURIComponent(textoCompartir + "\n\n" + urlActual)}`;
+        window.open(urlWa, '_blank');
+      }
     }
 
     function obtenerUbicacionGPS() {
