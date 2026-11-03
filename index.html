@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NexoServ - Menú Digital Inteligente</title>
+  <title id="meta-title">NexoServ - Menú Digital Inteligente</title>
+
+  <!-- ETIQUETAS OPEN GRAPH DINÁMICAS PARA VISTA PREVIA EN WHATSAPP Y REDES -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" id="og-title" content="NexoServ - Menú Digital Inteligente">
+  <meta property="og:description" content="Haz tu pedido online de forma rápida y directa por WhatsApp sin comisiones.">
+  <meta property="og:image" id="og-image" content="https://via.placeholder.com/300">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -234,7 +241,7 @@
     </div>
   </div>
 
-  <!-- LÓGICA DE CARGA DINÁMICA CON COMPARTIR INTELIGENTE -->
+  <!-- LÓGICA DE CARGA DINÁMICA CON ETIQUETAS OPEN GRAPH DINÁMICAS -->
   <script>
     const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
@@ -286,8 +293,18 @@
         const suscripcionVencida = !estaActivo && !tienePruebaVigente;
 
         datosConfig = config;
-        document.getElementById('local-nombre').textContent = config.nombre || 'Menú Digital';
-        if (config.logo_url) document.getElementById('local-logo').src = config.logo_url;
+        const nombreLocal = config.nombre || 'Menú Digital';
+        document.getElementById('local-nombre').textContent = nombreLocal;
+
+        // ACTUALIZACIÓN DINÁMICA DE ETIQUETAS OPEN GRAPH PARA WHATSAPP
+        document.getElementById('meta-title').textContent = `${nombreLocal} - Menú Digital`;
+        document.getElementById('og-title').setAttribute('content', `Menú Digital de ${nombreLocal}`);
+        document.getElementById('og-description').setAttribute('content', `Haz tu pedido online en ${nombreLocal} directo por WhatsApp.`);
+
+        if (config.logo_url) {
+          document.getElementById('local-logo').src = config.logo_url;
+          document.getElementById('og-image').setAttribute('content', config.logo_url);
+        }
 
         if (config.instagram) {
           const igLink = document.getElementById('local-instagram-link');
