@@ -301,6 +301,9 @@
           document.getElementById('local-logo').src = config.logo_url;
         }
 
+        // 🚀 REGISTRAR VISITA EN SUPABASE DE FORMA AUTOMÁTICA
+        await registrarVisitaEnSupabase(nombreLocal);
+
         if (config.instagram) {
           const igLink = document.getElementById('local-instagram-link');
           const igText = document.getElementById('local-instagram-text');
@@ -346,6 +349,52 @@
 
       } catch (e) {
         console.error("Error cargando comercio:", e);
+      }
+    }
+
+    // 📈 FUNCIÓN PARA REGISTRAR VISITAS EN LA TABLA DE SUPABASE
+    async function registrarVisitaEnSupabase(nombreLocal) {
+      if (!userIdNegocio) return;
+      try {
+        const { data: existingData } = await _supabaseClient
+          .from('estadisticas_tiendas')
+          .select('*')
+          .eq('user_id', userIdNegocio)
+          .maybeSingle();
+
+        const sessionKey = `visita_registrada_${userIdNegocio}`;
+        const esVisitaUnica = !sessionStorage.getItem(sessionKey);
+
+        if (existingData) {
+          const nuevasVisitasTotales = (existingData.visitas_totales || 0) + 1;
+          const nuevasVisitasUnicas = esVisitaUnica ? (existingData.visitas_unicas || 0) + 1 : existingData.visitas_unicas;
+
+          await _supabaseClient
+            .from('estadisticas_tiendas')
+            .update({
+              nombre_local: nombreLocal,
+              visitas_totales: nuevasVisitasTotales,
+              visitas_unicas: nuevasVisitasUnicas
+            })
+            .eq('user_id', userIdNegocio);
+        } else {
+          await _supabaseClient
+            .from('estadisticas_tiendas')
+            .insert([{
+              user_id: userIdNegocio,
+              nombre_local: nombreLocal,
+              categoria: 'Gastronomía / Comercio',
+              visitas_totales: 1,
+              visitas_unicas: 1,
+              pedidos: 0
+            }]);
+        }
+
+        if (esVisitaUnica) {
+          sessionStorage.setItem(sessionKey, 'true');
+        }
+      } catch (err) {
+        console.error("Error al registrar visita:", err);
       }
     }
 
@@ -519,7 +568,6 @@
       document.getElementById('modal-checkout').classList.add('hidden');
     }
 
-    // FUNCIÓN DE COMPARTIR INTELIGENTE (USA EL COMPARTIR NATIVO DEL CELULAR CON VISTA PREVIA)
     async function compartirMenuAmigos() {
       const urlActual = window.location.href;
       const nombreLocal = datosConfig.nombre || 'este local';
@@ -532,11 +580,8 @@
             text: textoCompartir,
             url: urlActual,
           });
-        } catch (err) {
-          // Si el usuario cancela, no hacemos nada
-        }
+        } catch (err) {}
       } else {
-        // Fallback para PC / navegadores que no soportan Web Share API
         const urlWa = `https://wa.me/?text=${encodeURIComponent(textoCompartir + "\n\n" + urlActual)}`;
         window.open(urlWa, '_blank');
       }
