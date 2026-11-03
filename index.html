@@ -1,251 +1,679 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexoServ - Panel de Estadísticas Real</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body class="bg-zinc-950 text-zinc-100 font-sans antialiased min-h-screen flex flex-col">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="meta-title">NexoServ - Menú Digital Inteligente</title>
 
-    <!-- Header -->
-    <header class="bg-zinc-900 border-b border-zinc-800 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-3">
-                <div class="bg-amber-500 text-black p-2.5 rounded-xl shadow-md font-black">
-                    <i class="fa-solid fa-chart-line text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold tracking-wide text-white">NexoServ <span class="text-amber-400 font-light">Analytics</span></h1>
-                    <p class="text-xs text-zinc-400">Métricas reales y activas por comercio</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-3">
-                <button onclick="exportarCSV()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-zinc-700">
-                    <i class="fa-solid fa-download"></i> Exportar CSV
-                </button>
-                <button onclick="cargarEstadisticasReales()" class="bg-amber-500 hover:bg-amber-400 text-black px-4 py-2 rounded-xl text-xs font-black transition flex items-center gap-2 shadow-lg shadow-amber-500/20">
-                    <i class="fa-solid fa-rotate-right"></i> Actualizar
-                </button>
-            </div>
+  <!-- ETIQUETAS OPEN GRAPH CON IMAGEN INSTITUCIONAL NEXOSERV (OPTIMIZADO PARA WHATSAPP) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" id="og-title" content="NexoServ - Menú Digital Inteligente">
+  <meta property="og:description" content="Haz tu pedido online de forma rápida y directa por WhatsApp sin comisiones.">
+  <!-- Usamos una imagen corporativa nítida y oficial para evitar el rectángulo gris -->
+  <meta property="og:image" content="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root { --primary-color: #eab308; }
+    body { background-color: #09090b; color: #e5e7eb; }
+    .text-primary { color: var(--primary-color); }
+    .bg-primary { background-color: var(--primary-color); }
+    .border-primary { border-color: var(--primary-color); }
+    
+    .glow-effect {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, rgba(9, 9, 11, 0) 70%);
+      z-index: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="font-sans pb-28 relative overflow-x-hidden">
+
+  <!-- ================= VISTA 1: LANDING PAGE PROFESIONAL ================= -->
+  <div id="vista-landing" class="hidden min-h-screen flex flex-col justify-between p-5 max-w-lg mx-auto relative z-10 space-y-8">
+    <div class="glow-effect -top-10 -left-20"></div>
+    <div class="glow-effect top-1/2 -right-20"></div>
+
+    <header class="flex items-center justify-between pt-4 border-b border-zinc-800/80 pb-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-black font-black text-xl shadow-lg shadow-amber-500/20">
+          N
         </div>
+        <span class="font-extrabold text-lg text-white tracking-wide">Nexo<span class="text-amber-400">Serv</span></span>
+      </div>
+      <a href="admin.html" class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/60 rounded-xl text-xs font-bold text-white transition-all shadow-sm">
+        Iniciar Sesión 🔐
+      </a>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full space-y-8">
+    <main class="space-y-8 text-center pt-2">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold tracking-wide uppercase animate-pulse">
+        ✨ La nueva era de los menús digitales
+      </div>
 
-        <!-- Tarjetas de Resumen -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 shadow-sm">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Tiendas Reales Activas</p>
-                        <h3 id="statTotalTiendas" class="text-3xl font-extrabold text-white mt-1">0</h3>
-                    </div>
-                    <div class="bg-amber-500/10 text-amber-400 p-3 rounded-xl">
-                        <i class="fa-solid fa-store text-lg"></i>
-                    </div>
-                </div>
-                <p class="text-xs text-amber-400 mt-3 font-medium">Comercios verificados</p>
-            </div>
+      <div class="space-y-4">
+        <h1 class="font-black text-4xl sm:text-5xl text-white tracking-tight leading-tight">
+          Tu propio menú online <span class="bg-gradient-to-r from-amber-400 to-yellow-200 bg-clip-text text-transparent">sin comisiones</span>
+        </h1>
+        <p class="text-sm sm:text-base text-zinc-400 max-w-md mx-auto leading-relaxed">
+          Potencia tu local gastronómico o comercio. Digitaliza tu catálogo, recibe pedidos directos por WhatsApp y administra todo de forma profesional.
+        </p>
+      </div>
 
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 shadow-sm">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Visitas Totales</p>
-                        <h3 id="statTotalVisitas" class="text-3xl font-extrabold text-white mt-1">0</h3>
-                    </div>
-                    <div class="bg-emerald-500/10 text-emerald-400 p-3 rounded-xl">
-                        <i class="fa-solid fa-users text-lg"></i>
-                    </div>
-                </div>
-                <p class="text-xs text-emerald-400 mt-3 font-medium">Tráfico real acumulado</p>
+      <div class="grid gap-3.5 text-left pt-2">
+        <div class="group relative bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800/80 hover:border-amber-500/40 p-4.5 rounded-2xl transition-all shadow-xl">
+          <div class="flex items-start gap-3.5">
+            <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-lg">🚀</div>
+            <div class="space-y-1">
+              <h3 class="font-bold text-sm text-white flex items-center gap-2">30 Días de Prueba Full Gratis</h3>
+              <p class="text-xs text-zinc-400 leading-relaxed">Acceso inmediato sin tarjeta de crédito. Configura tu cuenta con Google en un solo toque.</p>
             </div>
-
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 shadow-sm">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Pedidos Totales</p>
-                        <h3 id="statTotalPedidos" class="text-3xl font-extrabold text-white mt-1">0</h3>
-                    </div>
-                    <div class="bg-blue-500/10 text-blue-400 p-3 rounded-xl">
-                        <i class="fa-solid fa-receipt text-lg"></i>
-                    </div>
-                </div>
-                <p class="text-xs text-zinc-400 mt-3">A través de WhatsApp</p>
-            </div>
-
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 shadow-sm">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Promedio Visitas/Local</p>
-                        <h3 id="statPromedioVisitas" class="text-3xl font-extrabold text-white mt-1">0</h3>
-                    </div>
-                    <div class="bg-purple-500/10 text-purple-400 p-3 rounded-xl">
-                        <i class="fa-solid fa-calculator text-lg"></i>
-                    </div>
-                </div>
-                <p class="text-xs text-zinc-400 mt-3">Rendimiento medio</p>
-            </div>
+          </div>
         </div>
 
-        <!-- Tabla de Locales Reales -->
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl overflow-hidden">
-            <div class="p-5 border-b border-zinc-800 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-list-check text-amber-400"></i> Detalle por Local Real
-                </h2>
-                <div class="w-full sm:w-72 relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-zinc-500">
-                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
-                    </span>
-                    <input type="text" id="buscadorLocal" onkeyup="filtrarLocales()" placeholder="Buscar comercio..." 
-                        class="bg-zinc-950 border border-zinc-800 text-sm rounded-xl block w-full pl-10 pr-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition">
-                </div>
+        <div class="group relative bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800/80 hover:border-amber-500/40 p-4.5 rounded-2xl transition-all shadow-xl">
+          <div class="flex items-start gap-3.5">
+            <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-lg">⚡</div>
+            <div class="space-y-1">
+              <h3 class="font-bold text-sm text-white flex items-center gap-2">Automatización con WhatsApp</h3>
+              <p class="text-xs text-zinc-400 leading-relaxed">Tus clientes arman el carrito y el pedido llega formateado de manera perfecta directo a tu chat.</p>
             </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-zinc-950/50 text-zinc-400 text-xs uppercase tracking-wider border-b border-zinc-800">
-                            <th class="py-3 px-6 font-semibold">Comercio</th>
-                            <th class="py-3 px-6 font-semibold">Categoría</th>
-                            <th class="py-3 px-6 font-semibold">Fecha Alta</th>
-                            <th class="py-3 px-6 font-semibold text-center">Visitas (Únicas / Total)</th>
-                            <th class="py-3 px-6 font-semibold text-center">Pedidos</th>
-                            <th class="py-3 px-6 font-semibold text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaLocalesBody" class="divide-y divide-zinc-800/60 text-sm">
-                        <tr><td colspan="6" class="text-center py-8 text-zinc-500">Cargando datos reales desde Supabase...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+          </div>
         </div>
+
+        <div class="group relative bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800/80 hover:border-amber-500/40 p-4.5 rounded-2xl transition-all shadow-xl">
+          <div class="flex items-start gap-3.5">
+            <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-lg">💳</div>
+            <div class="space-y-1">
+              <h3 class="font-bold text-sm text-white flex items-center gap-2">Cobros Integrados & Webhooks</h3>
+              <p class="text-xs text-zinc-400 leading-relaxed">Sincronización automatizada con pasarelas de pago y gestión multi-tenant segura.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
-    <!-- Script de Conexión y Renderizado -->
-    <script>
-        const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
+    <footer class="space-y-4 pt-4 text-center">
+      <a href="admin.html" class="block w-full py-4 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:opacity-95 text-black font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl shadow-amber-500/20 transition-all transform active:scale-95">
+        Crear mi Menú Gratis Ahora 🚀
+      </a>
+    </footer>
+  </div>
 
-        const _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        let localesData = [];
 
-        async function cargarEstadisticasReales() {
-            try {
-                // Traemos los datos de la tabla estadisticas_tiendas
-                const { data, error } = await _supabaseClient
-                    .from('estadisticas_tiendas')
-                    .select('*')
-                    .order('visitas_totales', { ascending: false });
+  <!-- ================= VISTA 2: MENÚ DIGITAL PÚBLICO ================= -->
+  <div id="vista-menu" class="hidden">
+    <!-- HEADER IMPONENTE Y CENTRADO CON BOTÓN DE COMPARTIR A AMIGOS ARRIBA A LA DERECHA -->
+    <header class="bg-gradient-to-b from-zinc-900 via-zinc-900/95 to-zinc-950 border-b border-zinc-800/80 pt-4 pb-5 px-4 sticky top-0 z-30 backdrop-blur-md shadow-xl">
+      <div class="max-w-md mx-auto relative">
+        
+        <!-- Botón Compartir a amigos en la esquina superior derecha -->
+        <div class="absolute right-0 top-0">
+          <button onclick="compartirMenuAmigos()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-amber-400 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md">
+            <span>💬</span> <span>Compartir a amigos</span>
+          </button>
+        </div>
 
-                if (error) throw error;
+        <div class="text-center space-y-3 pt-2">
+          <!-- Logo Grande y Centrado con Efecto Glow -->
+          <div class="relative inline-block">
+            <div class="absolute -inset-1 bg-gradient-to-r from-amber-500 to-yellow-300 rounded-full blur opacity-40"></div>
+            <img id="local-logo" src="https://via.placeholder.com/100" class="relative w-24 h-24 rounded-full object-cover border-4 border-zinc-900 shadow-2xl mx-auto">
+          </div>
 
-                // 🧹 FILTRADO INTELIGENTE: Descartamos filas sin nombre, nombres vacíos o comercios de prueba fantasma
-                localesData = (data || []).filter(item => {
-                    const nombre = item.nombre_local ? item.nombre_local.trim() : '';
-                    return nombre !== '' && nombre !== 'Menú Digital' && nombre !== 'Cargando menú...';
-                });
+          <!-- Nombre del Comercio -->
+          <div class="space-y-1">
+            <h1 id="local-nombre" class="font-black text-2xl text-white tracking-tight leading-snug">Cargando menú...</h1>
+            <p id="local-estado" class="text-xs text-zinc-400 font-medium"></p>
+          </div>
 
-                renderizarPanel();
-            } catch (err) {
-                console.error("Error al cargar estadísticas:", err);
-                document.getElementById('tablaLocalesBody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-rose-400">Error al conectar con la base de datos.</td></tr>`;
+          <!-- Estado de Apertura e Instagram Destacados -->
+          <div class="flex items-center justify-center gap-2 pt-1 flex-wrap">
+            <div id="local-badge-abierto"></div>
+            <a id="local-instagram-link" href="#" target="_blank" class="hidden items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-purple-900/40 to-pink-900/40 border border-pink-500/40 text-pink-400 rounded-full text-xs font-bold hover:bg-pink-500/20 transition-all">
+              📸 <span id="local-instagram-text">Instagram</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </header>
+
+    <main class="max-w-md mx-auto p-4 space-y-6">
+      <!-- Banner de Promociones / Ofertas Imponente -->
+      <div id="promo-container" class="hidden bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border-2 border-amber-500/50 rounded-3xl p-5 space-y-3 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-10 -top-10 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="flex items-center justify-between">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/20 border border-amber-500/40 rounded-full text-amber-400 font-extrabold text-xs tracking-wider uppercase animate-pulse">
+            🔥 Oferta / Destacado del Día
+          </div>
+        </div>
+        <img id="promo-img" src="" class="w-full h-48 object-cover rounded-2xl hidden shadow-md border border-zinc-800">
+        <p id="promo-txt" class="text-sm text-zinc-200 font-medium leading-relaxed"></p>
+      </div>
+
+      <div id="categorias-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <button onclick="filtrarCategoria('todos')" class="cat-btn px-4 py-2 rounded-xl text-xs font-bold bg-primary text-black whitespace-nowrap shadow">Todos</button>
+      </div>
+
+      <div id="productos-container" class="space-y-3"></div>
+
+      <!-- FOOTER CON DESARROLLADOR NEXOSERV -->
+      <footer class="pt-6 pb-4 text-center border-t border-zinc-800/80 space-y-2">
+        <p class="text-xs text-zinc-500">Menú digital potenciado por</p>
+        <a href="https://wa.me/543644509472?text=Hola%20NexoServ,%20quiero%20crear%20mi%20men%C3%BA%20digital" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 bg-zinc-900 border border-amber-500/30 hover:border-amber-500/60 rounded-xl text-xs font-extrabold text-amber-400 transition-all shadow-sm">
+          🚀 Desarrollado por <span class="text-white underline">NexoServ</span>
+        </a>
+      </footer>
+    </main>
+
+    <!-- BOTÓN FLOTANTE DEL CARRITO -->
+    <div id="carrito-flotante" class="fixed bottom-0 left-0 right-0 p-4 bg-zinc-900/95 border-t border-zinc-800 backdrop-blur-md z-40 hidden">
+      <div class="max-w-md mx-auto flex items-center justify-between">
+        <div>
+          <p class="text-xs text-zinc-400">Total en Carrito</p>
+          <p id="carrito-total" class="font-extrabold text-lg text-white">$0</p>
+        </div>
+        <button onclick="abrirModalCheckout()" class="px-6 py-3 bg-primary text-black font-extrabold rounded-xl text-sm shadow-lg">
+          Ver Pedido 🛒
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL DE CHECKOUT / DATOS DE ENVÍO Y UBICACIÓN -->
+    <div id="modal-checkout" class="fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden backdrop-blur-sm">
+      <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+          <h2 class="font-bold text-base text-white">🛍️ Finalizar tu Pedido</h2>
+          <button onclick="cerrarModalCheckout()" class="text-zinc-400 font-bold text-sm">✕</button>
+        </div>
+
+        <div id="resumen-carrito" class="space-y-2 text-xs text-zinc-300 max-h-40 overflow-y-auto pr-1"></div>
+
+        <div class="space-y-3 pt-2 border-t border-zinc-800">
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1">Tipo de Entrega</label>
+            <select id="tipo-entrega" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
+              <option value="delivery">🛵 Envío a Domicilio</option>
+              <option value="retiro">🏃 Retiro por el Local</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1">Nombre y Apellido</label>
+            <input type="text" id="cliente-nombre" placeholder="Ej: Juan Pérez" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
+          </div>
+          
+          <!-- CAMPO DE DIRECCIÓN CON BOTÓN GPS -->
+          <div id="campo-direccion" class="space-y-2">
+            <div class="flex justify-between items-center">
+              <label class="block text-xs font-semibold text-zinc-400">Dirección de Entrega</label>
+              <button type="button" onclick="obtenerUbicacionGPS()" class="px-3 py-1 bg-amber-500/10 border border-amber-500/40 text-amber-400 hover:bg-amber-500/20 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
+                📍 Usar mi ubicación GPS
+              </button>
+            </div>
+            <input type="text" id="cliente-direccion" placeholder="Ej: Av. San Martín 456" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
+          </div>
+
+          <!-- CAMPO REFERENCIA / MAPS -->
+          <div id="campo-referencia">
+            <label class="block text-xs font-semibold text-amber-400 mb-1">📍 Referencia o Coordenadas Maps (Opcional)</label>
+            <input type="text" id="cliente-referencia" placeholder="Ej: Casa reja negra / Link de Google Maps" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1">Método de Pago</label>
+            <select id="metodo-pago" class="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-white">
+              <option value="Efectivo">💵 Efectivo</option>
+              <option value="Mercado Pago (Alias/Transferencia)">📱 Transferencia / Alias</option>
+              <option value="Link de Pago MP">💳 Tarjeta / Link de Mercado Pago</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="enviarPedidoWhatsApp()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-sm shadow-lg transition-all">
+          Enviar Pedido por WhatsApp 🚀
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LÓGICA DE CARGA DINÁMICA -->
+  <script>
+    const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
+
+    const _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let userIdNegocio = null;
+    let datosConfig = {};
+    let productosNegocio = [];
+    let carrito = [];
+    let categoriaActiva = 'todos';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      userIdNegocio = params.get('u');
+
+      if (!userIdNegocio) {
+        document.getElementById('vista-landing').classList.remove('hidden');
+        return;
+      }
+
+      document.getElementById('vista-menu').classList.remove('hidden');
+      await cargarDatosComercio();
+    });
+
+    async function cargarDatosComercio() {
+      try {
+        const { data: config } = await _supabaseClient
+          .from('configuracion')
+          .select('*')
+          .eq('user_id', userIdNegocio)
+          .maybeSingle();
+
+        if (!config) {
+          document.getElementById('local-nombre').textContent = "Local no encontrado";
+          return;
+        }
+
+        const { data: perfil } = await _supabaseClient
+          .from('profiles')
+          .select('is_active, trial_ends_at')
+          .eq('id', userIdNegocio)
+          .maybeSingle();
+
+        const ahora = new Date();
+        const vencePrueba = perfil && perfil.trial_ends_at ? new Date(perfil.trial_ends_at) : null;
+        const tienePruebaVigente = vencePrueba && vencePrueba > ahora;
+        const estaActivo = perfil && perfil.is_active === true;
+        const suscripcionVencida = !estaActivo && !tienePruebaVigente;
+
+        datosConfig = config;
+        const nombreLocal = config.nombre || 'Menú Digital';
+        document.getElementById('local-nombre').textContent = nombreLocal;
+
+        if (config.logo_url) {
+          document.getElementById('local-logo').src = config.logo_url;
+        }
+
+        // 🚀 REGISTRAR VISITA EN SUPABASE DE FORMA AUTOMÁTICA
+        await registrarVisitaEnSupabase(nombreLocal);
+
+        if (config.instagram) {
+          const igLink = document.getElementById('local-instagram-link');
+          const igText = document.getElementById('local-instagram-text');
+          let handle = config.instagram.trim();
+          if (!handle.startsWith('@')) handle = '@' + handle;
+          igText.textContent = handle;
+          igLink.href = `https://instagram.com/${handle.replace('@', '')}`;
+          igLink.classList.remove('hidden');
+          igLink.classList.add('inline-flex');
+        }
+
+        const badge = document.getElementById('local-badge-abierto');
+        const estadoTexto = document.getElementById('local-estado');
+
+        if (suscripcionVencida) {
+          estadoTexto.textContent = "Local temporalmente no disponible";
+          badge.innerHTML = '<span class="px-3 py-1 bg-rose-950 text-rose-400 border border-rose-800/50 rounded-full text-[10px] font-bold">🔴 Local Cerrado (Suscripción Vencida)</span>';
+          
+          document.getElementById('productos-container').innerHTML = `
+            <div class="bg-zinc-900 border border-rose-500/30 rounded-2xl p-6 text-center space-y-3 shadow-lg">
+              <p class="text-3xl">⏳</p>
+              <h3 class="font-bold text-base text-rose-400">Menú Temporalmente Pausado</h3>
+              <p class="text-xs text-zinc-400">Este comercio se encuentra actualizando su plataforma o cuenta pendiente de renovación.</p>
+            </div>
+          `;
+          return;
+        }
+
+        if (config.abierto) {
+          estadoTexto.textContent = config.direccion || '';
+          badge.innerHTML = '<span class="px-3 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800/50 rounded-full text-[11px] font-bold shadow-sm">🟢 Abierto</span>';
+        } else {
+          estadoTexto.textContent = config.direccion || '';
+          badge.innerHTML = '<span class="px-3 py-1 bg-rose-950 text-rose-400 border border-rose-800/50 rounded-full text-[11px] font-bold shadow-sm">🔴 Cerrado</span>';
+        }
+
+        if (config.color_primario) {
+          document.documentElement.style.setProperty('--primary-color', config.color_primario);
+        }
+
+        await cargarPromoActiva();
+        await cargarProductosComercio();
+
+      } catch (e) {
+        console.error("Error cargando comercio:", e);
+      }
+    }
+
+    // 📈 FUNCIÓN PARA REGISTRAR VISITAS EN LA TABLA DE SUPABASE
+    async function registrarVisitaEnSupabase(nombreLocal) {
+      if (!userIdNegocio) return;
+      try {
+        const { data: existingData } = await _supabaseClient
+          .from('estadisticas_tiendas')
+          .select('*')
+          .eq('user_id', userIdNegocio)
+          .maybeSingle();
+
+        const sessionKey = `visita_registrada_${userIdNegocio}`;
+        const esVisitaUnica = !sessionStorage.getItem(sessionKey);
+
+        if (existingData) {
+          const nuevasVisitasTotales = (existingData.visitas_totales || 0) + 1;
+          const nuevasVisitasUnicas = esVisitaUnica ? (existingData.visitas_unicas || 0) + 1 : existingData.visitas_unicas;
+
+          await _supabaseClient
+            .from('estadisticas_tiendas')
+            .update({
+              nombre_local: nombreLocal,
+              visitas_totales: nuevasVisitasTotales,
+              visitas_unicas: nuevasVisitasUnicas
+            })
+            .eq('user_id', userIdNegocio);
+        } else {
+          await _supabaseClient
+            .from('estadisticas_tiendas')
+            .insert([{
+              user_id: userIdNegocio,
+              nombre_local: nombreLocal,
+              categoria: 'Gastronomía / Comercio',
+              visitas_totales: 1,
+              visitas_unicas: 1,
+              pedidos: 0
+            }]);
+        }
+
+        if (esVisitaUnica) {
+          sessionStorage.setItem(sessionKey, 'true');
+        }
+      } catch (err) {
+        console.error("Error al registrar visita:", err);
+      }
+    }
+
+    async function cargarPromoActiva() {
+      try {
+        const { data: promo } = await _supabaseClient
+          .from('promociones')
+          .select('*')
+          .eq('user_id', userIdNegocio)
+          .order('creado_en', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (promo) {
+          const hace12Horas = new Date(Date.now() - 12 * 60 * 60 * 1000);
+          if (new Date(promo.creado_en) > hace12Horas) {
+            document.getElementById('promo-container').classList.remove('hidden');
+            document.getElementById('promo-txt').textContent = promo.texto_promo || '';
+            if (promo.imagen_url) {
+              const img = document.getElementById('promo-img');
+              img.src = promo.imagen_url;
+              img.classList.remove('hidden');
             }
+          }
         }
+      } catch (e) {}
+    }
 
-        function renderizarPanel(filtro = '') {
-            const tbody = document.getElementById('tablaLocalesBody');
-            tbody.innerHTML = '';
+    async function cargarProductosComercio() {
+      try {
+        const { data } = await _supabaseClient
+          .from('productos')
+          .select('*')
+          .eq('user_id', userIdNegocio);
 
-            let totalTiendas = localesData.length;
-            let totalVisitasGlobal = 0;
-            let totalPedidosGlobal = 0;
+        productosNegocio = data || [];
+        renderizarCategorias();
+        renderizarProductos();
+      } catch (e) {}
+    }
 
-            const filtrados = localesData.filter(local => 
-                (local.nombre_local && local.nombre_local.toLowerCase().includes(filtro.toLowerCase())) ||
-                (local.categoria && local.categoria.toLowerCase().includes(filtro.toLowerCase()))
-            );
+    function renderizarCategorias() {
+      const cats = ['todos', ...new Set(productosNegocio.map(p => p.categoria).filter(Boolean))];
+      const container = document.getElementById('categorias-container');
+      container.innerHTML = '';
 
-            if (filtrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-zinc-500">No hay comercios reales registrados todavía.</td></tr>`;
-                document.getElementById('statTotalTiendas').innerText = 0;
-                document.getElementById('statTotalVisitas').innerText = 0;
-                document.getElementById('statTotalPedidos').innerText = 0;
-                document.getElementById('statPromedioVisitas').innerText = 0;
-                return;
-            }
+      cats.forEach(cat => {
+        const isActive = categoriaActiva === cat;
+        container.innerHTML += `
+          <button onclick="filtrarCategoria('${cat}')" class="cat-btn px-4 py-2 rounded-xl text-xs font-bold transition-all ${isActive ? 'bg-primary text-black shadow' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'} whitespace-nowrap">
+            ${cat.charAt(0).toUpperCase() + cat.slice(1)}
+          </button>
+        `;
+      });
+    }
 
-            filtrados.forEach(local => {
-                const visitasTotales = local.visitas_totales || 0;
-                const visitasUnicas = local.visitas_unicas || 0;
-                const pedidos = local.pedidos || 0;
-                
-                totalVisitasGlobal += visitasTotales;
-                totalPedidosGlobal += pedidos;
+    function filtrarCategoria(cat) {
+      categoriaActiva = cat;
+      renderizarCategorias();
+      renderizarProductos();
+    }
 
-                const fechaFormateada = local.fecha_alta ? new Date(local.fecha_alta).toLocaleDateString('es-AR') : 'Reciente';
+    function renderizarProductos() {
+      const container = document.getElementById('productos-container');
+      container.innerHTML = '';
 
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-zinc-800/40 transition";
-                tr.innerHTML = `
-                    <td class="py-4 px-6 font-medium text-white flex items-center gap-3">
-                        <div class="bg-zinc-800 text-amber-400 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shadow-inner border border-zinc-700/50">
-                            <i class="fa-solid fa-store"></i>
-                        </div>
-                        <div>
-                            <span class="block font-semibold">${local.nombre_local}</span>
-                            <span class="text-[11px] text-zinc-500">ID: ${local.user_id.substring(0, 8)}...</span>
-                        </div>
-                    </td>
-                    <td class="py-4 px-6 text-zinc-300">${local.categoria || 'Comercio'}</td>
-                    <td class="py-4 px-6 text-zinc-400 text-xs">${fechaFormateada}</td>
-                    <td class="py-4 px-6 text-center">
-                        <span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-full text-xs font-semibold">
-                            ${visitasTotales.toLocaleString()} <span class="text-zinc-500 font-normal">(${visitasUnicas} únicas)</span>
-                        </span>
-                    </td>
-                    <td class="py-4 px-6 text-center text-zinc-200 font-bold">${pedidos.toLocaleString()}</td>
-                    <td class="py-4 px-6 text-right">
-                        <a href="index.html?u=${local.user_id}" target="_blank" class="text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-3 py-1.5 rounded-xl text-xs font-bold transition inline-flex items-center gap-1 border border-amber-500/20">
-                            <i class="fa-solid fa-external-link-alt"></i> Ver Menú
-                        </a>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+      const filtrados = productosNegocio.filter(p => {
+        const matchCat = categoriaActiva === 'todos' || p.categoria === categoriaActiva;
+        const pausado = p.pausado === true || p.pausado === 'true';
+        return matchCat && !pausado;
+      });
 
-            // Actualizar tarjetas resumen superior
-            document.getElementById('statTotalTiendas').innerText = totalTiendas;
-            document.getElementById('statTotalVisitas').innerText = totalVisitasGlobal.toLocaleString();
-            document.getElementById('statTotalPedidos').innerText = totalPedidosGlobal.toLocaleString();
-            document.getElementById('statPromedioVisitas').innerText = totalTiendas > 0 ? Math.round(totalVisitasGlobal / totalTiendas).toLocaleString() : 0;
+      if (filtrados.length === 0) {
+        container.innerHTML = '<p class="text-center text-xs text-zinc-500 py-8">No hay productos disponibles en esta categoría.</p>';
+        return;
+      }
+
+      filtrados.forEach(p => {
+        const tieneDescuento = p.precio_original && p.precio_original > p.precio;
+        const itemEnCarrito = carrito.find(item => item.id === p.id);
+        const cantidad = itemEnCarrito ? itemEnCarrito.cantidad : 0;
+
+        container.innerHTML += `
+          <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 flex gap-3 items-center shadow-sm">
+            <img src="${p.imagen_url || 'https://via.placeholder.com/100'}" class="w-20 h-20 rounded-xl object-cover bg-zinc-950">
+            <div class="flex-1 space-y-1">
+              <h3 class="font-bold text-sm text-white">${p.nombre}</h3>
+              <p class="text-xs text-zinc-400 line-clamp-2">${p.descripcion || ''}</p>
+              <div class="flex items-center gap-2">
+                <span class="font-extrabold text-sm text-primary">$${p.precio}</span>
+                ${tieneDescuento ? `<span class="text-xs line-through text-zinc-500">$${p.precio_original}</span>` : ''}
+              </div>
+            </div>
+            
+            <!-- CONTROLES DINÁMICOS DE CANTIDAD (+ / -) -->
+            <div class="flex items-center gap-1.5 shrink-0">
+              ${cantidad > 0 ? `
+                <button onclick="cambiarCantidad(${p.id}, -1)" class="w-8 h-8 bg-zinc-950 border border-zinc-800 hover:border-red-500 text-white font-bold rounded-lg text-xs flex items-center justify-center transition-all">➖</button>
+                <span class="w-6 text-center text-xs font-extrabold text-white">${cantidad}</span>
+              ` : ''}
+              <button onclick="cambiarCantidad(${p.id}, 1)" class="w-8 h-8 bg-zinc-950 border border-zinc-800 hover:border-primary text-white font-bold rounded-lg text-xs flex items-center justify-center transition-all shadow">➕</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function cambiarCantidad(idProducto, delta) {
+      const producto = productosNegocio.find(item => item.id === idProducto);
+      if (!producto) return;
+
+      const existente = carrito.find(item => item.id === idProducto);
+      if (existente) {
+        existente.cantidad += delta;
+        if (existente.cantidad <= 0) {
+          carrito = carrito.filter(item => item.id !== idProducto);
         }
+      } else if (delta > 0) {
+        carrito.push({ ...producto, cantidad: 1 });
+      }
 
-        function filtrarLocales() {
-            const query = document.getElementById('buscadorLocal').value;
-            renderizarPanel(query);
+      actualizarBarraCarrito();
+      renderizarProductos();
+    }
+
+    function actualizarBarraCarrito() {
+      const totalPrecio = carrito.reduce((sum, i) => sum + (i.precio * i.cantidad), 0);
+      const barra = document.getElementById('carrito-flotante');
+      if (carrito.length > 0) {
+        barra.classList.remove('hidden');
+        document.getElementById('carrito-total').textContent = `$${totalPrecio.toLocaleString()}`;
+      } else {
+        barra.classList.add('hidden');
+        cerrarModalCheckout();
+      }
+    }
+
+    function abrirModalCheckout() {
+      const container = document.getElementById('resumen-carrito');
+      container.innerHTML = '';
+
+      carrito.forEach(item => {
+        container.innerHTML += `
+          <div class="flex justify-between items-center py-2 border-b border-zinc-800/50 gap-2">
+            <span class="text-white">${item.nombre}</span>
+            <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1">
+                <button onclick="cambiarCantidadCheckout(${item.id}, -1)" class="w-6 h-6 bg-zinc-950 border border-zinc-800 text-white rounded text-[10px] font-bold">➖</button>
+                <span class="w-5 text-center font-bold text-xs">${item.cantidad}</span>
+                <button onclick="cambiarCantidadCheckout(${item.id}, 1)" class="w-6 h-6 bg-zinc-950 border border-zinc-800 text-white rounded text-[10px] font-bold">➕</button>
+              </div>
+              <span class="font-bold text-primary min-w-[50px] text-right">$${item.precio * item.cantidad}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      document.getElementById('modal-checkout').classList.remove('hidden');
+    }
+
+    function cambiarCantidadCheckout(idProducto, delta) {
+      cambiarCantidad(idProducto, delta);
+      if (carrito.length > 0) {
+        abrirModalCheckout();
+      } else {
+        cerrarModalCheckout();
+      }
+    }
+
+    function cerrarModalCheckout() {
+      document.getElementById('modal-checkout').classList.add('hidden');
+    }
+
+    async function compartirMenuAmigos() {
+      const urlActual = window.location.href;
+      const nombreLocal = datosConfig.nombre || 'este local';
+      const textoCompartir = `¡Hola! 👋 Mirá el menú digital de *${nombreLocal}* para hacer pedidos online de forma rápida y directa.`;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: nombreLocal,
+            text: textoCompartir,
+            url: urlActual,
+          });
+        } catch (err) {}
+      } else {
+        const urlWa = `https://wa.me/?text=${encodeURIComponent(textoCompartir + "\n\n" + urlActual)}`;
+        window.open(urlWa, '_blank');
+      }
+    }
+
+    function obtenerUbicacionGPS() {
+      if (!navigator.geolocation) {
+        alert("Tu navegador no soporta geolocalización.");
+        return;
+      }
+
+      const btnGps = event.target;
+      const textoOriginal = btnGps.textContent;
+      btnGps.textContent = "📍 Buscando GPS...";
+      btnGps.disabled = true;
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const linkMaps = `https://maps.google.com/?q=${lat},${lng}`;
+          
+          document.getElementById('cliente-direccion').value = `Ubicación GPS Actual`;
+          document.getElementById('cliente-referencia').value = linkMaps;
+          
+          btnGps.textContent = "✅ ¡Ubicación Obtenida!";
+          setTimeout(() => {
+            btnGps.textContent = textoOriginal;
+            btnGps.disabled = false;
+          }, 3000);
+        },
+        (error) => {
+          alert("No se pudo obtener la ubicación. Asegúrate de dar permisos de GPS.");
+          btnGps.textContent = textoOriginal;
+          btnGps.disabled = false;
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+
+    function enviarPedidoWhatsApp() {
+      const nombre = document.getElementById('cliente-nombre').value.trim();
+      const direccion = document.getElementById('cliente-direccion').value.trim();
+      const referencia = document.getElementById('cliente-referencia').value.trim();
+      const tipoEntrega = document.getElementById('tipo-entrega').value;
+      const metodoPago = document.getElementById('metodo-pago').value;
+      const whatsappNegocio = datosConfig.whatsapp_1;
+
+      if (!nombre) {
+        alert("Por favor ingresa tu nombre.");
+        return;
+      }
+      if (tipoEntrega === 'delivery' && !direccion) {
+        alert("Por favor ingresa tu dirección para el envío.");
+        return;
+      }
+      if (!whatsappNegocio) {
+        alert("El comercio no tiene configurado un número de WhatsApp.");
+        return;
+      }
+
+      let mensaje = `*¡Nuevo Pedido! 🛒*\n\n`;
+      mensaje += `👤 *Cliente:* ${nombre}\n`;
+      mensaje += `📦 *Tipo:* ${tipoEntrega === 'delivery' ? 'Envío a Domicilio' : 'Retiro por el local'}\n`;
+      
+      if (tipoEntrega === 'delivery') {
+        mensaje += `📍 *Dirección:* ${direccion}\n`;
+        if (referencia) {
+          mensaje += `🗺️ *Referencia / Maps:* ${referencia}\n`;
         }
+      }
 
-        function exportarCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,ID,Nombre,Categoria,FechaAlta,VisitasUnicas,VisitasTotales,Pedidos\n";
-            localesData.forEach(l => {
-                csvContent += `${l.user_id},"${l.nombre_local}","${l.categoria || ''}",${l.fecha_alta},${l.visitas_unicas || 0},${l.visitas_totales || 0},${l.pedidos || 0}\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "nexoserv_estadisticas_reales.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+      mensaje += `💳 *Pago:* ${metodoPago}\n\n`;
+      mensaje += `*Detalle del pedido:*\n`;
 
-        // Cargar automáticamente al abrir la página
-        window.onload = cargarEstadisticasReales;
-    </script>
+      let total = 0;
+      carrito.forEach(item => {
+        const subtotal = item.precio * item.cantidad;
+        total += subtotal;
+        mensaje += `- ${item.cantidad}x ${item.nombre} ($${subtotal})\n`;
+      });
+
+      if (tipoEntrega === 'delivery' && datosConfig.costo_delivery) {
+        total += parseFloat(datosConfig.costo_delivery);
+        mensaje += `🛵 Envío: $${datosConfig.costo_delivery}\n`;
+      }
+
+      mensaje += `\n💰 *TOTAL A PAGAR: $${total.toLocaleString()}*`;
+
+      const urlWa = `https://wa.me/${whatsappNegocio}?text=${encodeURIComponent(mensaje)}`;
+      window.open(urlWa, '_blank');
+    }
+  </script>
 </body>
 </html>
