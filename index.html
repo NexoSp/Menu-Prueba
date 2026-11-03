@@ -24,7 +24,7 @@
     }
   </style>
 </head>
-<body class="font-sans pb-24 relative overflow-x-hidden">
+<body class="font-sans pb-28 relative overflow-x-hidden">
 
   <!-- ================= VISTA 1: LANDING PAGE PROFESIONAL ================= -->
   <div id="vista-landing" class="hidden min-h-screen flex flex-col justify-between p-5 max-w-lg mx-auto relative z-10 space-y-8">
@@ -145,6 +145,21 @@
       </div>
 
       <div id="productos-container" class="space-y-3"></div>
+
+      <!-- BOTÓN DE COMPARTIR MENÚ A AMIGOS -->
+      <div class="pt-4 pb-2">
+        <button onclick="compartirMenuAmigos()" class="w-full py-3.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/60 text-white font-bold rounded-2xl text-xs shadow-md transition-all flex items-center justify-center gap-2">
+          💬 Compartir Menú a Amigos
+        </button>
+      </div>
+
+      <!-- FOOTER CON DESARROLLADOR NEXOSERV -->
+      <footer class="pt-6 pb-4 text-center border-t border-zinc-800/80 space-y-2">
+        <p class="text-xs text-zinc-500">Menú digital potenciado por</p>
+        <a href="https://wa.me/543644509472?text=Hola%20NexoServ,%20quiero%20crear%20mi%20men%C3%BA%20digital" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 bg-zinc-900 border border-amber-500/30 hover:border-amber-500/60 rounded-xl text-xs font-extrabold text-amber-400 transition-all shadow-sm">
+          🚀 Desarrollado por <span class="text-white underline">NexoServ</span>
+        </a>
+      </footer>
     </main>
 
     <!-- BOTÓN FLOTANTE DEL CARRITO -->
@@ -217,7 +232,7 @@
     </div>
   </div>
 
-  <!-- LÓGICA DE CARGA DINÁMICA CON BOTONES + / - Y GPS -->
+  <!-- LÓGICA DE CARGA DINÁMICA CON BOTONES + / - , GPS Y COMPARTIR -->
   <script>
     const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
@@ -488,6 +503,14 @@
 
     function cerrarModalCheckout() {
       document.getElementById('modal-checkout').classList.add('hidden');
+    }
+
+    function compartirMenuAmigos() {
+      const urlActual = window.location.href;
+      const nombreLocal = datosConfig.nombre || 'este local';
+      const texto = `¡Hola! 👋 Mirá el menú digital de *${nombreLocal}* para hacer pedidos online:\n\n${urlActual}`;
+      const urlWa = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+      window.open(urlWa, '_blank');
     }
 
     function obtenerUbicacionGPS() {
