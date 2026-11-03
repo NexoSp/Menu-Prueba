@@ -29,7 +29,7 @@
     .text-gold { color: var(--primary-color); }
     .bg-gold { background-color: var(--primary-color); }
     
-    /* Efecto de resaltado para el Tour */
+    /* Efecto de resaltado limpio para el Tour */
     .tour-highlight {
       position: relative;
       z-index: 60;
@@ -136,7 +136,7 @@
       
       <div class="flex justify-between items-center border-b border-dark-border pb-3">
         <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/20 border border-amber-500/40 rounded-full text-amber-400 font-extrabold text-[10px] tracking-wider uppercase">
-          ✨ Tour Guiado (<span id="tour-step-indicator">1 de 4</span>)
+          ✨ Tour Guiado (<span id="tour-step-indicator">1 de 3</span>)
         </div>
         <button onclick="finalizarTour()" class="text-gray-400 hover:text-white font-bold text-xs">Saltar Tour ✕</button>
       </div>
@@ -144,7 +144,7 @@
       <div class="space-y-2 py-2 text-left">
         <h3 id="tour-titulo" class="font-black text-lg text-white">¡Bienvenido a NexoServ! 🚀</h3>
         <p id="tour-texto" class="text-xs text-gray-300 leading-relaxed">
-          Vamos a hacer un recorrido rápido de 30 segundos para que conozcas cómo administrar tu menú digital y recibir pedidos al instante.
+          Vamos a hacer un recorrido rápido para que conozcas cómo administrar tu menú digital y recibir pedidos al instante.
         </p>
       </div>
 
@@ -221,7 +221,7 @@
 
     <!-- SOLAPAS DE CONTENIDO -->
     <div id="solapa-config" class="space-y-6">
-      <section id="tour-promo-section" class="bg-dark-card p-5 rounded-2xl shadow-sm border border-amber-500/30 space-y-4">
+      <section class="bg-dark-card p-5 rounded-2xl shadow-sm border border-amber-500/30 space-y-4">
         <h2 class="font-bold text-base text-amber-400 border-b border-dark-border pb-2">🔥 Subir Estado / Promo del Día (Dura 12 Horas)</h2>
         <div class="space-y-3">
           <div>
@@ -340,7 +340,7 @@
     </div>
 
     <div id="solapa-productos" class="space-y-6 hidden">
-      <section id="tour-productos-section" class="bg-dark-card p-5 rounded-2xl shadow-sm border border-dark-border space-y-4">
+      <section class="bg-dark-card p-5 rounded-2xl shadow-sm border border-dark-border space-y-4">
         <h2 class="font-bold text-base text-white border-b border-dark-border pb-2"><span id="form-title" class="text-gold">🍔 Agregar Producto</span></h2>
         <input type="hidden" id="prod-id"><input type="hidden" id="prod-imagen">
         <div class="space-y-3">
@@ -389,7 +389,7 @@
 
   </main>
 
-  <!-- LÓGICA CON TOUR GUIADO INTERACTIVO Y CARGA SEGURA -->
+  <!-- LÓGICA CON TOUR OPTIMIZADO DE 3 PASOS -->
   <script>
     const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
@@ -401,12 +401,12 @@
     let listaProductos = [];
     let configActualId = null;
 
-    // CONFIGURACIÓN DE LOS PASOS DEL TOUR GUIADO
+    // CONFIGURACIÓN DE LOS 3 PASOS DEL TOUR GUIADO (LIMPIO Y SIN SOLAPAMIENTOS)
     let pasoTourActual = 0;
     const pasosTour = [
       {
         titulo: "¡Bienvenido a NexoServ Admin! 🚀",
-        texto: "Acá tenés el control total de tu menú digital. Vamos a mostrarte los puntos clave en 4 simples pasos.",
+        texto: "Acá tenés el control total de tu menú digital. Vamos a mostrarte los puntos clave en 3 simples pasos.",
         elemento: null,
         solapa: 'config'
       },
@@ -421,12 +421,6 @@
         texto: "Haz clic en esta solapa para agregar tus platos, bebidas, ajustar precios y organizarlos por categorías de forma súper intuitiva.",
         elemento: 'tour-tabs',
         solapa: 'productos'
-      },
-      {
-        titulo: "🔥 Promociones de 12 Horas",
-        texto: "Publica ofertas especiales o platos del día. Aparecerán destacadas en la parte superior de tu menú digital durante 12 horas exactas.",
-        elemento: 'tour-promo-section',
-        solapa: 'config'
       }
     ];
 
