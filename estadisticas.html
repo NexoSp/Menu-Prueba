@@ -1,33 +1,32 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexoMenú - Panel de Estadísticas por Local</title>
-    <!-- Tailwind CSS -->
+    <title>NexoServ - Panel de Estadísticas Real</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-900 text-gray-100 font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-zinc-950 text-zinc-100 font-sans antialiased min-h-screen flex flex-col">
 
     <!-- Header -->
-    <header class="bg-gray-800 border-b border-gray-700 shadow-lg">
+    <header class="bg-zinc-900 border-b border-zinc-800 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <div class="bg-emerald-600 p-2.5 rounded-xl shadow-md text-white">
+                <div class="bg-amber-500 text-black p-2.5 rounded-xl shadow-md font-black">
                     <i class="fa-solid fa-chart-line text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-wide text-white">NexoMenú <span class="text-emerald-400 font-light">Analytics</span></h1>
-                    <p class="text-xs text-gray-400">Panel de control y métricas individuales por comercio</p>
+                    <h1 class="text-xl font-bold tracking-wide text-white">NexoServ <span class="text-amber-400 font-light">Analytics</span></h1>
+                    <p class="text-xs text-zinc-400">Métricas reales y activas por comercio</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <button onclick="exportarCSV()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 border border-gray-600">
+                <button onclick="exportarCSV()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-zinc-700">
                     <i class="fa-solid fa-download"></i> Exportar CSV
                 </button>
-                <button onclick="cargarDatos()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 shadow-lg shadow-emerald-900/30">
+                <button onclick="cargarEstadisticasReales()" class="bg-amber-500 hover:bg-amber-400 text-black px-4 py-2 rounded-xl text-xs font-black transition flex items-center gap-2 shadow-lg shadow-amber-500/20">
                     <i class="fa-solid fa-rotate-right"></i> Actualizar
                 </button>
             </div>
@@ -39,83 +38,79 @@
 
         <!-- Tarjetas de Resumen -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 shadow-sm">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 shadow-sm">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">Tiendas Creadas</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Tiendas Reales Activas</p>
                         <h3 id="statTotalTiendas" class="text-3xl font-extrabold text-white mt-1">0</h3>
                     </div>
-                    <div class="bg-blue-500/10 text-blue-400 p-3 rounded-xl">
+                    <div class="bg-amber-500/10 text-amber-400 p-3 rounded-xl">
                         <i class="fa-solid fa-store text-lg"></i>
                     </div>
                 </div>
-                <p class="text-xs text-emerald-400 mt-3 flex items-center gap-1 font-medium">
-                    <i class="fa-solid fa-arrow-up"></i> Activas en la red
-                </p>
+                <p class="text-xs text-amber-400 mt-3 font-medium">Comercios verificados</p>
             </div>
 
-            <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 shadow-sm">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 shadow-sm">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">Visitas Totales</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Visitas Totales</p>
                         <h3 id="statTotalVisitas" class="text-3xl font-extrabold text-white mt-1">0</h3>
                     </div>
                     <div class="bg-emerald-500/10 text-emerald-400 p-3 rounded-xl">
                         <i class="fa-solid fa-users text-lg"></i>
                     </div>
                 </div>
-                <p class="text-xs text-emerald-400 mt-3 flex items-center gap-1 font-medium">
-                    <i class="fa-solid fa-chart-simple"></i> Tráfico acumulado
-                </p>
+                <p class="text-xs text-emerald-400 mt-3 font-medium">Tráfico real acumulado</p>
             </div>
 
-            <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 shadow-sm">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 shadow-sm">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">Pedidos Totales</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Pedidos Totales</p>
                         <h3 id="statTotalPedidos" class="text-3xl font-extrabold text-white mt-1">0</h3>
                     </div>
-                    <div class="bg-amber-500/10 text-amber-400 p-3 rounded-xl">
+                    <div class="bg-blue-500/10 text-blue-400 p-3 rounded-xl">
                         <i class="fa-solid fa-receipt text-lg"></i>
                     </div>
                 </div>
-                <p class="text-xs text-gray-400 mt-3">A través de WhatsApp/QR</p>
+                <p class="text-xs text-zinc-400 mt-3">A través de WhatsApp</p>
             </div>
 
-            <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 shadow-sm">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 shadow-sm">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">Promedio Visitas/Local</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Promedio Visitas/Local</p>
                         <h3 id="statPromedioVisitas" class="text-3xl font-extrabold text-white mt-1">0</h3>
                     </div>
                     <div class="bg-purple-500/10 text-purple-400 p-3 rounded-xl">
                         <i class="fa-solid fa-calculator text-lg"></i>
                     </div>
                 </div>
-                <p class="text-xs text-gray-400 mt-3">Rendimiento medio</p>
+                <p class="text-xs text-zinc-400 mt-3">Rendimiento medio</p>
             </div>
         </div>
 
-        <!-- Sección de Tabla Individualizada -->
-        <div class="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl overflow-hidden">
-            <div class="p-5 border-b border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <!-- Tabla de Locales Reales -->
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl overflow-hidden">
+            <div class="p-5 border-b border-zinc-800 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-list-check text-emerald-400"></i> Detalle por Local
+                    <i class="fa-solid fa-list-check text-amber-400"></i> Detalle por Local Real
                 </h2>
                 <div class="w-full sm:w-72 relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-zinc-500">
                         <i class="fa-solid fa-magnifying-glass text-sm"></i>
                     </span>
-                    <input type="text" id="buscadorLocal" onkeyup="filtrarLocales()" placeholder="Buscar local por nombre..." 
-                        class="bg-gray-900 border border-gray-700 text-sm rounded-xl block w-full pl-10 pr-4 py-2.5 text-gray-100 placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition">
+                    <input type="text" id="buscadorLocal" onkeyup="filtrarLocales()" placeholder="Buscar comercio..." 
+                        class="bg-zinc-950 border border-zinc-800 text-sm rounded-xl block w-full pl-10 pr-4 py-2.5 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition">
                 </div>
             </div>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-gray-900/50 text-gray-400 text-xs uppercase tracking-wider border-b border-gray-700">
-                            <th class="py-3 px-6 font-semibold">Local / Comercio</th>
+                        <tr class="bg-zinc-950/50 text-zinc-400 text-xs uppercase tracking-wider border-b border-zinc-800">
+                            <th class="py-3 px-6 font-semibold">Comercio</th>
                             <th class="py-3 px-6 font-semibold">Categoría</th>
                             <th class="py-3 px-6 font-semibold">Fecha Alta</th>
                             <th class="py-3 px-6 font-semibold text-center">Visitas (Únicas / Total)</th>
@@ -123,40 +118,43 @@
                             <th class="py-3 px-6 font-semibold text-right">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaLocalesBody" class="divide-y divide-gray-700/60 text-sm">
-                        <!-- Los datos se inyectan dinámicamente mediante JS -->
+                    <tbody id="tablaLocalesBody" class="divide-y divide-zinc-800/60 text-sm">
+                        <tr><td colspan="6" class="text-center py-8 text-zinc-500">Cargando datos reales desde Supabase...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 border-t border-gray-700 py-4 text-center text-xs text-gray-500 mt-auto">
-        NexoMenú Panel Estadístico • Administrado localmente o vía base de datos
-    </footer>
-
-    <!-- Script de Gestión y Estadísticas -->
+    <!-- Script de Conexión y Renderizado -->
     <script>
-        // Datos de ejemplo (Mock Data) o integración con localStorage / Supabase
-        let localesData = [
-            { id: 1, nombre: "Burger House Sáenz Peña", categoria: "Gastronomía / Hamburguesas", fechaAlta: "10/09/2026", visitasUnicas: 1420, visitasTotales: 3850, pedidos: 310 },
-            { id: 2, nombre: "Heladería Dulce Frío", categoria: "Heladería / Postres", fechaAlta: "22/09/2026", visitasUnicas: 890, visitasTotales: 2100, pedidos: 185 },
-            { id: 3, nombre: "Café Central Calle 12", categoria: "Cafetería", fechaAlta: "05/10/2026", visitasUnicas: 2300, visitasTotales: 5400, pedidos: 490 },
-            { id: 4, nombre: "Pizzería Don Pepe", categoria: "Pizzería", fechaAlta: "14/10/2026", visitasUnicas: 650, visitasTotales: 1250, pedidos: 95 }
-        ];
+        const SUPABASE_URL = 'https://wtzdqbxclqyreroqfgfm.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0emRxYnhjbHF5cmVyb3FmZ2ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3Njg4OTIsImV4cCI6MjEwODM0NDg5Mn0.hafxXt6APeOD8GTmank7XdeVL-jvfeL-44Rbk1jTT3Q';
 
-        function cargarDatos() {
-            // Si tenés datos guardados en localStorage (por ejemplo, guardados desde tus páginas de NexoMenú)
-            const datosGuardados = localStorage.getItem('nexomenu_stores_stats');
-            if (datosGuardados) {
-                try {
-                    localesData = JSON.parse(datosGuardados);
-                } catch(e) {
-                    console.error("Error al leer datos locales", e);
-                }
+        const _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let localesData = [];
+
+        async function cargarEstadisticasReales() {
+            try {
+                // Traemos los datos de la tabla estadisticas_tiendas
+                const { data, error } = await _supabaseClient
+                    .from('estadisticas_tiendas')
+                    .select('*')
+                    .order('visitas_totales', { ascending: false });
+
+                if (error) throw error;
+
+                // 🧹 FILTRADO INTELIGENTE: Descartamos filas sin nombre, nombres vacíos o comercios de prueba fantasma
+                localesData = (data || []).filter(item => {
+                    const nombre = item.nombre_local ? item.nombre_local.trim() : '';
+                    return nombre !== '' && nombre !== 'Menú Digital' && nombre !== 'Cargando menú...';
+                });
+
+                renderizarPanel();
+            } catch (err) {
+                console.error("Error al cargar estadísticas:", err);
+                document.getElementById('tablaLocalesBody').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-rose-400">Error al conectar con la base de datos.</td></tr>`;
             }
-            renderizarPanel();
         }
 
         function renderizarPanel(filtro = '') {
@@ -168,49 +166,59 @@
             let totalPedidosGlobal = 0;
 
             const filtrados = localesData.filter(local => 
-                local.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
-                local.categoria.toLowerCase().includes(filtro.toLowerCase())
+                (local.nombre_local && local.nombre_local.toLowerCase().includes(filtro.toLowerCase())) ||
+                (local.categoria && local.categoria.toLowerCase().includes(filtro.toLowerCase()))
             );
 
             if (filtrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500">No se encontraron locales registrados.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-zinc-500">No hay comercios reales registrados todavía.</td></tr>`;
+                document.getElementById('statTotalTiendas').innerText = 0;
+                document.getElementById('statTotalVisitas').innerText = 0;
+                document.getElementById('statTotalPedidos').innerText = 0;
+                document.getElementById('statPromedioVisitas').innerText = 0;
                 return;
             }
 
             filtrados.forEach(local => {
-                totalVisitasGlobal += local.visitasTotales;
-                totalPedidosGlobal += local.pedidos;
+                const visitasTotales = local.visitas_totales || 0;
+                const visitasUnicas = local.visitas_unicas || 0;
+                const pedidos = local.pedidos || 0;
+                
+                totalVisitasGlobal += visitasTotales;
+                totalPedidosGlobal += pedidos;
+
+                const fechaFormateada = local.fecha_alta ? new Date(local.fecha_alta).toLocaleDateString('es-AR') : 'Reciente';
 
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-700/40 transition";
+                tr.className = "hover:bg-zinc-800/40 transition";
                 tr.innerHTML = `
                     <td class="py-4 px-6 font-medium text-white flex items-center gap-3">
-                        <div class="bg-gray-700 text-emerald-400 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shadow-inner">
+                        <div class="bg-zinc-800 text-amber-400 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shadow-inner border border-zinc-700/50">
                             <i class="fa-solid fa-store"></i>
                         </div>
                         <div>
-                            <span class="block font-semibold">${local.nombre}</span>
-                            <span class="text-xs text-gray-400">ID Local: #${local.id}</span>
+                            <span class="block font-semibold">${local.nombre_local}</span>
+                            <span class="text-[11px] text-zinc-500">ID: ${local.user_id.substring(0, 8)}...</span>
                         </div>
                     </td>
-                    <td class="py-4 px-6 text-gray-300">${local.categoria}</td>
-                    <td class="py-4 px-6 text-gray-400 text-xs">${local.fechaAlta}</td>
+                    <td class="py-4 px-6 text-zinc-300">${local.categoria || 'Comercio'}</td>
+                    <td class="py-4 px-6 text-zinc-400 text-xs">${fechaFormateada}</td>
                     <td class="py-4 px-6 text-center">
-                        <span class="bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-full text-xs font-semibold">
-                            ${local.visitasTotales.toLocaleString()} <span class="text-gray-400 font-normal">(totales)</span>
+                        <span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-full text-xs font-semibold">
+                            ${visitasTotales.toLocaleString()} <span class="text-zinc-500 font-normal">(${visitasUnicas} únicas)</span>
                         </span>
                     </td>
-                    <td class="py-4 px-6 text-center text-gray-200 font-medium">${local.pedidos.toLocaleString()}</td>
+                    <td class="py-4 px-6 text-center text-zinc-200 font-bold">${pedidos.toLocaleString()}</td>
                     <td class="py-4 px-6 text-right">
-                        <button onclick="verDetalleLocal(${local.id})" class="text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 px-3 py-1.5 rounded-lg text-xs font-medium transition">
-                            <i class="fa-solid fa-chart-pie mr-1"></i> Detalle
-                        </button>
+                        <a href="index.html?u=${local.user_id}" target="_blank" class="text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-3 py-1.5 rounded-xl text-xs font-bold transition inline-flex items-center gap-1 border border-amber-500/20">
+                            <i class="fa-solid fa-external-link-alt"></i> Ver Menú
+                        </a>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            // Actualizar tarjetas resumen
+            // Actualizar tarjetas resumen superior
             document.getElementById('statTotalTiendas').innerText = totalTiendas;
             document.getElementById('statTotalVisitas').innerText = totalVisitasGlobal.toLocaleString();
             document.getElementById('statTotalPedidos').innerText = totalPedidosGlobal.toLocaleString();
@@ -222,29 +230,22 @@
             renderizarPanel(query);
         }
 
-        function verDetalleLocal(id) {
-            const local = localesData.find(l => l.id === id);
-            if (local) {
-                alert(`📊 Reporte Individual: ${local.nombre}\n\n- Categoría: ${local.categoria}\n- Fecha de Alta: ${local.fechaAlta}\n- Visitas Únicas: ${local.visitasUnicas}\n- Visitas Totales: ${local.visitasTotales}\n- Pedidos Realizados: ${local.pedidos}`);
-            }
-        }
-
         function exportarCSV() {
             let csvContent = "data:text/csv;charset=utf-8,ID,Nombre,Categoria,FechaAlta,VisitasUnicas,VisitasTotales,Pedidos\n";
             localesData.forEach(l => {
-                csvContent += `${l.id},"${l.nombre}","${l.categoria}",${l.fechaAlta},${l.visitasUnicas},${l.visitasTotales},${l.pedidos}\n`;
+                csvContent += `${l.user_id},"${l.nombre_local}","${l.categoria || ''}",${l.fecha_alta},${l.visitas_unicas || 0},${l.visitas_totales || 0},${l.pedidos || 0}\n`;
             });
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "nexomenu_estadisticas.csv");
+            link.setAttribute("download", "nexoserv_estadisticas_reales.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
 
-        // Cargar al iniciar
-        window.onload = cargarDatos;
+        // Cargar automáticamente al abrir la página
+        window.onload = cargarEstadisticasReales;
     </script>
 </body>
 </html>
